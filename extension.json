@@ -1,0 +1,53 @@
+{
+	"name": "ContactManager",
+	"author": "thomas-topway-it",
+	"version": "1.0",
+	"url": "https://www.mediawiki.org/wiki/Extension:ContactManager",
+	"descriptionmsg": "contactcmanager-extension-desc",
+	"license-name": "GPL-2.0-or-later",
+	"type": "parserhook",
+	"requires": {
+		"MediaWiki": ">= 1.35.0"
+	},
+	"MessagesDirs": {
+		"ContactManager": [
+			"i18n"
+		]
+	},
+	"callback": "ContactManagerHooks::initExtension",
+	"AutoloadClasses": {
+		"ContactManager": "includes/ContactManager.php",
+		"ContactManagerMailbox": "includes/ContactManagerMailbox.php",
+		"ContactManagerHooks": "includes/ContactManagerHooks.php"
+	},
+	"ExtensionMessagesFiles": {
+		"ContactManagerAlias": "ContactManager.alias.php",
+		"ContactManagerMagic": "ContactManagerMagic.i18n.magic.php"
+	},
+	"Hooks": {
+		"LoadExtensionSchemaUpdates": "ContactManagerHooks::onLoadExtensionSchemaUpdates",
+		"SMW::Property::initProperties": "ContactManagerHooks::onSMWPropertyinitProperties",
+		"BeforeInitialize": "ContactManagerHooks::onBeforeInitialize",
+		"MediaWikiServices": "ContactManagerHooks::onMediaWikiServices",
+		"PageProperties::OnEditSemanticSave": "ContactManagerHooks::PagePropertiesOnEditSemanticSave"
+	
+	},
+	"SpecialPages": {
+	},
+	"namespaces": [
+	],
+	"ResourceModules": {
+		"ext.ContactManager": {
+			"position": "top",
+			"localBasePath": "resources",
+			"remoteExtPath": "ContactManager/resources",
+			"scripts": [
+			],
+			"styles": [
+			],
+			"dependencies": [
+			]
+		}
+	},
+	"manifest_version": 1
+}

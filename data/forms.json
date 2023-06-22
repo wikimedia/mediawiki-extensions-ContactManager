@@ -1,0 +1,192 @@
+{
+   "Contact manager mailbox":{
+      "pagename-formula":"Contact Manager:Mailboxes/\u003CMailbox name\u003E",
+      "freetext-input":"do not show",
+      "content-model":"wikitext",
+      "categories":[
+         "Contact manager mailboxes"
+      ],
+      "fields":{
+         "Mailbox name":{
+            "required":true
+         },
+         "Mailbox server":{
+            "required":true
+         },
+         "Mailbox username":{
+            "required":true
+         },
+         "Mailbox password":{
+            "required":true
+         },
+         "Mailbox retrieved messages":[
+            
+         ],
+         "Mailbox target page":{
+            "required":true,
+            "default":"\u003Cnowiki\u003E{{mailboxName}}/{{folder}}/{{messageId}}\u003C/nowiki\u003E",
+            "default-result":"{{mailboxName}}/{{folder}}/{{messageId}}"
+         },
+         "Mailbox attachments folder":{
+            "default":"\u003Cnowiki\u003Eattachments/{{mailboxName}}\u003C/nowiki\u003E"
+         },
+         "Mailbox contacts target page":{
+            "default":"\u003Cnowiki\u003E{{fullname}}\u003C/nowiki\u003E"
+         },
+         "Mailbox filters":{
+            "preferred-input":"OO.ui.MenuTagMultiselectWidget",
+            "options-askquery":"[[Mailbox filter name::+]]"
+         },
+         "Mailbox categories email":{
+            "preferred-input":"mw.widgets.CategoryMultiselectWidget"
+         },
+         "Mailbox categories contact":{
+            "preferred-input":"mw.widgets.CategoryMultiselectWidget"
+         }
+      }
+   },
+   "Contact manager filter":{
+      "pagename-formula":"Contact Manager:Mailboxes/\u003CMailbox filter name\u003E",
+      "freetext-input":"do not show",
+      "categories":[
+         "Contact manager filters"
+      ],
+      "content-model":"wikitext",
+      "fields":{
+         "Mailbox filter name":{
+            "label":[
+               "Filter name"
+            ],
+            "options-limit":100,
+            "alternate-input":"autocomplete",
+            "label-result":"Filter name"
+         },
+         "Match":{
+            "fields":{
+               "Mailbox filter match":{
+                  "required":true,
+                  "preferred-input":"OO.ui.MenuTagMultiselectWidget",
+                  "options-values":[
+                     "From",
+                     "To",
+                     "Cc",
+                     "Bcc",
+                     "Subject",
+                     "Body"
+                  ],
+                  "options-limit":100,
+                  "alternate-input":"autocomplete",
+                  "options-values-result":[
+                     "From",
+                     "To",
+                     "Cc",
+                     "Bcc",
+                     "Subject",
+                     "Body"
+                  ]
+               },
+               "Mailbox filter match text":{
+                  "required":true,
+                  "options-limit":100,
+                  "alternate-input":"autocomplete"
+               }
+            }
+         },
+         "Attachment":{
+            "fields":{
+               "Mailbox filter attachment size":{
+                  "required":true,
+                  "preferred-input":"OO.ui.RadioSelectInputWidget",
+                  "options-values":[
+                     "Greater than",
+                     "Less than"
+                  ],
+                  "options-limit":100,
+                  "alternate-input":"autocomplete",
+                  "options-values-result":[
+                     "Greater than",
+                     "Less than"
+                  ]
+               },
+               "Mailbox filter attachment size value":{
+                  "required":true,
+                  "preferred-input":"OO.ui.NumberInputWidget",
+                  "options-limit":100,
+                  "alternate-input":"autocomplete"
+               }
+            }
+         },
+         "Mailbox filter action target page":{
+            "label":[
+               "Target page"
+            ],
+            "preferred-input":"mw.widgets.TitleInputWidget",
+            "options-limit":100,
+            "alternate-input":"autocomplete"
+         },
+         "Mailbox filter action category":{
+            "label":[
+               "Set category"
+            ],
+            "preferred-input":"mw.widgets.TitlesMultiselectWidget",
+            "options-limit":100,
+            "alternate-input":"autocomplete"
+         },
+         "Mailbox filter action skip":{
+            "label":[
+               "Skip"
+            ],
+            "options-limit":100,
+            "alternate-input":"autocomplete",
+            "label-result":"Skip"
+         }
+      }
+   },
+   "Contact manager contact":{
+      "pagename-formula":"<Contact first name> <Contact last name>",
+      "freetext-input":"do not show",
+      "content-model":"wikitext",
+      "categories":[
+         "Contacts"
+      ],
+      "fields":{
+         "Contact first name":[
+            
+         ],
+         "Contact last name":[
+            
+         ],
+         "Contact salutation":[
+            
+         ],
+         "Contact middlename":[
+            
+         ],
+         "Contact nickname":[
+            
+         ],
+         "Contact initials":[
+            
+         ],
+         "Contact suffix":[
+            
+         ],
+         "Contact full name":[
+            
+         ],
+         "Contact name":{
+            "preferred-input":"OO.ui.HiddenInputWidget",
+            "value-formula":"<Contact first name> <Contact last name>"
+         },
+         "Contact email":{
+            "multiple":true
+         },
+         "Contact telephone number":{
+            "multiple":true
+         },
+         "Contact language":[
+            
+         ]
+      }
+   }
+}
