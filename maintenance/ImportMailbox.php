@@ -58,13 +58,16 @@ class ImportMailbox extends Maintenance {
 		parent::__construct();
 		$this->addDescription( 'import mailbox' );
 		$this->requireExtension( 'ContactManager' );
-		
-	}
 
-	/**
+		$this->addOption( 'mailbox', 'limit import to specific mailbox', false, true );
+	}
+ 
+ 	/*
 	 * inheritDoc
 	 */
-	public function execute() {
+	public function execute() {		
+		$mailbox = $this->getOption( 'mailbox') ?? null;
+	
 		$this->propertyNames = \ContactManager::propertyKeysToLabel( [
 			'MailboxName',
 			'MailboxServer',
@@ -105,6 +108,7 @@ class ImportMailbox extends Maintenance {
 		
 		// loop mailboxes
 		foreach ( $mailboxes as $titleText => $value ) {
+		
 			$title = Title::newFromText( $titleText );
 			$properties = \PageProperties::getPageProperties( $title );
 			
@@ -119,7 +123,12 @@ class ImportMailbox extends Maintenance {
 				$mailboxRetrievedMessages
 			) = $this->getPropertyValue( $properties, ['MailboxName', 'MailboxServer', 'MailboxUsername', 'MailboxPassword', 'MailboxTargetPage', 'MailboxCategoriesEmail', 'MailboxCategoriesContact', 'MailboxRetrievedMessages' ] );
 
+			if ( !empty( $mailbox ) && trim( $mailbox ) !== trim( $mailboxName ) ) {
+				continue;
+			}
+	
 			echo 'connectMailbox ...' . "\n";
+			echo 'mailbox: ' . "$mailboxName \n";
 			echo 'mailboxServer: ' . "$mailboxServer \n";
 			echo 'mailboxUsername: ' . "$mailboxUsername \n";
 		
@@ -173,6 +182,9 @@ class ImportMailbox extends Maintenance {
 	 */
 	private function saveContact( $mailboxName, $folderName, $mailboxCategoriesContact, $fromName ) {
 		$parser = new TheIconic\NameParser\Parser();
+		if ( empty( $fromName ) ) {
+			return false;
+		}
 		$parsedName = $parser->parse( $fromName );
 		$fullName = $parsedName->getFullname();
 
