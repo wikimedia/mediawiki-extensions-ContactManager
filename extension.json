@@ -28,8 +28,7 @@
 		"LoadExtensionSchemaUpdates": "ContactManagerHooks::onLoadExtensionSchemaUpdates",
 		"SMW::Property::initProperties": "ContactManagerHooks::onSMWPropertyinitProperties",
 		"BeforeInitialize": "ContactManagerHooks::onBeforeInitialize",
-		"MediaWikiServices": "ContactManagerHooks::onMediaWikiServices",
-		"PageProperties::OnEditSemanticSave": "ContactManagerHooks::PagePropertiesOnEditSemanticSave"
+		"MediaWikiServices": "ContactManagerHooks::onMediaWikiServices"
 	
 	},
 	"SpecialPages": {
