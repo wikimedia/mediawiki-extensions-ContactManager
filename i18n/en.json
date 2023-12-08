@@ -5,9 +5,9 @@
 	"contactmanager-extension-desc": "Contact Manager based on PageProperties",
 	"contactmanager": "Contact Manager",
 
-	"pageproperties-slot-label-contactmanager-text": "email text",
-	"pageproperties-slot-label-contactmanager-html": "email html",
-	"pageproperties-slot-label-contactmanager-raw": "email raw",
+	"contactmanager-pageproperties-slot-label-contactmanager-text": "email text",
+	"contactmanager-pageproperties-slot-label-contactmanager-html": "email html",
+	"contactmanager-pageproperties-slot-label-contactmanager-raw": "email raw",
 
 	"contactmanager-mailbox-filter-name": "Mailbox filter name",
 	"contactmanager-mailbox-filter-name-desc": "Mailbox filter name (Contact Manager)",

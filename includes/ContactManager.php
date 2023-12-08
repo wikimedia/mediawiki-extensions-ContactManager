@@ -22,10 +22,9 @@
  * @copyright Copyright ©2023, https://wikisphere.org
  */
 
-use PHPMailer\PHPMailer\PHPMailer;
-
 class ContactManager {
 
+	/** @var array[] */
 	public static $labelsCamelCaseToKebabCase = [
 
 		'MailboxFilterName' => 'mailbox-filter-name',
@@ -160,4 +159,3 @@ class ContactManager {
 		return true;
 	}
 }
-

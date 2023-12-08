@@ -29,7 +29,7 @@
 		"SMW::Property::initProperties": "ContactManagerHooks::onSMWPropertyinitProperties",
 		"BeforeInitialize": "ContactManagerHooks::onBeforeInitialize",
 		"MediaWikiServices": "ContactManagerHooks::onMediaWikiServices"
-	
+
 	},
 	"SpecialPages": {
 	},

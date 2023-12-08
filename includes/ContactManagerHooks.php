@@ -64,7 +64,7 @@ class ContactManagerHooks {
 					'model' => 'json',
 					'text' => json_encode( $descriptor )
 				]
-			]; 
+			];
 			try {
 				$importer->doImportSelf( $pagename, $contents );
 			} catch ( Exception $e ) {
@@ -78,24 +78,25 @@ class ContactManagerHooks {
 	 * @return void
 	 */
 	public static function onMediaWikiServices( $services ) {
-		$services->addServiceManipulator( 'SlotRoleRegistry', static function ( \MediaWiki\Revision\SlotRoleRegistry $registry ) {
+		$services->addServiceManipulator(
+			'SlotRoleRegistry',
+			static function ( \MediaWiki\Revision\SlotRoleRegistry $registry ) {
+				$roles = [
+					SLOT_ROLE_CONTACTMANAGER_TEXT => CONTENT_MODEL_CONTACTMANAGER_TEXT,
+					SLOT_ROLE_CONTACTMANAGER_RAW => CONTENT_MODEL_CONTACTMANAGER_RAW,
+					SLOT_ROLE_CONTACTMANAGER_HTML => CONTENT_MODEL_CONTACTMANAGER_HTML
+				];
 
-			$roles = [
-				SLOT_ROLE_CONTACTMANAGER_TEXT => CONTENT_MODEL_CONTACTMANAGER_TEXT,
-				SLOT_ROLE_CONTACTMANAGER_RAW => CONTENT_MODEL_CONTACTMANAGER_RAW,
-				SLOT_ROLE_CONTACTMANAGER_HTML => CONTENT_MODEL_CONTACTMANAGER_HTML
-			];
-
-			foreach ( $roles as $role => $model ) {
-				if ( !$registry->isDefinedRole( $role ) ) {
-					$registry->defineRoleWithModel( $role, $model, [
+				foreach ( $roles as $role => $model ) {
+					if ( !$registry->isDefinedRole( $role ) ) {
+						$registry->defineRoleWithModel( $role, $model, [
 						"display" => "none",
 						"region" => "center",
 						"placement" => "append"
-					] );
+						] );
+					}
 				}
-			}
-		} );
+			} );
 	}
 
 	/**
@@ -104,7 +105,6 @@ class ContactManagerHooks {
 	 * @return void
 	 */
 	public static function onSMWPropertyinitProperties( SMW\PropertyRegistry $propertyRegistry ) {
-
 		$types = [
 			'EmailDate' => '_dat',
 			'ContactTelephoneNumber' => '_tel',
@@ -133,12 +133,11 @@ class ContactManagerHooks {
 				$propertyId,
 				$description
 			);
-			
+
 		}
 
 		return true;
 	}
-
 
 	/**
 	 * @param Title &$title
@@ -149,7 +148,14 @@ class ContactManagerHooks {
 	 * @param MediaWiki $mediaWiki
 	 * @return void
 	 */
-	public static function onBeforeInitialize( \Title &$title, $unused, \OutputPage $output, \User $user, \WebRequest $request, \MediaWiki $mediaWiki ) {
+	public static function onBeforeInitialize(
+		\Title &$title,
+		$unused,
+		\OutputPage $output,
+		\User $user,
+		\WebRequest $request,
+		\MediaWiki $mediaWiki
+	) {
 		\ContactManager::initialize();
 	}
 

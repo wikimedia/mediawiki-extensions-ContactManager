@@ -50,7 +50,7 @@ class ImportMailbox extends Maintenance {
 
 	/** @var attachmentsPathTmp */
 	private $attachmentsPathTmp;
-	
+
 	/** @var propertyNames */
 	private $propertyNames = [];
 
@@ -61,13 +61,10 @@ class ImportMailbox extends Maintenance {
 
 		$this->addOption( 'mailbox', 'limit import to specific mailbox', false, true );
 	}
- 
- 	/*
-	 * inheritDoc
-	 */
-	public function execute() {		
-		$mailbox = $this->getOption( 'mailbox') ?? null;
-	
+
+	public function execute() {
+		$mailbox = $this->getOption( 'mailbox' ) ?? null;
+
 		$this->propertyNames = \ContactManager::propertyKeysToLabel( [
 			'MailboxName',
 			'MailboxServer',
@@ -105,14 +102,13 @@ class ImportMailbox extends Maintenance {
 		$mailboxes = $this->getMailboxes();
 
 		$this->importer = \PageProperties::getImporter();
-		
+
 		// loop mailboxes
 		foreach ( $mailboxes as $titleText => $value ) {
-		
 			$title = Title::newFromText( $titleText );
 			$properties = \PageProperties::getPageProperties( $title );
-			
-			list(
+
+			[
 				$mailboxName,
 				$mailboxServer,
 				$mailboxUsername,
@@ -121,29 +117,43 @@ class ImportMailbox extends Maintenance {
 				$mailboxCategoriesEmail,
 				$mailboxCategoriesContact,
 				$mailboxRetrievedMessages
-			) = $this->getPropertyValue( $properties, ['MailboxName', 'MailboxServer', 'MailboxUsername', 'MailboxPassword', 'MailboxTargetPage', 'MailboxCategoriesEmail', 'MailboxCategoriesContact', 'MailboxRetrievedMessages' ] );
+			] = $this->getPropertyValue(
+				$properties, [
+					'MailboxName',
+					'MailboxServer',
+					'MailboxUsername',
+					'MailboxPassword',
+					'MailboxTargetPage',
+					'MailboxCategoriesEmail',
+					'MailboxCategoriesContact',
+					'MailboxRetrievedMessages'
+				] );
 
 			if ( !empty( $mailbox ) && trim( $mailbox ) !== trim( $mailboxName ) ) {
 				continue;
 			}
-	
+
 			echo 'connectMailbox ...' . "\n";
 			echo 'mailbox: ' . "$mailboxName \n";
 			echo 'mailboxServer: ' . "$mailboxServer \n";
 			echo 'mailboxUsername: ' . "$mailboxUsername \n";
-		
-			$mailbox = $this->connectMailbox( $mailboxServer, $mailboxUsername, $mailboxPassword ) ;
+
+			$mailbox = $this->connectMailbox( $mailboxServer, $mailboxUsername, $mailboxPassword );
 			$mailbox->setAttachmentsDir( $this->attachmentsPathTmp );
-			
+
 			echo 'get folders ...' . "\n";
-		
+
 			$folders = $mailbox->getMailboxes( '*' );
-			$retrievedMessages = ( !empty( $mailboxRetrievedMessages ) ? json_decode( $mailboxRetrievedMessages, true ) : [] );
-		
+			$retrievedMessages = (
+				!empty( $mailboxRetrievedMessages ) ? json_decode( $mailboxRetrievedMessages, true ) : []
+			);
+
 			// loop folders
 			foreach ( $folders as $key => $folder ) {
 				$mailbox->switchMailbox( $folder['fullpath'] );
-				$latest_uid = ( !empty( $retrievedMessages[$folder['shortpath']] ) ? $retrievedMessages[$folder['shortpath']] : 1 );
+				$latest_uid = (
+					!empty( $retrievedMessages[$folder['shortpath']] ) ? $retrievedMessages[$folder['shortpath']] : 1
+				);
 
 				// or: 'SINCE "1 Jan 2018" BEFORE "28 Jan 2018"'
 				$mails = $mailbox->fetch_overview( "$latest_uid:*" );
@@ -151,19 +161,19 @@ class ImportMailbox extends Maintenance {
 				// loop emails
 				foreach ( $mails as $headers ) {
 					$uid = $headers->uid;
-							
+
 					echo "get email({$headers->uid}) ...\n";
-			
+
 					$mail = $mailbox->getMail( $headers->uid );
 
 					$folderName = str_replace( [ '[', ']' ], '', $folder['shortpath'] );
 					$folderName = str_replace( '/', ' - ', $folderName );
-					
+
 					// $pageName is adjusted by reference
 					$targetPage = $this->createTargetPage( $mailboxName, $folderName, $uid );
-					
+
 					echo 'targetPage: ' . $targetPage . "\n";
-					
+
 					$mailRaw = $mailbox->getMailHeaderRaw( $headers->uid );
 
 					$this->saveEmail( $folder, $uid, $targetPage, $mail, $mailRaw, $mailboxCategoriesEmail );
@@ -179,6 +189,7 @@ class ImportMailbox extends Maintenance {
 	 * @param string $folderName
 	 * @param string $mailboxCategoriesContact
 	 * @param string $fromName
+	 * @return bool
 	 */
 	private function saveContact( $mailboxName, $folderName, $mailboxCategoriesContact, $fromName ) {
 		$parser = new TheIconic\NameParser\Parser();
@@ -193,30 +204,35 @@ class ImportMailbox extends Maintenance {
 		$parameters = [];
 		$display_title = false;
 
-		$results = \PageProperties::getQueryResults( $query_string, $properties_to_display, $parameters, $display_title );
+		$results = \PageProperties::getQueryResults(
+			$query_string,
+			$properties_to_display,
+			$parameters,
+			$display_title
+		);
 		$arr = $results->serializeToArray();
 
 		if ( count( $arr ) ) {
 			echo 'contact data exist (' . $fullName . ")\n";
 			return false;
 		}
-		
+
 		$pageName = str_ireplace(
 			[ '{{mailboxName}}', '{{folder}}', '{{fullName}}' ],
 			[ $mailboxName, $folderName, $fullName ],
 		$this->propertyNames['MailboxContactsTargetPage'] );
-		
+
 		$title_ = Title::newFromText( $pageName );
 		if ( $title_->isKnown() ) {
 			$i = 0;
 			do {
 				$title_ = Title::newFromText( $titleText . ' (' . $i . ')' );
-			} while( $title_->isKnown() );
+			} while ( $title_->isKnown() );
 		}
 
 		$pageProperties = [
-			'semantic-properties' =>  [
-				$this->propertyNames['ContactFirstName'] =>  $parsedName->getFirstname(),
+			'semantic-properties' => [
+				$this->propertyNames['ContactFirstName'] => $parsedName->getFirstname(),
 				$this->propertyNames['ContactLastName'] => $parsedName->getLastname(),
 				$this->propertyNames['ContactSalutation'] => $parsedName->getSalutation(),
 				$this->propertyNames['ContactMiddlename'] => $parsedName->getMiddlename(),
@@ -225,7 +241,7 @@ class ImportMailbox extends Maintenance {
 				$this->propertyNames['ContactSuffix'] => $parsedName->getSuffix(),
 				$this->propertyNames['ContactFullName'] => $fullName,
 			],
-			'semantic-forms' =>  [ "Contact manager contact" ],
+			'semantic-forms' => [ "Contact manager contact" ],
 			'page-properties' => [
 				'categories' => $mailboxCategoriesContact ?? []
 			]
@@ -233,20 +249,20 @@ class ImportMailbox extends Maintenance {
 
 		$pageName = $title_->getText();
 		$wikitext = null;
-			
+
 		$contents = [
 			[
 				'role' => SlotRecord::MAIN,
 				'model' => 'wikitext',
 				'text' => $wikitext
-			], 
+			],
 			[
 				'role' => SLOT_ROLE_PAGEPROPERTIES,
 				'model' => CONTENT_MODEL_PAGEPROPERTIES_SEMANTIC,
 				'text' => json_encode( $pageProperties )
 			],
 		];
-		
+
 		echo 'saving contact: ' . $pagename . "\n";
 
 		try {
@@ -254,12 +270,12 @@ class ImportMailbox extends Maintenance {
 		} catch ( Exception $e ) {
 			$this->error_messages[$pagename] = $e->getMessage();
 		}
-
 	}
 
 	/**
 	 * @param array $folder
 	 * @param int $uid
+	 * @param Title $targetPage
 	 * @param PhpImap\IncomingMail $mail
 	 * @param string $mailRaw
 	 * @param string $mailboxCategoriesEmail
@@ -278,13 +294,15 @@ class ImportMailbox extends Maintenance {
 			}
 		}
 
-		$emailFrom = ( $mail->fromName ? $mail->fromName . ' <' . str_replace( ['<', '>' ], '', $mail->fromAddress ) . '>'
-			: str_replace( ['<', '>' ], '', $mail->fromAddress ) );
+		$emailFrom = (
+			$mail->fromName ? $mail->fromName . ' <' . str_replace( [ '<', '>' ], '', $mail->fromAddress ) . '>'
+			: str_replace( [ '<', '>' ], '', $mail->fromAddress )
+		);
 
 		$wikitext = '';
-					
-		$pageProperties = [	
-			'semantic-properties' =>  [
+
+		$pageProperties = [
+			'semantic-properties' => [
 				$this->propertyNames['EmailFrom'] => $emailFrom,
 				$this->propertyNames['EmailTo'] => $this->formatRecipient( $mail->to ),
 				$this->propertyNames['EmailCc'] => $this->formatRecipient( $mail->cc ),
@@ -293,8 +311,8 @@ class ImportMailbox extends Maintenance {
 				$this->propertyNames['EmailSubject'] => $mail->subject,
 				$this->propertyNames['EmailDate'] => $mail->date,
 				$this->propertyNames['EmailAttachments'] => $filenames,
-		 	],
-			'semantic-forms' =>  [ "Contact manager email" ],
+			],
+			'semantic-forms' => [ "Contact manager email" ],
 				'page-properties' => [
 					'categories' => $mailboxCategoriesEmail ?? []
 				]
@@ -304,7 +322,7 @@ class ImportMailbox extends Maintenance {
 
 		$pathTarget = $wgContactManagerAttachments . '/' . $title->getArticleID();
 		if ( count( $attachments ) &&
-			( file_exists( $pathTarget) || mkdir( $pathTarget, 0777, true ) ) ) {
+			( file_exists( $pathTarget ) || mkdir( $pathTarget, 0777, true ) ) ) {
 
 			foreach ( $attachments as $attachment ) {
 				rename( $this->attachmentsPathTmp . '/' . $attachment->name, $pathTarget . '/' . $attachment->name );
@@ -318,6 +336,7 @@ class ImportMailbox extends Maintenance {
 
 		// update at each imported email
 		$update_obj = $pageProperties;
+		// phpcs:ignore Generic.Files.LineLength.TooLong
 		$update_obj['semantic-properties'][$this->propertyNames['MailboxRetrievedMessages']] = json_encode( $retrievedMessages );
 
 		$errors = [];
@@ -326,11 +345,12 @@ class ImportMailbox extends Maintenance {
 
 	/**
 	 * @param array $arr
+	 * @return array
 	 */
 	private function formatRecipient( $arr ) {
 		$ret = [];
 		foreach ( $arr as $key => $value ) {
-			$ret[] = ( $key !== $value ? $value . ' <' . $key . '>' : str_replace( ['<', '>' ], '', $value ) );
+			$ret[] = ( $key !== $value ? $value . ' <' . $key . '>' : str_replace( [ '<', '>' ], '', $value ) );
 		}
 
 		return $ret;
@@ -339,11 +359,15 @@ class ImportMailbox extends Maintenance {
 	/**
 	 * @param array $properties
 	 * @param array $names
+	 * @return array
 	 */
 	private function getPropertyValue( $properties, $names ) {
 		$ret = [];
 		foreach ( $names as $value ) {
-			$ret[] = ( array_key_exists( $this->propertyNames[$value], $properties['semantic-properties'] ) ? $properties['semantic-properties'][$this->propertyNames[$value]] : null );
+			$ret[] = (
+				array_key_exists( $this->propertyNames[$value], $properties['semantic-properties'] )
+					? $properties['semantic-properties'][$this->propertyNames[$value]] : null
+			);
 		}
 		return $ret;
 	}
@@ -357,28 +381,33 @@ class ImportMailbox extends Maintenance {
 		$parameters = [];
 		$display_title = true;
 
-		$results = \PageProperties::getQueryResults( $query_string, $properties_to_display, $parameters, $display_title );
+		$results = \PageProperties::getQueryResults(
+			$query_string,
+			$properties_to_display,
+			$parameters,
+			$display_title
+		);
 		$ret = $results->serializeToArray();
 		return ( array_key_exists( 'results', $ret ) ? $ret['results'] : [] );
 	}
-	
+
 	/**
 	 * @param string $mailboxName
 	 * @param string $folderName
 	 * @param int $uid
 	 * @return string
 	 */
-	private function createTargetPage( $mailboxName, $folderName, $uid ) {	
-		if ( !empty ( $mailboxTargetPage ) ) {
+	private function createTargetPage( $mailboxName, $folderName, $uid ) {
+		if ( !empty( $mailboxTargetPage ) ) {
 			$pageName = str_ireplace(
 				[ '{{mailboxName}}', '{{folder}}', '{{messageId}}' ],
 				[ $mailboxName, $folderName, $uid ],
 				$mailboxTargetPage );
-					
+
 		} else {
-			$pageName = $mailboxName . '/' . $folderName . '/' . $uid; 	//$mail->messageId;
+			$pageName = $mailboxName . '/' . $folderName . '/' . $uid; // $mail->messageId;
 		}
-										
+
 		// create parent pages
 		$subpages = explode( '/', $pageName );
 		array_pop( $subpages );
@@ -386,7 +415,7 @@ class ImportMailbox extends Maintenance {
 		foreach ( $subpages as $titleText_ ) {
 			$path_[] = $titleText_;
 			$title_ = Title::newFromText( implode( '/', $path_ ) );
-	
+
 			if ( $title_ && !$title_->isKnown() ) {
 				$ret_ = \ContactManager::doCreateContent( null, $title_, "" );
 			}
@@ -395,7 +424,7 @@ class ImportMailbox extends Maintenance {
 		// https://www.mediawiki.org/wiki/Manual:Page_title#:~:text=Titles%20containing%20the%20characters%20%23,for%20MediaWiki%20it%20is%20not.
 		// forbidden chars: # < > [ ] | { } _
 		$pageName = str_replace( [ '#', '<', '>', '[', ']', '|', '{', '}', '_' ], '', $pageName );
-		return $pageName;			
+		return $pageName;
 	}
 
 	/**
@@ -407,7 +436,6 @@ class ImportMailbox extends Maintenance {
 	 * @param array $pageProperties
 	 */
 	private function doImport( $pagename, $wikitext, $mailText, $mailHtml, $mailRaw, $pageProperties ) {
-			
 		$contents = [
 			[
 				'role' => SlotRecord::MAIN,
@@ -441,7 +469,6 @@ class ImportMailbox extends Maintenance {
 		} catch ( Exception $e ) {
 			$this->error_messages[$pagename] = $e->getMessage();
 		}
-
 	}
 
 	/**
@@ -449,7 +476,8 @@ class ImportMailbox extends Maintenance {
 	 * @param string $username
 	 * @param string $password
 	 * @param string|null $mailbox
-	 * return ContactManagerMailbox
+	 * @param int $port
+	 * @return ContactManagerMailbox
 	 */
 	private function connectMailbox( $server, $username, $password, $mailbox = "", $port = 993 ) {
 		global $wgContactManagerAttachments;
@@ -460,18 +488,17 @@ class ImportMailbox extends Maintenance {
 		}
 		$this->attachmentsPathTmp = $attachmentsPathTmp;
 
-		// return new PhpImap\Mailbox( 
+		// return new PhpImap\Mailbox(
 		return new ContactManagerMailbox(
 			'{' . $server . ':' . $port . '/imap/ssl}' . $mailbox,
 			$username,
 			$password,
-			 //__DIR__,	// Directory, where attachments will be saved (optional)
+			 // __DIR__, // Directory, where attachments will be saved (optional)
 			$this->attachmentsPathTmp,
 			'UTF-8',	// Server encoding (optional)
 			true,		// Trim leading/ending whitespaces of IMAP path (optional)
 			true		// Attachment filename mode (optional; false = random filename; true = original filename)
 		);
-
 	}
 
 }

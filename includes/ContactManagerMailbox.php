@@ -20,27 +20,29 @@
  * @author thomas-topway-it <support@topway.it>
  * @copyright Copyright ©2023, https://wikisphere.org
  */
- 
+
 class ContactManagerMailbox extends PhpImap\Mailbox {
 
+	/**
+	 * @param string $criteria
+	 * @return array|bool
+	 */
 	public function fetch_overview( $criteria ) {
 		$mails = imap_fetch_overview( $this->getImapStream(), $criteria, FT_UID );
 
-        if ( \count($mails) ) {
+		if ( \count( $mails ) ) {
 			return $mails;
 		}
 
 		return [];
 	}
 
-    public function getMailHeaderRaw( int $mailId ): string {
-       return PhpImap\Imap::fetchheader(
-            $this->getImapStream(),
-            $mailId,
-            (SE_UID === $this->imapSearchOption) ? FT_UID : 0
-        );
-
+	public function getMailHeaderRaw( int $mailId ): string {
+		return PhpImap\Imap::fetchheader(
+			$this->getImapStream(),
+			$mailId,
+			( SE_UID === $this->imapSearchOption ) ? FT_UID : 0
+		);
 	}
 
 }
-
