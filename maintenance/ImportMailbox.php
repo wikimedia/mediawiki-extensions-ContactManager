@@ -495,9 +495,9 @@ class ImportMailbox extends Maintenance {
 			$password,
 			 // __DIR__, // Directory, where attachments will be saved (optional)
 			$this->attachmentsPathTmp,
-			'UTF-8',	// Server encoding (optional)
-			true,		// Trim leading/ending whitespaces of IMAP path (optional)
-			true		// Attachment filename mode (optional; false = random filename; true = original filename)
+			'UTF-8', // Server encoding (optional)
+			true, // Trim leading/ending whitespaces of IMAP path (optional)
+			true // Attachment filename mode (optional; false = random filename; true = original filename)
 		);
 	}
 
