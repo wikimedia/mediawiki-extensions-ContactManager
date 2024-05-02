@@ -1,0 +1,112 @@
+{
+	"wiki": {
+		"type": "schema",
+		"name": "ContactManager/Mailbox info",
+		"title-parsed": "Mailbox info",
+		"title": "Mailbox info",
+		"uuid": "6609c732670ae"
+	},
+	"properties": {
+		"name": {
+			"wiki": {
+				"name": "name",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Name",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"uuid": "6609c732670b4"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "Name"
+		},
+		"unread": {
+			"wiki": {
+				"name": "unread",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Unread",
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"uuid": "6609c732670b5"
+			},
+			"type": "integer",
+			"title": "Unread"
+		},
+		"deleted": {
+			"wiki": {
+				"name": "deleted",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Deleted",
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"uuid": "6609c732670b7"
+			},
+			"type": "integer",
+			"title": "Deleted"
+		},
+		"nmsgs": {
+			"wiki": {
+				"name": "nmsgs",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Nmsgs",
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"uuid": "6609c732670b8"
+			},
+			"type": "integer",
+			"title": "Nmsgs"
+		},
+		"size": {
+			"wiki": {
+				"name": "size",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Size",
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"uuid": "6609c732670b9"
+			},
+			"type": "integer",
+			"title": "Size"
+		},
+		"date": {
+			"wiki": {
+				"name": "date",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Date",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"uuid": "6609c732670ba"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "Date"
+		},
+		"mailbox": {
+			"wiki": {
+				"name": "mailbox",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Mailbox",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"uuid": "6609c732670bc"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "Mailbox"
+		},
+		"recent": {
+			"wiki": {
+				"name": "recent",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Recent",
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"uuid": "6609c732670bd"
+			},
+			"type": "integer",
+			"title": "Recent"
+		}
+	},
+	"type": "object",
+	"title": "Mailbox info"
+}

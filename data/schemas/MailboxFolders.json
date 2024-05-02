@@ -1,0 +1,110 @@
+{
+	"wiki": {
+		"type": "schema",
+		"name": "ContactManager/Mailbox folders",
+		"title-parsed": "Mailbox folders",
+		"title": "Mailbox folders"
+	},
+	"properties": {
+		"name": {
+			"wiki": {
+				"name": "name",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"label-parsed": "name",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": []
+			},
+			"type": "string",
+			"format": "text",
+			"title": "name"
+		},
+		"folders": {
+			"wiki": {
+				"name": "folders",
+				"title-parsed": "folders",
+				"title": "folders",
+				"unique-items": false,
+				"type": "schema"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "",
+					"type": "schema",
+					"layout": "section"
+				},
+				"properties": {
+					"fullpath": {
+						"wiki": {
+							"name": "fullpath",
+							"type": "property",
+							"multiple-items": false,
+							"label-parsed": "fullpath",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "text",
+						"title": "fullpath"
+					},
+					"attributes": {
+						"wiki": {
+							"name": "attributes",
+							"type": "property",
+							"multiple-items": false,
+							"label-parsed": "attributes",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "text",
+						"title": "attributes"
+					},
+					"delimiter": {
+						"wiki": {
+							"name": "delimiter",
+							"type": "property",
+							"multiple-items": false,
+							"label-parsed": "delimiter",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "text",
+						"title": "delimiter"
+					},
+					"shortpath": {
+						"wiki": {
+							"name": "shortpath",
+							"type": "property",
+							"multiple-items": false,
+							"label-parsed": "shortpath",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "text",
+						"title": "shortpath"
+					}
+				}
+			},
+			"type": "array",
+			"title": "folders",
+			"uniqueItems": false
+		}
+	},
+	"required": [ "name" ],
+	"type": "object",
+	"title": "Mailbox folders"
+}

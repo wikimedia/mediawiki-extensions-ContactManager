@@ -21,7 +21,9 @@
  * @copyright Copyright ©2023, https://wikisphere.org
  */
 
-class ContactManagerMailbox extends PhpImap\Mailbox {
+namespace MediaWiki\Extension\ContactManager;
+
+class PHPImapMailbox extends \PhpImap\Mailbox {
 
 	/**
 	 * @param string $criteria
@@ -38,7 +40,7 @@ class ContactManagerMailbox extends PhpImap\Mailbox {
 	}
 
 	public function getMailHeaderRaw( int $mailId ): string {
-		return PhpImap\Imap::fetchheader(
+		return \PhpImap\Imap::fetchheader(
 			$this->getImapStream(),
 			$mailId,
 			( SE_UID === $this->imapSearchOption ) ? FT_UID : 0

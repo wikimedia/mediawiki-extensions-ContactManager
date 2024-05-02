@@ -1,0 +1,245 @@
+{
+	"wiki": {
+		"type": "schema",
+		"name": "ContactManager/Contact",
+		"title-parsed": "Contact",
+		"title": "Contact"
+	},
+	"properties": {
+		"first_name": {
+			"wiki": {
+				"name": "first_name",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "First name",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "text",
+			"title": "First name"
+		},
+		"last_name": {
+			"wiki": {
+				"name": "last_name",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Last name",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "text",
+			"title": "Last name"
+		},
+		"salutation": {
+			"wiki": {
+				"name": "salutation",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Salutation",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "text",
+			"title": "Salutation"
+		},
+		"middle_name": {
+			"wiki": {
+				"name": "middle_name",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Middle name",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "text",
+			"title": "Middle name"
+		},
+		"nickname": {
+			"wiki": {
+				"name": "nickname",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Nickname",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "text",
+			"title": "Nickname"
+		},
+		"initials": {
+			"wiki": {
+				"name": "initials",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Initials",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "text",
+			"title": "Initials"
+		},
+		"suffix": {
+			"wiki": {
+				"name": "suffix",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Suffix",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "text",
+			"title": "Suffix"
+		},
+		"full_name": {
+			"wiki": {
+				"name": "full_name",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "Full name",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "text",
+			"title": "Full name"
+		},
+		"email_addresses": {
+			"wiki": {
+				"name": "email_addresses",
+				"title-parsed": "email addresses",
+				"title": "email addresses",
+				"unique-items": true,
+				"type": "schema"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "new_property",
+					"type": "property",
+					"multiple-items": true,
+					"default-parsed": [],
+					"visibility": "visible",
+					"preferred-input": "OO.ui.TextInputWidget (email)",
+					"input-config": [],
+					"required": false
+				},
+				"format": "email",
+				"default": []
+			},
+			"type": "array",
+			"title": "email addresses",
+			"uniqueItems": true
+		},
+		"phone_numbers": {
+			"wiki": {
+				"name": "phone_numbers",
+				"title-parsed": "phone numbers",
+				"title": "phone numbers",
+				"unique-items": true,
+				"type": "schema"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "new_property",
+					"type": "property",
+					"multiple-items": true,
+					"default-parsed": [],
+					"visibility": "visible",
+					"preferred-input": "intl-tel-input",
+					"input-config": [],
+					"required": false
+				},
+				"format": "tel",
+				"default": []
+			},
+			"type": "array",
+			"title": "phone numbers",
+			"uniqueItems": true
+		},
+		"links": {
+			"wiki": {
+				"name": "links",
+				"title-parsed": "Links",
+				"title": "Links",
+				"description-parsed": "any useful link, like cv, personal blogs, etc.",
+				"description": "any useful link, like cv, personal blogs, etc.",
+				"unique-items": false,
+				"type": "schema"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "new_property",
+					"type": "property",
+					"multiple-items": true,
+					"default-parsed": [],
+					"visibility": "visible",
+					"preferred-input": "OO.ui.TextInputWidget (url)",
+					"input-config": [],
+					"required": false
+				},
+				"format": "url",
+				"default": []
+			},
+			"type": "array",
+			"title": "Links",
+			"description": "any useful link, like cv, personal blogs, etc.",
+			"uniqueItems": false
+		},
+		"picture": {
+			"wiki": {
+				"name": "picture",
+				"type": "property",
+				"multiple-items": false,
+				"input-config": {
+					"droppable": true,
+					"showDropTarget": true,
+					"accept": [
+						"image/png",
+						"image/gif",
+						"image/jpeg",
+						"image/pjpeg",
+						"image/jpeg",
+						"image/pjpeg",
+						"image/webp",
+						"application/pdf"
+					]
+				},
+				"label-parsed": "Picture",
+				"value-prefix": "File:",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.SelectFileWidget",
+				"required": false
+			},
+			"type": "string",
+			"format": "text",
+			"title": "Picture"
+		}
+	},
+	"type": "object",
+	"title": "Contact"
+}

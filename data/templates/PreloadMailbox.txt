@@ -1,0 +1,93 @@
+==Mailbox info==
+{{#visualDataButton: Get mailbox info
+|callback = ContactManager.initJob
+|schema = ContactManager/Define job
+|edit-page={{FULLPAGENAME}}/Jobs/MailboxInfo
+|target-slot = main
+}} 
+
+
+{{#visualdataquery: [[name::+]] [[{{FULLPAGENAME}}]]
+|schema=ContactManager/Mailbox info
+|pagetitle=
+|format=table
+}} 
+
+
+==Folders==
+ 
+{{#VisualDataButton: Get folders
+|callback = ContactManager.initJob
+|schema = ContactManager/Define job
+|edit-page={{FULLPAGENAME}}/Jobs/GetFolders
+|target-slot=main
+}}
+
+
+{{#visualdataquery: [[name::+]] [[{{FULLPAGENAME}}]]
+|?folders/shortpath
+|pagetitle=
+|template?folders/shortpath=ContactManagerFoldersTable
+|schema=ContactManager/Mailbox folders
+}}
+
+
+==Filters==
+
+{{#visualdataform: ContactManager/Message filter
+|title = Create filter
+|action = create
+|edit-page = 
+|return-page = {{FULLPAGENAME}}
+|view = popup
+|popup-size = medium
+|css-class =
+|pagename-formula = {{FULLPAGENAME}}/Filters/<name>
+|edit-freetext = true   
+|edit-categories = false
+|edit-content-model = false
+|edit-target-slot = false
+|target-slot = main
+|default-categories = 
+|default-content-model = wikitext
+|preload=
+|preload-data=
+|layout-align = top
+|popup-help = false 
+|layout = tabs
+|submit-button-text =
+|validate-button-text =
+}}
+
+
+{{#visualdataquery: [[name::+]] [[{{FULLPAGENAME}}/~]]
+|schema=ContactManager/Message filter
+|?name
+|?mailbox
+|?action
+|template?action=ContactManager/Message filter edit
+}}
+
+
+
+==Messages==
+
+{{#VisualDataButton: Get messages
+|callback = ContactManager.initJob
+|schema = ContactManager/Retrieve messages
+|edit-page={{FULLPAGENAME}}/Jobs/GetMessages
+|target-slot=main
+}}
+
+
+
+<!--
+{{#VisualDataButton: Save contacts
+|callback = ContactManager.initJob
+|schema = ContactManager/Define job
+|edit-page={{FULLPAGENAME}}/Jobs/GetContacts
+|preload-data?mailbox={{PAGENAME}}
+|target-slot=main
+}}
+-->
+

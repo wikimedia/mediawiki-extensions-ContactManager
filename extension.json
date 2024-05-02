@@ -1,7 +1,7 @@
 {
 	"name": "ContactManager",
 	"author": "thomas-topway-it",
-	"version": "1.0",
+	"version": "1.2",
 	"url": "https://www.mediawiki.org/wiki/Extension:ContactManager",
 	"descriptionmsg": "contactcmanager-extension-desc",
 	"license-name": "GPL-2.0-or-later",
@@ -17,8 +17,10 @@
 	"callback": "ContactManagerHooks::initExtension",
 	"AutoloadClasses": {
 		"ContactManager": "includes/ContactManager.php",
-		"ContactManagerMailbox": "includes/ContactManagerMailbox.php",
 		"ContactManagerHooks": "includes/ContactManagerHooks.php"
+	},
+	"APIModules": {
+		"contactmanager-createjob": "MediaWiki\\Extension\\ContactManager\\ApiCreateJob"
 	},
 	"ExtensionMessagesFiles": {
 		"ContactManagerAlias": "ContactManager.alias.php",
@@ -26,27 +28,80 @@
 	},
 	"Hooks": {
 		"LoadExtensionSchemaUpdates": "ContactManagerHooks::onLoadExtensionSchemaUpdates",
-		"SMW::Property::initProperties": "ContactManagerHooks::onSMWPropertyinitProperties",
 		"BeforeInitialize": "ContactManagerHooks::onBeforeInitialize",
-		"MediaWikiServices": "ContactManagerHooks::onMediaWikiServices"
-
+		"BeforePageDisplay": "ContactManagerHooks::onBeforePageDisplay",
+		"BeforeCreateEchoEvent": "MediaWiki\\Extension\\ContactManager\\EchoInterface::onBeforeCreateEchoEvent"
 	},
 	"SpecialPages": {
 	},
-	"namespaces": [
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\ContactManager\\": "includes/classes/"
+	},
+	"GroupPermissions": {
+		"sysop": {
+			"contactmanager-can-manage-mailboxes": true
+		},
+		"bureaucrat": {
+			"contactmanager-can-manage-mailboxes": true
+		},
+		"contactmanager-admin": {
+			"contactmanager-can-manage-mailboxes": true
+		}
+	},
+	"AddGroups": {
+		"contactmanager-admin": [
+			"contactmanager-admin"
+		]
+	},
+	"RemoveGroups": {
+		"contactmanager-admin": [
+			"contactmanager-admin"
+		]
+	},
+	"AvailableRights": [
+		"contactmanager-can-manage-mailboxes"
 	],
+	"namespaces": [
+		{
+			"id": 2260,
+			"constant": "NS_CONTACTMANAGER",
+			"name": "ContactManager"
+		},
+		{
+			"id": 2261,
+			"constant": "NS_CONTACTMANAGER_TALK",
+			"name": "ContactManagerTalk"
+		}
+	],
+	"JobClasses": {
+		"MailboxJob": "MediaWiki\\Extension\\ContactManager\\MailboxJob"
+	},
 	"ResourceModules": {
 		"ext.ContactManager": {
 			"position": "top",
 			"localBasePath": "resources",
 			"remoteExtPath": "ContactManager/resources",
 			"scripts": [
+				"ContactManager.js"
 			],
 			"styles": [
 			],
 			"dependencies": [
 			]
 		}
+	},
+	"config": {
+		"ContactManagerSchemasMailbox": "ContactManager/Mailbox",
+		"ContactManagerSchemasMailboxInfo": "ContactManager/Mailbox info",
+		"ContactManagerSchemasMailboxFolders": "ContactManager/Mailbox folders",
+		"ContactManagerSchemasRetrieveMessages": "ContactManager/Retrieve messages",
+		"ContactManagerSchemasIncomingMail": "ContactManager/Incoming mail",
+		"ContactManagerSchemasMessageFilter": "ContactManager/Message filter",
+		"ContactManagerSchemasContact": "ContactManager/Contact",
+		"ContactManagerMailboxInfoArticle": "ContactManager:Mailboxes/$1",
+		"ContactManagerMailboxFoldersArticle": "ContactManager:Mailboxes/$1",
+		"ContactManagerContactsArticle": "ContactManager:Contacts/$1",
+		"ContactManagerAttachmentsFolder": ""
 	},
 	"manifest_version": 1
 }

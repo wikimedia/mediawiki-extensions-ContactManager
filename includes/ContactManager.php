@@ -22,140 +22,237 @@
  * @copyright Copyright ©2023, https://wikisphere.org
  */
 
+use MediaWiki\Extension\ContactManager\Mailbox;
+use MediaWiki\Extension\ContactManager\MailboxJob;
+use MediaWiki\MediaWikiServices;
+
+if ( is_readable( __DIR__ . '/../vendor/autoload.php' ) ) {
+	include_once __DIR__ . '/../vendor/autoload.php';
+}
+
 class ContactManager {
-
-	/** @var array[] */
-	public static $labelsCamelCaseToKebabCase = [
-
-		'MailboxFilterName' => 'mailbox-filter-name',
-		'MailboxFilterMatch' => 'mailbox-filter-match',
-		'MailboxFilterMatchText' => 'mailbox-filter-match-text',
-
-		'MailboxFilterHasAttachment' => 'mailbox-filter-has-attachment',
-		'MailboxFilterAttachmentSize' => 'mailbox-filter-attachment-size',
-		'MailboxFilterAttachmentSizeValue' => 'mailbox-filter-attachment-size-value',
-
-		'MailboxFilterActionTargetPage' => 'mailbox-filter-action-target-page',
-		'MailboxFilterActionCategory' => 'mailbox-filter-action-category',
-		'MailboxFilterActionSkip' => 'mailbox-filter-action-skip',
-
-		'MailboxName' => 'mailbox-name',
-		'MailboxServer' => 'mailbox-server',
-		'MailboxUsername' => 'mailbox-username',
-		'MailboxPassword' => 'mailbox-password',
-		'MailboxRetrievedMessages' => 'mailbox-retrieved-messages',
-		'MailboxTargetPage' => 'mailbox-target-page',
-		'MailboxAttachmentsFolder' => 'mailbox-attachments-folder',
-		'MailboxContactsTargetPage' => 'mailbox-contacts-target-page',
-		'MailboxFilters' => 'mailbox-filters',
-		'MailboxCategoriesEmail' => 'mailbox-categories-email',
-		'MailboxCategoriesContact' => 'mailbox-categories-contact',
-		'MailboxContactPagename' => 'mailbox-contact-pagename',
-
-		'EmailFrom' => 'email-from',
-		'EmailTo' => 'email-to',
-		'EmailCc' => 'email-cc',
-		'EmailBcc' => 'email-bcc',
-		'EmailReplyTo' => 'email-reply-to',
-		'EmailSubject' => 'email-subject',
-		'EmailDate' => 'email-date',
-		'EmailAttachments' => 'email-attachments',
-
-		'ContactFirstName' => 'contact-first-name',
-		'ContactLastName' => 'contact-last-name',
-		'ContactName' => 'contact-name',
-		'ContactSalutation' => 'contact-salutation',
-		'ContactMiddlename' => 'contact-middlename',
-		'ContactNickname' => 'contact-nickname',
-		'ContactSuffix' => 'contact-suffix',
-		'ContactInitials' => 'contact-initials',
-		'ContactFullName' => 'contact-full-name',
-		'ContactEmail' => 'contact-email',
-		'ContactTelephoneNumber' => 'contact-telephone-number',
-		'ContactLanguage' => 'contact-language'
-	];
-
 	public static function initialize() {
 	}
 
 	/**
-	 * @param string $key
-	 * @return string
+	 * @param array $jobs
+	 * @return int
 	 */
-	public static function propertyKeyToLabel( $key ) {
-		if ( !empty( $GLOBALS['wgContactManagerPropertyLabels'][$key] ) ) {
-			return $GLOBALS['wgContactManagerPropertyLabels'][$key];
+	public static function pushJobs( $jobs ) {
+		$count = count( $jobs );
+		if ( !$count ) {
+			return 0;
 		}
-		return wfMessage( 'contactmanager-' . self::$labelsCamelCaseToKebabCase[$key] )->text();
-	}
+		$services = MediaWikiServices::getInstance();
+		if ( method_exists( $services, 'getJobQueueGroup' ) ) {
+			// MW 1.37+
+			$services->getJobQueueGroup()->push( $jobs );
+		} else {
+			JobQueueGroup::singleton()->push( $jobs );
+		}
 
-	/**
-	 * @param array $keys
-	 * @return array
-	 */
-	public static function propertyKeysToLabel( $keys ) {
-		$ret = [];
-		foreach ( $keys as $key ) {
-			if ( !empty( $GLOBALS['wgContactManagerPropertyLabels'][$key] ) ) {
-				$ret[$key] = $GLOBALS['wgContactManagerPropertyLabels'][$key];
-			} else {
-				$ret[$key] = wfMessage( 'contactmanager-' . self::$labelsCamelCaseToKebabCase[$key] )->text();
-			}
-		}
-		return $ret;
-	}
-
-	/**
-	 * @param Title $title
-	 * @return void
-	 */
-	public static function getWikiPage( $title ) {
-		// MW 1.36+
-		if ( method_exists( MediaWikiServices::class, 'getWikiPageFactory' ) ) {
-			return MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $title );
-		}
-		return WikiPage::factory( $title );
+		return $count;
 	}
 
 	/**
 	 * @param User $user
-	 * @param Title $title
-	 * @param string $contents
-	 * @return bool
+	 * @param string $mailboxName
+	 * @param array &$errors []
+	 * @return bool|array
 	 */
-	public static function doCreateContent( $user, $title, $contents ) {
-		$content = ContentHandler::makeContent( $contents, $title );
-		$wikiPage = self::getWikiPage( $title );
+	public static function getInfo( $user, $mailboxName, &$errors ) {
+		$mailbox = new Mailbox( $mailboxName, $errors );
 
-		$summary = "ContactManager extension";
-
-		if ( method_exists( $wikiPage, 'doUserEditContent' ) ) {
-			// MW 1.36+
-			// Use the global user if necessary (same as doEditContent())
-			$user = $user ?? RequestContext::getMain()->getUser();
-			$status = $wikiPage->doUserEditContent(
-				$content,
-				$user,
-				$summary,
-				EDIT_FORCE_BOT
-			);
-		} else {
-			// <= MW 1.35
-			$status = $wikiPage->doEditContent(
-				$content,
-				$summary,
-				EDIT_FORCE_BOT,
-				false,
-				$user
-			);
-		}
-
-		if ( !$status->isOk() ) {
+		if ( !$mailbox ) {
 			return false;
 		}
 
-		$title->invalidateCache();
+		$res = $mailbox->getInfo( $errors );
 
-		return true;
+		if ( !$res ) {
+			return false;
+		}
+
+		$targetTitle = str_replace( '$1', $mailboxName, $GLOBALS['wgContactManagerMailboxInfoArticle'] );
+
+		$jsonData = [
+			$GLOBALS['wgContactManagerSchemasMailboxInfo'] => [
+				'name' => $mailboxName,
+				'unread' => $res['Unread'],
+				'deleted' => $res['Deleted'],
+				'nmsgs' => $res['Nmsgs'],
+				'size' => $res['Size'],
+				'date' => $res['Date'],
+				'mailbox' => $res['Mailbox'],
+				'recent' => $res['Recent'],
+			]
+		];
+
+		$title = Title::newFromText( $targetTitle );
+		\VisualData::updateCreateSchemas( $user, $title, $jsonData, 'jsondata' );
+	}
+
+	/**
+	 * @param User $user
+	 * @param string $mailboxName
+	 * @param array &$errors []
+	 * @return array
+	 */
+	public static function getFolders( $user, $mailboxName, &$errors ) {
+		$mailbox = new Mailbox( $mailboxName, $errors );
+
+		if ( !$mailbox ) {
+			return false;
+		}
+
+		$res = $mailbox->getFolders( $errors );
+
+		if ( !$res ) {
+			// $this->error = array_pop( $errors );
+			return false;
+		}
+
+		$targetTitle = str_replace( '$1', $mailboxName, $GLOBALS['wgContactManagerMailboxFoldersArticle'] );
+
+		$jsonData = [
+			$GLOBALS['wgContactManagerSchemasMailboxFolders'] => [
+				'name' => $mailboxName,
+				'folders' => $res
+			]
+		];
+
+		$title = Title::newFromText( $targetTitle );
+		\VisualData::updateCreateSchemas( $user, $title, $jsonData, 'jsondata' );
+	}
+
+	/**
+	 * @param User $user
+	 * @param array $params
+	 * @param array &$errors []
+	 * @return array
+	 */
+	public static function getMessages( $user, $params, &$errors ) {
+		$mailbox = new Mailbox( $params['mailbox'], $errors );
+
+		if ( !$mailbox ) {
+			return false;
+		}
+
+		$imapMailbox = $mailbox->getImapMailbox();
+		$imapMailbox->setAttachmentsIgnore( (bool)$params['attachments_ignore'] );
+
+		$folders = $params['folders'];
+		$criteria = [];
+		foreach ( $params['criteria'] as $key => $value ) {
+			switch ( $value['criteria'] ) {
+				case 'SINCE':
+					if ( !empty( $value['since_autoupdate'] ) ) {
+
+						// *** we cannot rely on $value['date_value']
+						// since is not guaranteed to be updated
+						$title_ = Title::newFromText( $params['job_pagetitle'] );
+
+						if ( empty( $title_ ) ) {
+							throw new MWException( 'job_pagetitle not set' );
+						}
+						$jsonData = \VisualData::getJsonData( $title_ );
+						$schemaData = $jsonData['schemas'][$GLOBALS['wgContactManagerSchemasRetrieveMessages']];
+						if ( !empty( $schemaData['criteria'][$key]['date_value'] ) ) {
+							$criteria[] = $value['criteria'] . ' "' . $schemaData['criteria'][$key]['date_value'] . '"';
+						}
+
+					} elseif ( !empty( $value['date_value'] ) ) {
+						$criteria[] = $value['criteria'] . ' "' . $value['since-value'] . '"';
+					}
+					break;
+				case 'BEFORE':
+				case 'ON':
+					$criteria[] = $value['criteria'] . ' "' . $value['date_value'] . '"';
+					break;
+				case 'BCC':
+				case 'BODY':
+				case 'CC':
+				case 'FROM':
+				case 'KEYWORD':
+				case 'SUBJECT':
+				case 'TEXT':
+				case 'TO':
+				case 'UNKEYWORD':
+					$criteria[] = $value['criteria'] . ' "' . addslashes( $value['string_value'] ) . '"';
+					break;
+				default:
+					$criteria[] = $value['criteria'];
+			}
+		}
+
+		$title = Title::newFromID( $params['pageid'] );
+		$jobs = [];
+		$n = 0;
+		foreach ( $folders as $folder ) {
+			$name_pos = strpos( $folder['folder'], '}' );
+			$shortpath = substr( $folder['folder'], $name_pos + 1 );
+			$imapMailbox->switchMailbox( $shortpath );
+
+			// @TODO implement UI for fetch_overview
+			// $latest_uid = 1;
+			// $mails = $imapMailbox->fetch_overview( "$latest_uid:*" );
+			$mails = $imapMailbox->searchMailbox( implode( ' ', $criteria ) );
+
+			foreach ( $mails as $uid ) {
+				if ( !empty( $params['limit'] ) && $n === $params['limit'] ) {
+					break;
+				}
+
+				$jobs[] = new MailboxJob( $title, array_merge( $params, [
+					'job' => 'retrieve-message',
+					'folder' => $folder['folder'],
+					'folder_name' => $folder['folder_name'],
+					'uid' => $uid
+				] ) );
+
+				$n++;
+			}
+		}
+
+		self::pushJobs( $jobs );
+	}
+
+	/**
+	 * @return string
+	 */
+	public static function getAttachmentsFolder() {
+		return ( !empty( $GLOBALS['wgContactManagerAttachmentsFolder'] )
+			? $GLOBALS['wgContactManagerAttachmentsFolder']
+			: $GLOBALS['wgBaseDirectory'] . '/ContactManager' );
+	}
+
+	/**
+	 * @param array $data
+	 * @param array &$errors []
+	 * @return array
+	 */
+	public static function retrieveContacts( $data, &$errors ) {
+	}
+
+	/**
+	 * @param string|null $mailboxName
+	 * @return array
+	 */
+	public static function getMailboxes( $mailboxName = null ) {
+		$schema = $GLOBALS['wgContactManagerSchemasMailbox'];
+		$query = '[[name::' . ( $mailboxName ?? '+' ) . ']]';
+		$results = \VisualData::getQueryResults( $schema, $query );
+
+		if ( !$mailboxName ) {
+			return $results;
+		}
+
+		foreach ( $results as $value ) {
+			if ( $value['data']['name'] === $mailboxName ) {
+				return $value['data'];
+			}
+		}
+
+		return null;
 	}
 }

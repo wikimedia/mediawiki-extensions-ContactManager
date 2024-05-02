@@ -1,0 +1,388 @@
+{
+	"wiki": {
+		"type": "schema",
+		"uuid": "660830d33f167",
+		"name": "ContactManager/Retrieve messages"
+	},
+	"properties": {
+		"job": {
+			"wiki": {
+				"name": "job",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"label": "job",
+				"label-parsed": "job",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"uuid": "660830d33f16f"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "job"
+		},
+		"mailbox": {
+			"wiki": {
+				"name": "mailbox",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"label": "mailbox",
+				"label-parsed": "mailbox",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"uuid": "660830d33f173"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "mailbox"
+		},
+		"folders": {
+			"wiki": {
+				"name": "folders",
+				"title": "folders",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "662c8dadf35cb"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "",
+					"type": "schema",
+					"uuid": "662c8bc79bf72",
+					"layout": "section"
+				},
+				"properties": {
+					"folder": {
+						"wiki": {
+							"name": "folder",
+							"type": "property",
+							"multiple-items": false,
+							"required": true,
+							"label": "folder",
+							"label-parsed": "folder",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.DropdownInputWidget",
+							"input-config": [],
+							"options-allow-null": false,
+							"options-askquery": "[[name::\u003Cmailbox\u003E]]",
+							"askquery-schema": "ContactManager/Mailbox folders",
+							"askquery-printouts": [ "folders/fullpath", "folders/shortpath" ],
+							"options-query-formula": "\u003Cfolders/fullpath\u003E",
+							"options-label-formula": "\u003Cfolders/shortpath\u003E",
+							"uuid": "66138f32ef41d"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "folder"
+					},
+					"folder_name": {
+						"wiki": {
+							"name": "folder_name",
+							"type": "property",
+							"multiple-items": false,
+							"required": true,
+							"label": "folder name",
+							"help-message": "will be used in the pagename formula, therefore it must not contain any of the  [https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters Problem characters]",
+							"uuid": "66138f32ef420",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": []
+						},
+						"type": "string",
+						"format": "text",
+						"title": "folder name",
+						"description": "will be used in the pagename formula, therefore it must not contain any of the  \u003Ca class=\"external text\" href=\"https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters\"\u003EProblem characters\u003C/a\u003E"
+					}
+				},
+				"required": [ "folder", "folder_name" ]
+			},
+			"type": "array",
+			"title": "folders",
+			"uniqueItems": false
+		},
+		"save_contacts": {
+			"wiki": {
+				"name": "save_contacts",
+				"type": "property",
+				"multiple-items": false,
+				"label": "save contacts",
+				"default": "true",
+				"uuid": "660830d33f17f",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "boolean",
+			"title": "save contacts",
+			"default": "true"
+		},
+		"criteria": {
+			"wiki": {
+				"name": "criteria",
+				"title": "search criteria",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "662f549663ed9"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "",
+					"type": "schema",
+					"layout": "section",
+					"uuid": "662f549663edc"
+				},
+				"properties": {
+					"criteria": {
+						"wiki": {
+							"name": "criteria",
+							"type": "property",
+							"multiple-items": false,
+							"label": "criteria",
+							"label-parsed": "criteria",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.DropdownInputWidget",
+							"input-config": [],
+							"required": false,
+							"options-allow-null": false,
+							"options-wikilist": "ContactManager:SearchCriteria",
+							"uuid": "660bd584cf31e",
+							"options-values-parsed": {
+								"ALL": "ALL",
+								"ANSWERED": "ANSWERED",
+								"BCC": "BCC",
+								"BEFORE": "BEFORE",
+								"BODY": "BODY",
+								"CC": "CC",
+								"DELETED": "DELETED",
+								"FLAGGED": "FLAGGED",
+								"FROM": "FROM",
+								"KEYWORD": "KEYWORD",
+								"NEW": "NEW",
+								"OLD": "OLD",
+								"ON": "ON",
+								"RECENT": "RECENT",
+								"SEEN": "SEEN",
+								"SINCE": "SINCE",
+								"SUBJECT": "SUBJECT",
+								"TEXT": "TEXT",
+								"TO": "TO",
+								"UNANSWERED": "UNANSWERED",
+								"UNDELETED": "UNDELETED",
+								"UNFLAGGED": "UNFLAGGED",
+								"UNKEYWORD": "UNKEYWORD",
+								"UNSEEN": "UNSEEN"
+							}
+						},
+						"type": "string",
+						"format": "text",
+						"title": "criteria",
+						"enum": [
+							"ALL",
+							"ANSWERED",
+							"BCC",
+							"BEFORE",
+							"BODY",
+							"CC",
+							"DELETED",
+							"FLAGGED",
+							"FROM",
+							"KEYWORD",
+							"NEW",
+							"OLD",
+							"ON",
+							"RECENT",
+							"SEEN",
+							"SINCE",
+							"SUBJECT",
+							"TEXT",
+							"TO",
+							"UNANSWERED",
+							"UNDELETED",
+							"UNFLAGGED",
+							"UNKEYWORD",
+							"UNSEEN"
+						]
+					},
+					"string_value": {
+						"wiki": {
+							"name": "string_value",
+							"type": "property",
+							"multiple-items": false,
+							"uuid": "660bd7807b7de",
+							"visibility": "condition",
+							"showif-field": "criteria",
+							"showif-condition": "regex",
+							"showif-value": "(BCC)|(BODY)|(CC)|(FROM)|(KEYWORD)|(SUBJECT)|(TEXT)|(TO)|(UNKEYWORD)",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "text"
+					},
+					"date_value": {
+						"wiki": {
+							"name": "date_value",
+							"type": "property",
+							"multiple-items": false,
+							"label": "date",
+							"uuid": "660bd7807b7e2",
+							"visibility": "condition",
+							"showif-field": "criteria",
+							"showif-condition": "regex",
+							"showif-value": "(BEFORE)|(ON)|(SINCE)",
+							"preferred-input": "mw.widgets.DateInputWidget",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "date",
+						"title": "date"
+					},
+					"since_autoupdate": {
+						"wiki": {
+							"name": "since_autoupdate",
+							"type": "property",
+							"multiple-items": false,
+							"label": "auto update",
+							"default": "true",
+							"uuid": "6612ff865e679",
+							"visibility": "condition",
+							"showif-field": "criteria",
+							"showif-condition": "=",
+							"showif-value": "SINCE",
+							"preferred-input": "OO.ui.ToggleSwitchWidget",
+							"input-config": [],
+							"required": false
+						},
+						"type": "boolean",
+						"title": "auto update",
+						"default": "true"
+					}
+				}
+			},
+			"type": "array",
+			"title": "search criteria",
+			"uniqueItems": false
+		},
+		"filters": {
+			"wiki": {
+				"name": "filters",
+				"min-items": 1,
+				"unique-items": true,
+				"type": "schema",
+				"uuid": "662d3784ac232"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "filters",
+					"type": "property",
+					"multiple-items": true,
+					"label": "filters",
+					"default": [],
+					"uuid": "662d3758ca1c3",
+					"visibility": "visible",
+					"preferred-input": "OO.ui.MenuTagMultiselectWidget",
+					"input-config": [],
+					"options-allow-null": false,
+					"options-label-formula": "\u003Cname\u003E",
+					"options-askquery": "[[name::+]] [[{{FULLPAGENAME}}/~]]",
+					"askquery-schema": "ContactManager/Message filter",
+					"askquery-printouts": [ "name" ],
+					"options-query-formula": "\u003Cpagetitle\u003E",
+					"required": false,
+					"options-values-parsed": {
+						"ContactManager:Mailboxes/gmail/Filters/a": "a"
+					},
+					"layout": "table"
+				},
+				"format": "text",
+				"title": "filters",
+				"default": [],
+				"enum": [ "ContactManager:Mailboxes/gmail/Filters/a" ]
+			},
+			"type": "array",
+			"minItems": 1,
+			"uniqueItems": true
+		},
+		"pagename_formula": {
+			"wiki": {
+				"name": "pagename_formula",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"label": "pagename-formula",
+				"help-message": "suggested value: \u003Cnowiki\u003E{{FULLPAGENAME}}/messages/\u003Cfolder_name\u003E/\u003CContactManager/Incoming mail/id\u003E\u003C/nowiki\u003E -- all properties of the schema [[VisualDataSchema:ContactManager/Incoming mail|ContactManager/Incoming mail]] can be used. Eg. \u003Cnowiki\u003E\u003CContactManager/Incoming mail/id\u003E\u003C/nowiki\u003E or \u003Cnowiki\u003E\u003CContactManager/Incoming mail/headers/subject\u003E\u003C/nowiki\u003E",
+				"default": "{{FULLPAGENAME}}/messages/\u003Cfolder_name\u003E/\u003CContactManager/Incoming mail/id\u003E",
+				"uuid": "6625fa058fb0f",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": []
+			},
+			"type": "string",
+			"format": "text",
+			"title": "pagename-formula",
+			"description": "suggested value: {{FULLPAGENAME}}/messages/\u0026lt;folder_name\u0026gt;/\u0026lt;ContactManager/Incoming mail/id\u0026gt; -- all properties of the schema \u003Ca href=\"/index.php?title=VisualDataSchema:ContactManager/Incoming_mail\" title=\"VisualDataSchema:ContactManager/Incoming mail\"\u003EContactManager/Incoming mail\u003C/a\u003E can be used. Eg. \u0026lt;ContactManager/Incoming mail/id\u0026gt; or \u0026lt;ContactManager/Incoming mail/headers/subject\u0026gt;",
+			"default": "ContactManager:Mailboxes/gmail/messages/\u003Cfolder_name\u003E/\u003CContactManager/Incoming mail/id\u003E"
+		},
+		"attachments_ignore": {
+			"wiki": {
+				"name": "attachments_ignore",
+				"type": "property",
+				"multiple-items": false,
+				"label": "ignore attachments",
+				"uuid": "662cb14e0c7b6",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "boolean",
+			"title": "ignore attachments"
+		},
+		"job_pagetitle": {
+			"wiki": {
+				"name": "job_pagetitle",
+				"type": "property",
+				"multiple-items": false,
+				"visibility": "hidden",
+				"uuid": "662d458574378",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"value-formula": "{{FULLPAGENAME}}"
+			},
+			"options": {
+				"hidden": true
+			},
+			"type": "string",
+			"format": "text"
+		},
+		"limit": {
+			"wiki": {
+				"type": "property",
+				"name": "limit",
+				"visibility": "visible",
+				"label": "limit",
+				"help-message": "limit the number of messages retrieved (for testing purpose)",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6630a0a7066f0"
+			},
+			"type": "integer",
+			"title": "limit",
+			"description": "limit the number of messages retrieved (for testing purpose)"
+		}
+	},
+	"required": [ "job", "mailbox", "pagename_formula" ],
+	"type": "object"
+}

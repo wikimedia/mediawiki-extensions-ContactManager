@@ -1,0 +1,45 @@
+{
+	"wiki": {
+		"type": "schema",
+		"uuid": "6608564f9c78b",
+		"name": "ContactManager/Define job",
+		"title-parsed": "Define job",
+		"title": "Define job"
+	},
+	"properties": {
+		"job": {
+			"wiki": {
+				"name": "job",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "job",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6608564f9c78f"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "job"
+		},
+		"mailbox": {
+			"wiki": {
+				"name": "mailbox",
+				"type": "property",
+				"multiple-items": false,
+				"label-parsed": "mailbox",
+				"uuid": "6608564f9c795",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "text",
+			"title": "mailbox"
+		}
+	},
+	"type": "object",
+	"title": "Define job"
+}

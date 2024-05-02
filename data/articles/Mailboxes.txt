@@ -1,0 +1,33 @@
+
+{{#visualdataform: ContactManager/Mailbox
+|title = Add Mailbox
+|action = create
+|return-page = ContactManager/Mailbox
+|view = popup
+|popup-size = medium
+|css-class =
+|pagename-formula=ContactManager:Mailboxes/<name>
+|edit-freetext = false	
+|edit-categories = false
+|edit-content-model = false
+|target-slot = jsondata	
+|default-categories = 
+|default-content-model = wikitext
+|preload=ContactManager:PreloadMailbox
+|preload-data=
+|layout-align = top
+|popup-help = false 
+|submit-button-text =
+|layout = tabs
+|submit-button-text =
+|validate-button-text =
+}}
+
+
+
+{{#visualdataquery:[[name::+]]
+|schema=ContactManager/Mailbox 
+|?name
+|format=datatable 
+}}
+

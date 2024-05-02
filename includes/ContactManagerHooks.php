@@ -22,17 +22,7 @@
  * @copyright Copyright ©2023, https://wikisphere.org
  */
 
-use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
-
-define( 'SLOT_ROLE_CONTACTMANAGER_TEXT', 'contactmanager-text' );
-define( 'CONTENT_MODEL_CONTACTMANAGER_TEXT', 'text' );
-
-define( 'SLOT_ROLE_CONTACTMANAGER_HTML', 'contactmanager-html' );
-define( 'CONTENT_MODEL_CONTACTMANAGER_HTML', 'html' );
-
-define( 'SLOT_ROLE_CONTACTMANAGER_RAW', 'contactmanager-raw' );
-define( 'CONTENT_MODEL_CONTACTMANAGER_RAW', 'text' );
 
 class ContactManagerHooks {
 	/**
@@ -51,92 +41,74 @@ class ContactManagerHooks {
 	 * @param DatabaseUpdater|null $updater
 	 */
 	public static function onLoadExtensionSchemaUpdates( DatabaseUpdater $updater = null ) {
-		$importer = \PageProperties::getImporter();
-		$fileContents = file_get_contents( __DIR__ . '/../data/forms.json' );
-		$forms = json_decode( $fileContents, true );
+		if ( !class_exists( 'VisualData' ) ) {
+			return;
+		}
+		$importer = \VisualData::getImporter();
 		$error_messages = [];
-
-		foreach ( $forms as $formName => $descriptor ) {
-			$pagename = 'PagePropertiesForm:' . $formName;
-			$contents = [
-				[
-					'role' => SlotRecord::MAIN,
-					'model' => 'json',
-					'text' => json_encode( $descriptor )
-				]
-			];
+		$doImport = static function ( $pagename, $contents ) use ( $importer ) {
 			try {
 				$importer->doImportSelf( $pagename, $contents );
 			} catch ( Exception $e ) {
 				$error_messages[$pagename] = $e->getMessage();
 			}
-		}
-	}
+		};
 
-	/**
-	 * @param MediaWikiServices $services
-	 * @return void
-	 */
-	public static function onMediaWikiServices( $services ) {
-		$services->addServiceManipulator(
-			'SlotRoleRegistry',
-			static function ( \MediaWiki\Revision\SlotRoleRegistry $registry ) {
-				$roles = [
-					SLOT_ROLE_CONTACTMANAGER_TEXT => CONTENT_MODEL_CONTACTMANAGER_TEXT,
-					SLOT_ROLE_CONTACTMANAGER_RAW => CONTENT_MODEL_CONTACTMANAGER_RAW,
-					SLOT_ROLE_CONTACTMANAGER_HTML => CONTENT_MODEL_CONTACTMANAGER_HTML
-				];
-
-				foreach ( $roles as $role => $model ) {
-					if ( !$registry->isDefinedRole( $role ) ) {
-						$registry->defineRoleWithModel( $role, $model, [
-						"display" => "none",
-						"region" => "center",
-						"placement" => "append"
-						] );
-					}
+		$import = static function ( $path, $callback ) {
+			$files = scandir( $path );
+			foreach ( $files as $file ) {
+				$filePath = "$path/$file";
+				if ( is_file( $filePath ) ) {
+					$titleText = substr( $file, 0, strpos( $file, '.' ) );
+					$content = file_get_contents( $filePath );
+					$callback( $titleText, $content );
 				}
-			} );
+			}
+		};
+
+		$dirPath = __DIR__ . '/../data';
+
+		$import( "$dirPath/articles", static function ( $titleText, $content ) use ( &$doImport ) {
+			$doImport( "ContactManager:$titleText", [
+				[
+					'role' => SlotRecord::MAIN,
+					'model' => 'wikitext',
+					'text' => $content
+				]
+			] );
+		} );
+
+		$import( "$dirPath/templates", static function ( $titleText, $content ) use ( &$doImport ) {
+			$doImport( "Template:ContactManager/$titleText", [
+				[
+					'role' => SlotRecord::MAIN,
+					'model' => 'wikitext',
+					'text' => $content
+				]
+			] );
+		} );
+
+		$import( "$dirPath/schemas", static function ( $titleText, $content ) use ( &$doImport ) {
+			if ( array_key_exists( 'wgContactManagerSchemas' . $titleText, $GLOBALS ) ) {
+				$doImport( 'VisualDataSchema:ContactManager/' . $GLOBALS['wgContactManagerSchemas' . $titleText], [
+					[
+						'role' => SlotRecord::MAIN,
+						'model' => 'json',
+						'text' => json_encode( $content )
+					]
+				] );
+			}
+		} );
 	}
 
 	/**
-	 * @see https://github.com/SemanticMediaWiki/SemanticMediaWiki/blob/master/docs/examples/hook.property.initproperties.md
-	 * @param SMW\PropertyRegistry $propertyRegistry
+	 * @param OutputPage $outputPage
+	 * @param Skin $skin
 	 * @return void
 	 */
-	public static function onSMWPropertyinitProperties( SMW\PropertyRegistry $propertyRegistry ) {
-		$types = [
-			'EmailDate' => '_dat',
-			'ContactTelephoneNumber' => '_tel',
-			'MailboxFilterAttachmentSizeValue' => '_num',
-			'MailboxFilterActionTargetPage' => '_wpg',
-			'MailboxFilterActionCategory' => '_wpg',
-		];
-
-		foreach ( \ContactManager::$labelsCamelCaseToKebabCase as $key => $value ) {
-			$label = \ContactManager::propertyKeyToLabel( $key );
-			$propertyId = '__contactmanager_' . str_replace( '-', '_', $value );
-			$type = ( empty( $types[$key] ) ? '_txt' : $types[$key] );
-			$viewable = true;
-			$annotable = true;
-			$description = 'contactmanager-' . $value . '-desc';
-
-			$propertyRegistry->registerProperty(
-				$propertyId,
-				$type,
-				$label,
-				$viewable,
-				$annotable
-			);
-
-			$propertyRegistry->registerPropertyDescriptionByMsgKey(
-				$propertyId,
-				$description
-			);
-
-		}
-
-		return true;
+	public static function onBeforePageDisplay( OutputPage $outputPage, Skin $skin ) {
+		$title = $outputPage->getTitle();
+		$outputPage->addModules( 'ext.ContactManager' );
 	}
 
 	/**
@@ -149,12 +121,12 @@ class ContactManagerHooks {
 	 * @return void
 	 */
 	public static function onBeforeInitialize(
-		\Title &$title,
+		Title &$title,
 		$unused,
-		\OutputPage $output,
-		\User $user,
-		\WebRequest $request,
-		\MediaWiki $mediaWiki
+		OutputPage $output,
+		User $user,
+		WebRequest $request,
+		/* MediaWiki|MediaWiki\Actions\ActionEntryPoint */ $mediaWiki
 	) {
 		\ContactManager::initialize();
 	}

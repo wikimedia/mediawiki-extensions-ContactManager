@@ -1,0 +1,94 @@
+{
+	"wiki": {
+		"type": "schema",
+		"uuid": "661432c2d9feb",
+		"name": "ContactManager/Mailbox",
+		"title": "Mailbox"
+	},
+	"properties": {
+		"name": {
+			"wiki": {
+				"name": "name",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"label-parsed": "name",
+				"uuid": "661432c2d9fee",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": []
+			},
+			"type": "string",
+			"format": "text",
+			"title": "name"
+		},
+		"server": {
+			"wiki": {
+				"name": "server",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"label-parsed": "Server",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"uuid": "661432c2d9ff1"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "Server"
+		},
+		"port": {
+			"wiki": {
+				"name": "port",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"label-parsed": "Port",
+				"default-parsed": "993",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"input-config": [],
+				"uuid": "661432c2d9ff2"
+			},
+			"type": "integer",
+			"title": "Port",
+			"default": "993"
+		},
+		"username": {
+			"wiki": {
+				"name": "username",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"label-parsed": "Username",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"uuid": "661432c2d9ff4"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "Username"
+		},
+		"password": {
+			"wiki": {
+				"name": "password",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"label-parsed": "Password",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"uuid": "661432c2d9ff5"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "Password"
+		}
+	},
+	"required": [ "name", "server", "port", "username", "password" ],
+	"type": "object",
+	"title": "Mailbox"
+}
