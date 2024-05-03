@@ -44,10 +44,14 @@ class Mailbox {
 			$errors[] = 'mailbox not found';
 			return false;
 		}
+
+		$password = ( !empty( $GLOBALS['wgContactManagerMailboxPassword'][$data['name']] ) ?
+			$GLOBALS['wgContactManagerMailboxPassword'][$data['name']] : $data['password'] );
+
 		$this->mailbox = self::connectMailbox(
 			$data['server'],
 			$data['username'],
-			$data['password']
+			$password
 		);
 	}
 

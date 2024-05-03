@@ -19,8 +19,9 @@
  * @copyright Copyright © 2023-2024, https://wikisphere.org
  */
 /* eslint-disable no-unused-vars */
-// eslint-disable-next-line no-unused-vars
-const ContactManager = ( function () {
+
+// eslint-disable-next-line no-implicit-globals, no-undef
+ContactManager = ( function () {
 	function initJob( value, data ) {
 		return new Promise( function ( resolve, reject ) {
 			const payload = {

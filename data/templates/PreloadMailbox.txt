@@ -1,10 +1,11 @@
-==Mailbox info==
+==Mailbox info==    
 {{#visualDataButton: Get mailbox info
 |callback = ContactManager.initJob
 |schema = ContactManager/Define job
 |edit-page={{FULLPAGENAME}}/Jobs/MailboxInfo
-|target-slot = main
-}} 
+|preload-data?job=mailbox-info
+|target-slot = main 
+}}     
 
 
 {{#visualdataquery: [[name::+]] [[{{FULLPAGENAME}}]]
@@ -20,6 +21,7 @@
 |callback = ContactManager.initJob
 |schema = ContactManager/Define job
 |edit-page={{FULLPAGENAME}}/Jobs/GetFolders
+|preload-data?job=mailbox-info
 |target-slot=main
 }}
 
@@ -76,6 +78,7 @@
 |callback = ContactManager.initJob
 |schema = ContactManager/Retrieve messages
 |edit-page={{FULLPAGENAME}}/Jobs/GetMessages
+|preload-data?job=retrieve-messages
 |target-slot=main
 }}
 
@@ -90,4 +93,3 @@
 |target-slot=main
 }}
 -->
-

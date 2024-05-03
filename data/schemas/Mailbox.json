@@ -12,6 +12,7 @@
 				"type": "property",
 				"multiple-items": false,
 				"required": true,
+				"label": "name",
 				"label-parsed": "name",
 				"uuid": "661432c2d9fee",
 				"visibility": "visible",
@@ -28,6 +29,7 @@
 				"type": "property",
 				"multiple-items": false,
 				"required": true,
+				"label": "Server",
 				"label-parsed": "Server",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
@@ -44,6 +46,8 @@
 				"type": "property",
 				"multiple-items": false,
 				"required": true,
+				"label": "Port",
+				"default": "993",
 				"label-parsed": "Port",
 				"default-parsed": "993",
 				"visibility": "visible",
@@ -61,6 +65,7 @@
 				"type": "property",
 				"multiple-items": false,
 				"required": true,
+				"label": "Username",
 				"label-parsed": "Username",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
@@ -73,22 +78,24 @@
 		},
 		"password": {
 			"wiki": {
-				"name": "password",
 				"type": "property",
-				"multiple-items": false,
-				"required": true,
-				"label-parsed": "Password",
+				"uuid": "661432c2d9ff5",
+				"name": "password",
 				"visibility": "visible",
+				"label": "Password",
+				"help-message": "if this is not your local wiki and other users use it, leave this field empty and instead use the global parameter \u003Ccode\u003E$wgContactManagerMailboxPassword\u003C/code\u003E with as key the mailbox name and the password as value",
+				"multiple-items": false,
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
-				"uuid": "661432c2d9ff5"
+				"required": false
 			},
 			"type": "string",
 			"format": "text",
-			"title": "Password"
+			"title": "Password",
+			"description": "if this is not your local wiki and other users use it, leave this field empty and instead use the global parameter \u003Ccode\u003E$wgContactManagerMailboxPassword\u003C/code\u003E with as key the mailbox name and the password as value"
 		}
 	},
-	"required": [ "name", "server", "port", "username", "password" ],
+	"required": [ "name", "server", "port", "username" ],
 	"type": "object",
 	"title": "Mailbox"
 }
