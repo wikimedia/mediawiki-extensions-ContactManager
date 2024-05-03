@@ -90,11 +90,11 @@ class ContactManagerHooks {
 
 		$import( "$dirPath/schemas", static function ( $titleText, $content ) use ( &$doImport ) {
 			if ( array_key_exists( 'wgContactManagerSchemas' . $titleText, $GLOBALS ) ) {
-				$doImport( 'VisualDataSchema:ContactManager/' . $GLOBALS['wgContactManagerSchemas' . $titleText], [
+				$doImport( 'VisualDataSchema:' . $GLOBALS['wgContactManagerSchemas' . $titleText], [
 					[
 						'role' => SlotRecord::MAIN,
 						'model' => 'json',
-						'text' => json_encode( $content )
+						'text' => $content
 					]
 				] );
 			}
