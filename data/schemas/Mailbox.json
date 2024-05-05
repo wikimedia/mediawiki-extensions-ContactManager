@@ -1,101 +1,76 @@
 {
 	"wiki": {
 		"type": "schema",
-		"uuid": "661432c2d9feb",
-		"name": "ContactManager/Mailbox",
-		"title": "Mailbox"
+		"uuid": "663695326d824",
+		"name": "ContactManager/Mailbox"
 	},
 	"properties": {
 		"name": {
 			"wiki": {
-				"name": "name",
 				"type": "property",
-				"multiple-items": false,
-				"required": true,
-				"label": "name",
-				"label-parsed": "name",
-				"uuid": "661432c2d9fee",
+				"uuid": "663695326d82e",
+				"name": "name",
 				"visibility": "visible",
+				"label": "name",
+				"multiple-items": false,
 				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": []
+				"input-config": [],
+				"required": true
 			},
 			"type": "string",
 			"format": "text",
 			"title": "name"
 		},
-		"server": {
+		"from": {
 			"wiki": {
-				"name": "server",
+				"name": "from",
+				"title": "from",
+				"description": "add one or more sender in the form \"name \u003Cemail\u003E\" (the email must be the email address of this account, a registered alias, or a verified email address)",
+				"min-items": 1,
+				"unique-items": true,
+				"type": "schema",
+				"uuid": "6636988127ad3"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "from",
+					"type": "property",
+					"multiple-items": true,
+					"default": [],
+					"uuid": "663698217edcf",
+					"visibility": "visible",
+					"preferred-input": "OO.ui.TextInputWidget",
+					"input-config": [],
+					"required": false,
+					"layout": "table"
+				},
+				"format": "text",
+				"default": []
+			},
+			"type": "array",
+			"title": "from",
+			"description": "add one or more sender in the form \"name \u0026lt;email\u0026gt;\" (the email must be the email address of this account, a registered alias, or a verified email address)",
+			"minItems": 1,
+			"uniqueItems": true
+		},
+		"reply-to": {
+			"wiki": {
+				"name": "reply-to",
 				"type": "property",
 				"multiple-items": false,
-				"required": true,
-				"label": "Server",
-				"label-parsed": "Server",
+				"label": "reply-to",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
-				"uuid": "661432c2d9ff1"
+				"required": false,
+				"uuid": "663698de1df58"
 			},
 			"type": "string",
 			"format": "text",
-			"title": "Server"
-		},
-		"port": {
-			"wiki": {
-				"name": "port",
-				"type": "property",
-				"multiple-items": false,
-				"required": true,
-				"label": "Port",
-				"default": "993",
-				"label-parsed": "Port",
-				"default-parsed": "993",
-				"visibility": "visible",
-				"preferred-input": "OO.ui.NumberInputWidget",
-				"input-config": [],
-				"uuid": "661432c2d9ff2"
-			},
-			"type": "integer",
-			"title": "Port",
-			"default": "993"
-		},
-		"username": {
-			"wiki": {
-				"name": "username",
-				"type": "property",
-				"multiple-items": false,
-				"required": true,
-				"label": "Username",
-				"label-parsed": "Username",
-				"visibility": "visible",
-				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"uuid": "661432c2d9ff4"
-			},
-			"type": "string",
-			"format": "text",
-			"title": "Username"
-		},
-		"password": {
-			"wiki": {
-				"type": "property",
-				"uuid": "661432c2d9ff5",
-				"name": "password",
-				"visibility": "visible",
-				"label": "Password",
-				"help-message": "if this is not your local wiki and other users use it, leave this field empty and instead use the global parameter \u003Ccode\u003E$wgContactManagerMailboxPassword\u003C/code\u003E with as key the mailbox name and the password as value",
-				"multiple-items": false,
-				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"required": false
-			},
-			"type": "string",
-			"format": "text",
-			"title": "Password",
-			"description": "if this is not your local wiki and other users use it, leave this field empty and instead use the global parameter \u003Ccode\u003E$wgContactManagerMailboxPassword\u003C/code\u003E with as key the mailbox name and the password as value"
+			"title": "reply-to"
 		}
 	},
-	"required": [ "name", "server", "port", "username" ],
-	"type": "object",
-	"title": "Mailbox"
+	"required": [ "name" ],
+	"type": "object"
 }

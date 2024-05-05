@@ -28,6 +28,17 @@
 	"require": {
 		"php-imap/php-imap": "^5.0",
 		"theiconic/name-parser": "^1.2",
-		"willdurand/email-reply-parser": "^2.10"
+		"willdurand/email-reply-parser": "^2.10",
+		"symfony/mailer": "^5.4",
+		"symfony/amazon-mailer": "^5.4",
+		"symfony/mailchimp-mailer": "^5.4",
+		"symfony/mailgun-mailer": "^5.4",
+		"symfony/mailjet-mailer": "^5.4",
+		"symfony/oh-my-smtp-mailer": "^5.4",
+		"symfony/postmark-mailer": "^5.4",
+		"symfony/sendgrid-mailer": "^5.4",
+		"symfony/sendinblue-mailer": "^5.4",
+		"symfony/google-mailer": "^5.4",
+		"html2text/html2text": "^4.3"
 	}
 }

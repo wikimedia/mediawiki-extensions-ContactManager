@@ -1,0 +1,2 @@
+{{#querylink:ContactManager:Read email|open|pageid={{{articleid}}}|mailbox={{#urldecode:{{#urlget:mailbox}}}}}} | [[{{{pagetitle}}}|source]]
+

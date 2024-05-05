@@ -1,0 +1,7 @@
+{{#querylink:ContactManager:Messages|{{{shortpath}}}|pageid={{{articleid}}}|folder={{{shortpath}}}|path={{{pagetitle}}}|mailbox={{#visualdataprint:{{{pagetitle}}}
+   |schema=ContactManager/Mailbox folders
+   |?name
+   |format=raw
+  }}
+}}
+

@@ -1,0 +1,322 @@
+{
+	"wiki": {
+		"type": "schema",
+		"uuid": "65f73d69661ce",
+		"name": "ContactManager/Compose email",
+		"title": "Compose email"
+	},
+	"properties": {
+		"transport": {
+			"wiki": {
+				"name": "transport",
+				"type": "property",
+				"multiple-items": false,
+				"label": "transport",
+				"uuid": "6635f23ad06bf",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.DropdownInputWidget",
+				"input-config": [],
+				"options-allow-null": false,
+				"required": false,
+				"options-values-parsed": {
+					"mailbox": "mailbox",
+					"mailer": "mailer"
+				}
+			},
+			"type": "string",
+			"format": "text",
+			"title": "transport",
+			"enum": [ "mailbox", "mailer" ]
+		},
+		"mailer": {
+			"wiki": {
+				"name": "mailer",
+				"type": "property",
+				"multiple-items": false,
+				"label": "mailer",
+				"uuid": "6636aafd53818",
+				"visibility": "condition",
+				"preferred-input": "OO.ui.DropdownInputWidget",
+				"input-config": [],
+				"options-allow-null": false,
+				"options-askquery": "[[name::+]]",
+				"askquery-schema": "ContactManager/Mailer",
+				"askquery-printouts": [ "name" ],
+				"required": false,
+				"showif-field": "transport",
+				"showif-condition": "=",
+				"showif-value": "mailer",
+				"options-values-parsed": {
+					"sendgrid - culturaitaliana": "sendgrid - culturaitaliana"
+				}
+			},
+			"type": "string",
+			"format": "text",
+			"title": "mailer",
+			"enum": [ "sendgrid - culturaitaliana" ]
+		},
+		"from": {
+			"wiki": {
+				"name": "from",
+				"type": "property",
+				"multiple-items": false,
+				"label": "from",
+				"uuid": "663605d67d11f",
+				"visibility": "condition",
+				"preferred-input": "OO.ui.DropdownInputWidget",
+				"input-config": [],
+				"options-allow-null": false,
+				"options-label-formula": "\u003Cfrom\u003E",
+				"options-askquery": "[[name::+]]",
+				"askquery-schema": "ContactManager/Mailbox",
+				"askquery-printouts": [ "from" ],
+				"options-query-formula": "\u003Cfrom\u003E",
+				"required": false,
+				"showif-field": "transport",
+				"showif-condition": "=",
+				"showif-value": "mailbox",
+				"options-values-parsed": {
+					"Thomas \u003Cthomas.topway.it@gmail.com\u003E": "Thomas \u003Cthomas.topway.it@gmail.com\u003E"
+				}
+			},
+			"type": "string",
+			"format": "text",
+			"title": "from",
+			"enum": [ "Thomas \u003Cthomas.topway.it@gmail.com\u003E" ]
+		},
+		"from_mailer": {
+			"wiki": {
+				"name": "from_mailer",
+				"type": "property",
+				"multiple-items": false,
+				"label": "from",
+				"uuid": "6637044859838",
+				"visibility": "condition",
+				"preferred-input": "OO.ui.DropdownInputWidget",
+				"input-config": [],
+				"options-allow-null": false,
+				"options-label-formula": "\u003Cfrom\u003E",
+				"options-askquery": "[[name::+]]",
+				"askquery-schema": "ContactManager/Mailer",
+				"askquery-printouts": [ "from" ],
+				"options-query-formula": "\u003Cfrom\u003E",
+				"required": false,
+				"showif-field": "transport",
+				"showif-condition": "=",
+				"showif-value": "mailer",
+				"options-values-parsed": {
+					"Istituto cultura italiana NCLE \u003Cici.tbilisi@culturaitaliana.org\u003E": "Istituto cultura italiana NCLE \u003Cici.tbilisi@culturaitaliana.org\u003E"
+				}
+			},
+			"type": "string",
+			"format": "text",
+			"title": "from",
+			"enum": [
+				"Istituto cultura italiana NCLE \u003Cici.tbilisi@culturaitaliana.org\u003E"
+			]
+		},
+		"to": {
+			"wiki": {
+				"name": "to",
+				"min-items": 0,
+				"unique-items": true,
+				"type": "schema",
+				"uuid": "6636ad628488e"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "to",
+					"type": "property",
+					"multiple-items": true,
+					"label": "to",
+					"default": [],
+					"uuid": "6635dd2221ea3",
+					"visibility": "visible",
+					"preferred-input": "MenuTagSearchMultiselect",
+					"input-config": [],
+					"options-askquery": "[[full_name::\u003Cvalue\u003E~]]",
+					"askquery-schema": "ContactManager/Contact",
+					"askquery-printouts": [ "full_name", "email_addresses" ],
+					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail_addresses\u003E\u003E",
+					"required": false,
+					"layout": "table"
+				},
+				"format": "text",
+				"title": "to",
+				"default": []
+			},
+			"type": "array",
+			"minItems": 0,
+			"uniqueItems": true
+		},
+		"cc": {
+			"wiki": {
+				"name": "cc",
+				"min-items": 0,
+				"unique-items": true,
+				"type": "schema",
+				"uuid": "6636ad628488f"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "cc",
+					"type": "property",
+					"multiple-items": true,
+					"label": "cc",
+					"default": [],
+					"uuid": "6635dd2221ea4",
+					"visibility": "visible",
+					"preferred-input": "MenuTagSearchMultiselect",
+					"input-config": [],
+					"options-askquery": "[[full_name::\u003Cvalue\u003E~]]",
+					"askquery-schema": "ContactManager/Contact",
+					"askquery-printouts": [ "full_name", "email_addresses" ],
+					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail_addresses\u003E\u003E",
+					"required": false,
+					"layout": "table"
+				},
+				"format": "text",
+				"title": "cc",
+				"default": []
+			},
+			"type": "array",
+			"minItems": 0,
+			"uniqueItems": true
+		},
+		"bcc": {
+			"wiki": {
+				"name": "bcc",
+				"min-items": 0,
+				"unique-items": true,
+				"type": "schema",
+				"uuid": "6636ad628488g"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "to",
+					"type": "property",
+					"multiple-items": true,
+					"label": "bcc",
+					"default": [],
+					"uuid": "6635dd2221ea5",
+					"visibility": "visible",
+					"preferred-input": "MenuTagSearchMultiselect",
+					"input-config": [],
+					"options-askquery": "[[full_name::\u003Cvalue\u003E~]]",
+					"askquery-schema": "ContactManager/Contact",
+					"askquery-printouts": [ "full_name", "email_addresses" ],
+					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail_addresses\u003E\u003E",
+					"required": false,
+					"layout": "table"
+				},
+				"format": "text",
+				"title": "bcc",
+				"default": []
+			},
+			"type": "array",
+			"minItems": 0,
+			"uniqueItems": true
+		},
+		"subject": {
+			"wiki": {
+				"name": "subject",
+				"type": "property",
+				"multiple-items": false,
+				"label": "subject",
+				"label-parsed": "subject",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "65f73d69661e1"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "subject"
+		},
+		"text": {
+			"wiki": {
+				"name": "text",
+				"type": "property",
+				"multiple-items": false,
+				"label": "text",
+				"label-parsed": "text",
+				"visibility": "visible",
+				"preferred-input": "VisualEditor",
+				"input-config": [],
+				"required": false,
+				"uuid": "65f73d69661e3"
+			},
+			"type": "string",
+			"format": "textarea",
+			"title": "text"
+		},
+		"attachments": {
+			"wiki": {
+				"name": "attachments",
+				"title-parsed": "attachments",
+				"title": "attachments",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "65f73d69661e5"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "",
+					"type": "property",
+					"multiple-items": true,
+					"input-config": {
+						"accept": [
+							"image/png",
+							"image/gif",
+							"image/jpeg",
+							"image/pjpeg",
+							"image/jpeg",
+							"image/pjpeg",
+							"image/webp",
+							"application/pdf"
+						]
+					},
+					"default": [],
+					"value-prefix": "File:",
+					"default-parsed": [],
+					"visibility": "visible",
+					"preferred-input": "OO.ui.SelectFileWidget",
+					"required": false,
+					"layout": "table",
+					"uuid": "65f73d69661e7"
+				},
+				"format": "text",
+				"default": []
+			},
+			"type": "array",
+			"title": "attachments",
+			"uniqueItems": false
+		},
+		"mailbox": {
+			"wiki": {
+				"type": "property",
+				"uuid": "6636abf4b72b9",
+				"name": "mailbox",
+				"visibility": "hidden",
+				"label": "mailbox",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"options": {
+				"hidden": true
+			},
+			"type": "string",
+			"format": "text",
+			"title": "mailbox"
+		}
+	},
+	"type": "object",
+	"title": "Compose email"
+}

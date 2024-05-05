@@ -1,0 +1,36 @@
+{{#visualdataform: ContactManager/Contact
+|title = Add Contact 
+|action = create
+|return-page = ContactManager:Contacts
+|view = popup
+|popup-size = medium
+|css-class =
+|pagename-formula=ContactManager:Contacts/<full_name>
+|edit-freetext = false	
+|edit-categories = true
+|edit-content-model = false
+|target-slot = main	
+|default-categories = 
+|default-content-model = wikitext
+|preload=
+|preload-data=
+|layout-align = top
+|popup-help = false 
+|submit-button-text =
+|layout = tabs
+|submit-button-text =
+|validate-button-text =
+}}
+
+
+
+{{#visualdataquery:[[full_name::+]][[ContactManager:Contacts/~]]
+|schema=ContactManager/Contact
+|limit=10
+|?full_name
+|?email_addresses
+|?action
+|template?action=ContactManager/Contact edit
+|order=full_name asc 
+}}
+

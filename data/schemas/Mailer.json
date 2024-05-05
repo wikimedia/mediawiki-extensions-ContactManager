@@ -1,0 +1,120 @@
+{
+	"wiki": {
+		"type": "schema",
+		"uuid": "6636144ff3906",
+		"name": "ContactManager/Mailer"
+	},
+	"properties": {
+		"provider": {
+			"wiki": {
+				"type": "property",
+				"uuid": "6636144ff390b",
+				"name": "provider",
+				"visibility": "visible",
+				"label": "provider",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.DropdownInputWidget",
+				"input-config": [],
+				"options-allow-null": false,
+				"required": true
+			},
+			"type": "string",
+			"format": "text",
+			"title": "provider",
+			"enum": [
+				"smtp",
+				"sendmail",
+				"native",
+				"amazon",
+				"mailchimp",
+				"mailgun",
+				"mailjet",
+				"postmark",
+				"sendgrid",
+				"sendinblue",
+				"gmail",
+				"ohmysmtp"
+			]
+		},
+		"name": {
+			"wiki": {
+				"name": "name",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"label": "name",
+				"uuid": "663616696b0a7",
+				"visibility": "condition",
+				"showif-field": "provider",
+				"showif-condition": "regex",
+				"showif-value": "^(?!native|sendmail).*$",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": []
+			},
+			"type": "string",
+			"format": "text",
+			"title": "name"
+		},
+		"transport": {
+			"wiki": {
+				"name": "transport",
+				"type": "property",
+				"multiple-items": false,
+				"label": "transport",
+				"uuid": "663616696b0aa",
+				"visibility": "condition",
+				"showif-field": "provider",
+				"showif-condition": "regex",
+				"showif-value": "^(?!smtp|native|sendmail).*$",
+				"preferred-input": "OO.ui.DropdownInputWidget",
+				"input-config": [],
+				"options-allow-null": false,
+				"required": false,
+				"options-values-parsed": {
+					"smtp": "smtp",
+					"http": "http",
+					"api": "api"
+				}
+			},
+			"type": "string",
+			"format": "text",
+			"title": "transport",
+			"enum": [ "smtp", "http", "api" ]
+		},
+		"from": {
+			"wiki": {
+				"name": "from",
+				"title": "from",
+				"description": "add one or more sender in the form \"name \u003Cemail\u003E\" (the email must be a legitimate email address with this provider)",
+				"min-items": 1,
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "663705afe7785"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "from",
+					"type": "property",
+					"multiple-items": true,
+					"default": [],
+					"uuid": "6636a0fa3fdef",
+					"visibility": "visible",
+					"preferred-input": "OO.ui.TextInputWidget",
+					"input-config": [],
+					"required": false,
+					"layout": "table"
+				},
+				"format": "text",
+				"default": []
+			},
+			"type": "array",
+			"title": "from",
+			"description": "add one or more sender in the form \"name \u0026lt;email\u0026gt;\" (the email must be a legitimate email address with this provider)",
+			"minItems": 1,
+			"uniqueItems": false
+		}
+	},
+	"required": [ "provider", "name" ],
+	"type": "object"
+}

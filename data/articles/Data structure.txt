@@ -1,0 +1,38 @@
+
+* articles
+**[[ContactManager:Data structure]]
+**[[ContactManager:Mailboxes]]
+**[[ContactManager:Contacts]]
+**[[ContactManager:Mailers]]
+**[[ContactManager:Messages]]
+** [[ContactManager:Read email]]
+** [[ContactManager:SearchCriteria]]
+** [[ContactManager:FilterMetadata]]
+
+
+* templates
+**[[Template:ContactManager/Contact edit]]
+**[[Template:ContactManager/Email]]
+**[[Template:ContactManager/Email action]]
+**[[Template:ContactManager/GetMailbox]]
+**[[Template:ContactManager/MailboxAction]]
+**[[Template:ContactManager/Mailbox edit]]
+**[[Template:ContactManager/Mailer edit]]
+**[[Template:ContactManager/Message filter edit]]
+**[[Template:ContactManager/PreloadMailbox]]
+**[[Template:ContactManager/Read email]]
+**[[Template:ContactManagerFoldersTable]]
+
+
+*schemas
+**[[VisualDataSchema:ContactManager/Compose email]]
+**[[VisualDataSchema:ContactManager/Contact]]
+**[[VisualDataSchema:ContactManager/Define job]]
+**[[VisualDataSchema:ContactManager/Incoming mail]]
+**[[VisualDataSchema:ContactManager/Mailbox]]
+**[[VisualDataSchema:ContactManager/Mailbox folders]]
+**[[VisualDataSchema:ContactManager/Mailbox info]]
+**[[VisualDataSchema:ContactManager/Mailer]]
+**[[VisualDataSchema:ContactManager/Message filter]]
+**[[VisualDataSchema:ContactManager/Retrieve messages]]
+

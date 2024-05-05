@@ -21,14 +21,16 @@
 |layout = tabs
 |submit-button-text =
 |validate-button-text =
+|overwrite-existing-article-on-create=true
 }}
 
-
+ 
 
 {{#visualdataquery:[[name::+]]
 |schema=ContactManager/Mailbox 
 |?name
 |?action
-|format=datatable 
-|template?action=ContactManager/MailboxAction
+|template?action=ContactManager/Mailbox edit
+|format=datatable
 }}
+

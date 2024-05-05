@@ -1,0 +1,6 @@
+{{#visualdataprint: {{{1}}}
+|schema=ContactManager/Mailbox
+|?name
+|format=raw
+}}
+

@@ -3,6 +3,12 @@
 		"authors": []
 	},
 	"contactmanager-extension-desc": "Contact Manager based on VisualData",
+	"contactmanager-sidepanel-section": "Contact Manager",
+	"contactmanager-sidepanel-mailboxes": "Mailboxes",
+	"contactmanager-sidepanel-contacts": "Contacts",
+	"contactmanager-sidepanel-mailers": "Mailers",
+	"contactmanager-sidepanel-data-structure": "Data structure",
+
 	"right-contactmanager-can-manage-mailboxes": "contactmanager can manage mailboxes",
 	"action-contactmanager-can-manage-mailboxes": "contactmanager can manage mailboxes",
 	"apihelp-contactmanager-createjob-summary": "apihelp contactmanager createjob summary",

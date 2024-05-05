@@ -2,10 +2,15 @@
 	"@metadata": {
 		"authors": []
 	},
-	"right-contactmanager-can-manage-mailboxes": "a label message",
-	"action-contactmanager-can-manage-mailboxes": "a label message",
+	"contactmanager-sidepanel-section": "A label message Manager",
+	"contactmanager-sidepanel-mailboxes": "A label message",
+	"contactmanager-sidepanel-contacts": "A label message",
+	"contactmanager-sidepanel-mailers": "A label message",
+	"contactmanager-sidepanel-data-structure": "A label message",
+	"right-contactmanager-can-manage-mailboxes": "A label message",
+	"action-contactmanager-can-manage-mailboxes": "A label message",
 	"contactmanager-extension-desc": "a label message",
-	"apihelp-contactmanager-createjob-summary": "a label message",
-	"apihelp-contactmanager-createjob-param-pageid": "a label message",
-	"apihelp-contactmanager-createjob-param-data": "a label message"
+	"apihelp-contactmanager-createjob-summary": "A label message",
+	"apihelp-contactmanager-createjob-param-pageid": "A label message",
+	"apihelp-contactmanager-createjob-param-data": "A label message"
 }

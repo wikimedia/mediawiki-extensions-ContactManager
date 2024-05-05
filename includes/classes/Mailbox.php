@@ -45,13 +45,20 @@ class Mailbox {
 			return false;
 		}
 
-		$password = ( !empty( $GLOBALS['wgContactManagerMailboxPassword'][$data['name']] ) ?
-			$GLOBALS['wgContactManagerMailboxPassword'][$data['name']] : $data['password'] );
+		if ( empty( $GLOBALS['wgContactManagerIMAP'][$data['name']] ) ) {
+			$errors[] = 'credentials not found';
+			return false;
+		}
+
+		$credentials = $GLOBALS['wgContactManagerIMAP'][$data['name']];
+		$credentials = array_change_key_case( $credentials, CASE_LOWER );
 
 		$this->mailbox = self::connectMailbox(
-			$data['server'],
-			$data['username'],
-			$password
+			$credentials['server'],
+			$credentials['username'],
+			$credentials['password'],
+			"",
+			$credentials['port'],
 		);
 	}
 

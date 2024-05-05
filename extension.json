@@ -1,7 +1,7 @@
 {
 	"name": "ContactManager",
 	"author": "thomas-topway-it",
-	"version": "1.2",
+	"version": "1.2.1",
 	"url": "https://www.mediawiki.org/wiki/Extension:ContactManager",
 	"descriptionmsg": "contactcmanager-extension-desc",
 	"license-name": "GPL-2.0-or-later",
@@ -30,7 +30,9 @@
 		"LoadExtensionSchemaUpdates": "ContactManagerHooks::onLoadExtensionSchemaUpdates",
 		"BeforeInitialize": "ContactManagerHooks::onBeforeInitialize",
 		"BeforePageDisplay": "ContactManagerHooks::onBeforePageDisplay",
-		"BeforeCreateEchoEvent": "MediaWiki\\Extension\\ContactManager\\EchoInterface::onBeforeCreateEchoEvent"
+		"BeforeCreateEchoEvent": "MediaWiki\\Extension\\ContactManager\\EchoInterface::onBeforeCreateEchoEvent",
+		"SkinBuildSidebar": "ContactManagerHooks::onSkinBuildSidebar",
+		"VisualData::OnFormSubmit": "ContactManagerHooks::VisualDataOnFormSubmit"
 	},
 	"SpecialPages": {
 	},
@@ -97,11 +99,14 @@
 		"ContactManagerSchemasRetrieveMessages": "ContactManager/Retrieve messages",
 		"ContactManagerSchemasIncomingMail": "ContactManager/Incoming mail",
 		"ContactManagerSchemasMessageFilter": "ContactManager/Message filter",
+		"ContactManagerSchemasComposeEmail": "ContactManager/Compose email",
+		"ContactManagerSchemasMailer": "ContactManager/Mailer",
 		"ContactManagerSchemasContact": "ContactManager/Contact",
 		"ContactManagerMailboxInfoArticle": "ContactManager:Mailboxes/$1",
 		"ContactManagerMailboxFoldersArticle": "ContactManager:Mailboxes/$1",
 		"ContactManagerContactsArticle": "ContactManager:Contacts/$1",
-		"ContactManagerAttachmentsFolder": ""
+		"ContactManagerAttachmentsFolder": "",
+		"ContactManangerDisableSidebarLink": false
 	},
 	"manifest_version": 1
 }

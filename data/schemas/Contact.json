@@ -1,8 +1,8 @@
 {
 	"wiki": {
 		"type": "schema",
+		"uuid": "6635df063ed83",
 		"name": "ContactManager/Contact",
-		"title-parsed": "Contact",
 		"title": "Contact"
 	},
 	"properties": {
@@ -11,11 +11,13 @@
 				"name": "first_name",
 				"type": "property",
 				"multiple-items": false,
+				"label": "First name",
 				"label-parsed": "First name",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
-				"required": false
+				"required": false,
+				"uuid": "6635df063ed86"
 			},
 			"type": "string",
 			"format": "text",
@@ -26,11 +28,13 @@
 				"name": "last_name",
 				"type": "property",
 				"multiple-items": false,
+				"label": "Last name",
 				"label-parsed": "Last name",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
-				"required": false
+				"required": false,
+				"uuid": "6635df063ed89"
 			},
 			"type": "string",
 			"format": "text",
@@ -41,11 +45,13 @@
 				"name": "salutation",
 				"type": "property",
 				"multiple-items": false,
+				"label": "Salutation",
 				"label-parsed": "Salutation",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
-				"required": false
+				"required": false,
+				"uuid": "6635df063ed8a"
 			},
 			"type": "string",
 			"format": "text",
@@ -56,11 +62,13 @@
 				"name": "middle_name",
 				"type": "property",
 				"multiple-items": false,
+				"label": "Middle name",
 				"label-parsed": "Middle name",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
-				"required": false
+				"required": false,
+				"uuid": "6635df063ed8b"
 			},
 			"type": "string",
 			"format": "text",
@@ -71,11 +79,13 @@
 				"name": "nickname",
 				"type": "property",
 				"multiple-items": false,
+				"label": "Nickname",
 				"label-parsed": "Nickname",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
-				"required": false
+				"required": false,
+				"uuid": "6635df063ed8c"
 			},
 			"type": "string",
 			"format": "text",
@@ -86,11 +96,13 @@
 				"name": "initials",
 				"type": "property",
 				"multiple-items": false,
+				"label": "Initials",
 				"label-parsed": "Initials",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
-				"required": false
+				"required": false,
+				"uuid": "6635df063ed8d"
 			},
 			"type": "string",
 			"format": "text",
@@ -101,11 +113,13 @@
 				"name": "suffix",
 				"type": "property",
 				"multiple-items": false,
+				"label": "Suffix",
 				"label-parsed": "Suffix",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
-				"required": false
+				"required": false,
+				"uuid": "6635df063ed8e"
 			},
 			"type": "string",
 			"format": "text",
@@ -113,14 +127,19 @@
 		},
 		"full_name": {
 			"wiki": {
-				"name": "full_name",
 				"type": "property",
+				"uuid": "6635df063ed8f",
+				"name": "full_name",
+				"visibility": "hidden",
+				"label": "Full name",
 				"multiple-items": false,
-				"label-parsed": "Full name",
-				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
-				"required": false
+				"required": false,
+				"value-formula": "\u003Cfirst_name\u003E \u003Clast_name\u003E"
+			},
+			"options": {
+				"hidden": true
 			},
 			"type": "string",
 			"format": "text",
@@ -132,7 +151,8 @@
 				"title-parsed": "email addresses",
 				"title": "email addresses",
 				"unique-items": true,
-				"type": "schema"
+				"type": "schema",
+				"uuid": "6635df063ed90"
 			},
 			"items": {
 				"type": "string",
@@ -140,11 +160,14 @@
 					"name": "new_property",
 					"type": "property",
 					"multiple-items": true,
+					"default": [],
 					"default-parsed": [],
 					"visibility": "visible",
 					"preferred-input": "OO.ui.TextInputWidget (email)",
 					"input-config": [],
-					"required": false
+					"required": false,
+					"uuid": "6635df063ed91",
+					"layout": "table"
 				},
 				"format": "email",
 				"default": []
@@ -159,7 +182,8 @@
 				"title-parsed": "phone numbers",
 				"title": "phone numbers",
 				"unique-items": true,
-				"type": "schema"
+				"type": "schema",
+				"uuid": "6635df063ed93"
 			},
 			"items": {
 				"type": "string",
@@ -167,11 +191,14 @@
 					"name": "new_property",
 					"type": "property",
 					"multiple-items": true,
+					"default": [],
 					"default-parsed": [],
 					"visibility": "visible",
 					"preferred-input": "intl-tel-input",
 					"input-config": [],
-					"required": false
+					"required": false,
+					"uuid": "6635df063ed94",
+					"layout": "table"
 				},
 				"format": "tel",
 				"default": []
@@ -188,7 +215,8 @@
 				"description-parsed": "any useful link, like cv, personal blogs, etc.",
 				"description": "any useful link, like cv, personal blogs, etc.",
 				"unique-items": false,
-				"type": "schema"
+				"type": "schema",
+				"uuid": "6635df063ed96"
 			},
 			"items": {
 				"type": "string",
@@ -196,11 +224,14 @@
 					"name": "new_property",
 					"type": "property",
 					"multiple-items": true,
+					"default": [],
 					"default-parsed": [],
 					"visibility": "visible",
 					"preferred-input": "OO.ui.TextInputWidget (url)",
 					"input-config": [],
-					"required": false
+					"required": false,
+					"uuid": "6635df063ed97",
+					"layout": "table"
 				},
 				"format": "url",
 				"default": []
@@ -229,11 +260,13 @@
 						"application/pdf"
 					]
 				},
-				"label-parsed": "Picture",
+				"label": "Picture",
 				"value-prefix": "File:",
+				"label-parsed": "Picture",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.SelectFileWidget",
-				"required": false
+				"required": false,
+				"uuid": "6635df063ed98"
 			},
 			"type": "string",
 			"format": "text",

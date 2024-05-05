@@ -24,6 +24,7 @@
 
 use MediaWiki\Extension\ContactManager\Mailbox;
 use MediaWiki\Extension\ContactManager\MailboxJob;
+use MediaWiki\Extension\ContactManager\Mailer;
 use MediaWiki\MediaWikiServices;
 
 if ( is_readable( __DIR__ . '/../vendor/autoload.php' ) ) {
@@ -32,6 +33,25 @@ if ( is_readable( __DIR__ . '/../vendor/autoload.php' ) ) {
 
 class ContactManager {
 	public static function initialize() {
+	}
+
+	/**
+	 * @param User $user
+	 * @param array $obj
+	 * @return bool
+	 */
+	public static function sendEmail( $user, $obj ) {
+		$context = RequestContext::getMain();
+		$schema = \VisualData::getSchema( $context, $GLOBALS['wgContactManagerSchemasComposeEmail'] );
+		$wikitext = ( $schema['properties']['text']['wiki']['preferred-input'] === 'VisualEditor' );
+
+		$errors = [];
+		$mailer = new Mailer( $user, $obj, $wikitext, $errors );
+		if ( count( $errors ) ) {
+			echo $errors[0];
+			return;
+		}
+		return $mailer->sendEmail();
 	}
 
 	/**

@@ -90,14 +90,16 @@ class ContactManagerHooks {
 
 		$import( "$dirPath/schemas", static function ( $titleText, $content ) use ( &$doImport ) {
 			if ( array_key_exists( 'wgContactManagerSchemas' . $titleText, $GLOBALS ) ) {
-				$doImport( 'VisualDataSchema:' . $GLOBALS['wgContactManagerSchemas' . $titleText], [
-					[
-						'role' => SlotRecord::MAIN,
-						'model' => 'json',
-						'text' => $content
-					]
-				] );
+				$titleText = $GLOBALS['wgContactManagerSchemas' . $titleText];
 			}
+
+			$doImport( "VisualDataSchema:$titleText", [
+				[
+					'role' => SlotRecord::MAIN,
+					'model' => 'json',
+					'text' => $content
+				]
+			] );
 		} );
 	}
 
@@ -131,4 +133,42 @@ class ContactManagerHooks {
 		\ContactManager::initialize();
 	}
 
+	/**
+	 * @param User $user
+	 * @param string $targetTitle
+	 * @param array $jsonData
+	 * @param string $freetext
+	 * @param bool $isNewPage
+	 * @return void
+	 */
+	public static function VisualDataOnFormSubmit( $user, $targetTitle, $jsonData, $freetext, $isNewPage ) {
+		if ( !empty( $jsonData['schemas'][$GLOBALS['wgContactManagerSchemasComposeEmail']] ) ) {
+			\ContactManager::sendEmail( $user, $jsonData['schemas'][$GLOBALS['wgContactManagerSchemasComposeEmail']] );
+		}
+	}
+
+	/**
+	 * @param Skin $skin
+	 * @param array &$bar
+	 * @return void
+	 */
+	public static function onSkinBuildSidebar( $skin, &$bar ) {
+		$user = $skin->getUser();
+		if ( !empty( $GLOBALS['wgContactManangerDisableSidebarLink'] ) ) {
+			return;
+		}
+
+		if ( !$user->isAllowed( 'contactmanager-can-manage-mailboxes' ) ) {
+			return;
+		}
+
+		$links = [ 'mailers', 'mailboxes', 'contacts', 'data-structure' ];
+		foreach ( $links as $value ) {
+			$title_ = Title::newFromText( str_replace( '-', ' ', "ContactManager:$value" ) );
+			$bar[ wfMessage( 'contactmanager-sidepanel-section' )->text() ][] = [
+				'text'   => wfMessage( "contactmanager-sidepanel-$value" )->text(),
+				'href'   => $title_->getLocalURL()
+			];
+		}
+	}
 }

@@ -1,16 +1,16 @@
-{{#visualdataform: ContactManager/Mailbox
+{{#visualdataform: ContactManager/Contact
 |title = edit
 |action = edit
-|edit-page = {{{pagetitle}}}
-|return-page = ContactManager:Mailboxes
+|edit-page=ContactManager:Contacts/{{{full_name}}}
+|return-page = ContactManager:Contacts
 |view = popup
 |popup-size = medium
 |css-class =
 |pagename-formula=
 |edit-freetext = false	
-|edit-categories = false
+|edit-categories = true
 |edit-content-model = false
-|target-slot = jsondata	
+|target-slot = main	
 |default-categories = 
 |default-content-model = wikitext
 |preload=

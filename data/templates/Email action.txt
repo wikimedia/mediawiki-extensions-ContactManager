@@ -1,0 +1,34 @@
+{{#visualdataform: ContactManager/Compose email
+|title = reply
+|action = create
+|edit-page = 
+|return-page =
+|view = popup
+|popup-size = large
+|css-class =
+|pagename-formula = ContactManager:Mailboxes/{{#urldecode:{{#urlget:mailbox}}}}/Sent email
+|edit-freetext = true   
+|edit-categories = false
+|edit-content-model = false
+|edit-target-slot = false
+|target-slot = main
+|default-categories = 
+|default-content-model = wikitext
+|preload=
+|preload-data=
+|layout-align = top
+|popup-help = false 
+|layout = tabs
+|submit-button-text =
+|validate-button-text =
+|overwrite-existing-article-on-create=true
+|preload-data?to={{{replyTo}}}
+|preload-data?subject=Re: {{{subject}}}
+|preload-data?text+base64={{#visualdataprint: {{{pagetitle}}}
+   |schema=ContactManager/Incoming mail
+   |?textHtml
+   |format=base64
+   }}
+|preload-data?mailbox={{#urldecode:{{#urlget:mailbox}}}}
+}}
+

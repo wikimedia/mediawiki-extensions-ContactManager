@@ -1,18 +1,22 @@
-==Mailbox info==    
+[[ContactManager:Mailboxes|&larr; go back]]
+ 
+==Mailbox info== 
 {{#visualDataButton: Get mailbox info
 |callback = ContactManager.initJob
 |schema = ContactManager/Define job
 |edit-page={{FULLPAGENAME}}/Jobs/MailboxInfo
 |preload-data?job=mailbox-info
+|preload-data?mailbox={{ContactManager/GetMailbox|{{FULLPAGENAME}}}}
 |target-slot = main 
-}}     
+}}
 
+ 
 
 {{#visualdataquery: [[name::+]] [[{{FULLPAGENAME}}]]
 |schema=ContactManager/Mailbox info
 |pagetitle=
 |format=table
-}} 
+}}  
 
 
 ==Folders==
@@ -21,17 +25,41 @@
 |callback = ContactManager.initJob
 |schema = ContactManager/Define job
 |edit-page={{FULLPAGENAME}}/Jobs/GetFolders
-|preload-data?job=mailbox-info
+|preload-data?job=get-folders
+|preload-data?mailbox={{ContactManager/GetMailbox|{{FULLPAGENAME}}}}
 |target-slot=main
 }}
 
-
+ 
 {{#visualdataquery: [[name::+]] [[{{FULLPAGENAME}}]]
 |?folders/shortpath
 |pagetitle=
 |template?folders/shortpath=ContactManagerFoldersTable
 |schema=ContactManager/Mailbox folders
 }}
+
+
+
+{{#VisualDataButton: Get messages
+|callback = ContactManager.initJob
+|schema = ContactManager/Retrieve messages
+|edit-page={{FULLPAGENAME}}/Jobs/GetMessages
+|preload-data?job=retrieve-messages
+|preload-data?mailbox={{ContactManager/GetMailbox|{{FULLPAGENAME}}}}
+|target-slot=main
+}}
+
+
+
+<!--
+{{#VisualDataButton: Save contacts
+|callback = ContactManager.initJob
+|schema = ContactManager/Define job
+|edit-page={{FULLPAGENAME}}/Jobs/GetContacts
+|preload-data?mailbox={{ContactManager/GetMailbox|{{FULLPAGENAME}}}}
+|target-slot=main
+}}
+-->
 
 
 ==Filters==
@@ -59,6 +87,7 @@
 |layout = tabs
 |submit-button-text =
 |validate-button-text =
+|preload-data?mailbox={{ContactManager/GetMailbox|{{FULLPAGENAME}}}}
 }}
 
 
@@ -71,25 +100,33 @@
 }}
 
 
+==Compose message==
 
-==Messages==
 
-{{#VisualDataButton: Get messages
-|callback = ContactManager.initJob
-|schema = ContactManager/Retrieve messages
-|edit-page={{FULLPAGENAME}}/Jobs/GetMessages
-|preload-data?job=retrieve-messages
-|target-slot=main
+{{#visualdataform: ContactManager/Compose email
+|title = New email
+|action = create
+|edit-page = 
+|return-page = {{FULLPAGENAME}}
+|view = inline
+|popup-size = large
+|css-class =
+|pagename-formula = {{FULLPAGENAME}}/Sent email
+|edit-freetext = true   
+|edit-categories = false
+|edit-content-model = false
+|edit-target-slot = false
+|target-slot = main
+|default-categories = 
+|default-content-model = wikitext
+|preload=
+|preload-data=
+|layout-align = top
+|popup-help = false 
+|layout = tabs
+|submit-button-text =
+|validate-button-text =
+|overwrite-existing-article-on-create=true
+|preload-data?mailbox={{ContactManager/GetMailbox|{{FULLPAGENAME}}}}
 }}
 
-
-
-<!--
-{{#VisualDataButton: Save contacts
-|callback = ContactManager.initJob
-|schema = ContactManager/Define job
-|edit-page={{FULLPAGENAME}}/Jobs/GetContacts
-|preload-data?mailbox={{PAGENAME}}
-|target-slot=main
-}}
--->
