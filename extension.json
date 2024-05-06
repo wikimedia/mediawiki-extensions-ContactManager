@@ -98,6 +98,7 @@
 		"ContactManagerSchemasMailboxFolders": "ContactManager/Mailbox folders",
 		"ContactManagerSchemasRetrieveMessages": "ContactManager/Retrieve messages",
 		"ContactManagerSchemasIncomingMail": "ContactManager/Incoming mail",
+		"ContactManagerSchemasDefineJob": "ContactManager/Define job",
 		"ContactManagerSchemasMessageFilter": "ContactManager/Message filter",
 		"ContactManagerSchemasComposeEmail": "ContactManager/Compose email",
 		"ContactManagerSchemasMailer": "ContactManager/Mailer",

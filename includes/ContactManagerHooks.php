@@ -91,6 +91,8 @@ class ContactManagerHooks {
 		$import( "$dirPath/schemas", static function ( $titleText, $content ) use ( &$doImport ) {
 			if ( array_key_exists( 'wgContactManagerSchemas' . $titleText, $GLOBALS ) ) {
 				$titleText = $GLOBALS['wgContactManagerSchemas' . $titleText];
+			} else {
+				$titleText = "ContactManager/$titleText";
 			}
 
 			$doImport( "VisualDataSchema:$titleText", [
