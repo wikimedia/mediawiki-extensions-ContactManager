@@ -47,13 +47,12 @@
 				"showif-condition": "=",
 				"showif-value": "mailer",
 				"options-values-parsed": {
-					"sendgrid - culturaitaliana": "sendgrid - culturaitaliana"
 				}
 			},
 			"type": "string",
 			"format": "text",
 			"title": "mailer",
-			"enum": [ "sendgrid - culturaitaliana" ]
+			"enum": [ "" ]
 		},
 		"from": {
 			"wiki": {
@@ -104,15 +103,12 @@
 				"showif-field": "transport",
 				"showif-condition": "=",
 				"showif-value": "mailer",
-				"options-values-parsed": {
-					"Istituto cultura italiana NCLE \u003Cici.tbilisi@culturaitaliana.org\u003E": "Istituto cultura italiana NCLE \u003Cici.tbilisi@culturaitaliana.org\u003E"
-				}
+				"options-values-parsed": {}
 			},
 			"type": "string",
 			"format": "text",
 			"title": "from",
 			"enum": [
-				"Istituto cultura italiana NCLE \u003Cici.tbilisi@culturaitaliana.org\u003E"
 			]
 		},
 		"to": {
