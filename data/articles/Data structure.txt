@@ -21,7 +21,7 @@
 **[[Template:ContactManager/Message filter edit]]
 **[[Template:ContactManager/PreloadMailbox]]
 **[[Template:ContactManager/Read email]]
-**[[Template:ContactManagerFoldersTable]]
+**[[Template:ContactManager/FoldersTable]]
 
 
 *schemas
