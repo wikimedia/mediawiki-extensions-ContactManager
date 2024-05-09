@@ -120,7 +120,10 @@ class ImportMessage {
 		$this->updateSinceAutoUpdate( $obj );
 
 		$categories = [];
-		$this->applyFilters( $obj, $pagenameFormula, $categories );
+		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories ) ) {
+			echo 'skip message ' . $uid . PHP_EOL;
+			return;
+		}
 
 		$pagenameFormula = str_replace( '<folder_name>', $params['folder_name'], $pagenameFormula );
 
@@ -338,7 +341,7 @@ class ImportMessage {
 				if ( $result_ ) {
 					switch ( $v['action'] ) {
 						case "skip":
-							return;
+							return false;
 						default:
 							if ( !empty( $v['pagename_formula'] ) ) {
 								$pagenameFormula = $v['pagename_formula'];

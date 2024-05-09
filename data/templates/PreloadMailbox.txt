@@ -34,7 +34,7 @@
 {{#visualdataquery: [[name::+]] [[{{FULLPAGENAME}}]]
 |?folders/shortpath
 |pagetitle=
-|template?folders/shortpath=ContactManagerFoldersTable
+|template?folders/shortpath=ContactManager/FoldersTable
 |schema=ContactManager/Mailbox folders
 }}
 
