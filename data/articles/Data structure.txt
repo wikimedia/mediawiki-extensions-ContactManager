@@ -24,6 +24,7 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 **[[Template:ContactManager/PreloadMailbox]]
 **[[Template:ContactManager/Read email]]
 **[[Template:ContactManager/FoldersTable]]
+**[[Template:ContactManager/FormatReply]]
 
 
 * modules

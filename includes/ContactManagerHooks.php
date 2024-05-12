@@ -99,7 +99,7 @@ class ContactManagerHooks {
 			$doImport( "Module:ContactManager/$titleText", [
 				[
 					'role' => SlotRecord::MAIN,
-					'model' => 'wikitext',
+					'model' => 'Scribunto',
 					'text' => $content
 				]
 			] );
