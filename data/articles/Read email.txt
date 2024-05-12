@@ -1,10 +1,12 @@
 {{#visualdataprint:{{#urlget:pageid}} 
 |schema=ContactManager/Incoming mail
-|?date
+|?date   
 |?headers/fromaddress
 |?subject
-|?replyTo
-|?textPlain
+|?replyTo=
+|?textPlain=
+|?textHtml=
+|?headersRaw=
 |format=template
 |template=ContactManager/Email
 }}

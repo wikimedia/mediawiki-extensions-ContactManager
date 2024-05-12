@@ -1,2 +1,2 @@
-{{#querylink:ContactManager:Read email|open|pageid={{{articleid}}}|mailbox={{#urldecode:{{#urlget:mailbox}}}}}} | [[{{{pagetitle}}}|source]]
+{{#querylink:ContactManager:Read email|open|pageid={{{articleid}}}|mailbox={{#urldecode:{{#urlget:mailbox}}}}|folder={{#urldecode:{{#urlget:folder}}}}|path={{#urldecode:{{#urlget:path}}}}}}&nbsp;|&nbsp;[[{{{pagetitle}}}|source]]
 

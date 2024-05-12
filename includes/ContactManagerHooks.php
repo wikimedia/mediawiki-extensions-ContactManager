@@ -38,6 +38,13 @@ class ContactManagerHooks {
 	}
 
 	/**
+	 * @param Parser $parser
+	 */
+	public static function onParserFirstCallInit( Parser $parser ) {
+		$parser->setFunctionHook( 'shadowroot', [ \ContactManager::class, 'parserFunctionShadowRoot' ] );
+	}
+
+	/**
 	 * @param DatabaseUpdater|null $updater
 	 */
 	public static function onLoadExtensionSchemaUpdates( DatabaseUpdater $updater = null ) {
@@ -88,6 +95,16 @@ class ContactManagerHooks {
 			] );
 		} );
 
+		$import( "$dirPath/modules", static function ( $titleText, $content ) use ( &$doImport ) {
+			$doImport( "Module:ContactManager/$titleText", [
+				[
+					'role' => SlotRecord::MAIN,
+					'model' => 'wikitext',
+					'text' => $content
+				]
+			] );
+		} );
+
 		$import( "$dirPath/schemas", static function ( $titleText, $content ) use ( &$doImport ) {
 			if ( array_key_exists( 'wgContactManagerSchemas' . $titleText, $GLOBALS ) ) {
 				$titleText = $GLOBALS['wgContactManagerSchemas' . $titleText];
@@ -113,6 +130,7 @@ class ContactManagerHooks {
 	public static function onBeforePageDisplay( OutputPage $outputPage, Skin $skin ) {
 		$title = $outputPage->getTitle();
 		$outputPage->addModules( 'ext.ContactManager' );
+		// $outputPage->addModuleStyles( 'ext.ContactManager.styles' );
 	}
 
 	/**

@@ -1,4 +1,5 @@
-[[ContactManager:Mailboxes/{{#urldecode:{{#urlget:mailbox}}}}|&larr; go back]]
+{{#querylink:ContactManager:Messages|&larr; go back|folder={{#urldecode:{{#urlget:folder}}}}|mailbox={{#urldecode:{{#urlget:mailbox}}}}|path={{#urldecode:{{#urlget:path}}}}}}
+
 
 {| class="wikitable infobox"
 ! date
@@ -12,12 +13,15 @@
 |-
 |}
 
+<!--
+|return-page ={{#queryurl:ContactManager:Read email|open|pageid={{{articleid}}}|mailbox={{#urldecode:{{#urlget:mailbox}}}}|folder={{#urldecode:{{#urlget:folder}}}}|path={{#urldecode:{{#urlget:path}}}}}}
+-->
 
 {{#visualdataform: ContactManager/Compose email
 |title = reply
 |action = create
 |edit-page = 
-|return-page =ContactManager:Mailboxes/{{#urldecode:{{#urlget:mailbox}}}}
+|return-page=ContactManager:Mailboxes/{{#urldecode:{{#urlget:mailbox}}}}/Sent email
 |view = popup
 |popup-size = large
 |css-class =
@@ -39,15 +43,15 @@
 |overwrite-existing-article-on-create=true
 |preload-data?to={{{replyTo}}}
 |preload-data?subject=Re: {{{subject}}}
-|preload-data?text+base64={{#visualdataprint: {{{pagetitle}}}
-   |schema=ContactManager/Incoming mail
-   |?textHtml
-   |format=base64
-   }}
+|preload-data?text+base64={{ContactManager/FormatReply|{{#base64encode:{{{textPlain|}}} }}|{{{headers/fromaddress}}}|{{{date}}}|text }} 
+|preload-data?text_html+base64={{ContactManager/FormatReply|{{#base64encode:{{{textHtml|}}} }}|{{{headers/fromaddress}}}|{{{date}}}|html }}
 |preload-data?mailbox={{#urldecode:{{#urlget:mailbox}}}}
 }}
 
 
-
-{{{textPlain}}}
+<tabs class="ContactManagerTabs">
+<tab name="text">{{#shadowroot:{{#base64encode:{{{textPlain|}}}}}|host}}</tab>
+<tab name="html">{{#shadowroot:{{#base64encode:{{{textHtml|}}}}}|host}}</tab>
+<tab name="headers">{{#shadowroot:{{#base64encode:{{{headersRaw|}}}}}|host}}</tab>
+</tabs>
 

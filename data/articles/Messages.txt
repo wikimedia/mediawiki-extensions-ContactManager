@@ -1,7 +1,7 @@
 {{#if:{{#urlget:path}} |  | This article is meant to be accessed with a dynamic url }}
 [[{{#urlget:path}}#Folders|&larr; go back]]
- 
-
+  
+  
 =={{#urlget:folder}}== 
 
 showing {{#expr:{{#urlget:offset}}+1}} - {{#expr:{{#urlget:offset}}+40}}
@@ -13,15 +13,13 @@ showing {{#expr:{{#urlget:offset}}+1}} - {{#expr:{{#urlget:offset}}+40}}
 |?pagetitle
 |?date
 |?subject
-|?headers/fromaddress
-|?headers/toaddress
-|?replyTo
-|?action
+|?headers/fromaddress=From
+|?headers/toaddress=To
 |pagetitle=
 |schema=ContactManager/Incoming mail
 |template?action=ContactManager/Email action
 |template?pagetitle=ContactManager/Read email
-|format_=datatables
+|format=table
 |order=date desc
 |offset={{#urlget:offset}}
 |limit=40

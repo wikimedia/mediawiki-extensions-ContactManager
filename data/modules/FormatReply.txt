@@ -1,0 +1,41 @@
+local p = {}
+
+function p.fn(frame)
+    local origArgs = (type(frame.getParent) == "function") and frame:getParent().args or frame
+
+    local base64 = require("Module:ContactManager/Base64")
+
+    local text = base64.decode(origArgs[1])
+    -- local text = origArgs[1]
+    local replyTo = mw.text.trim(origArgs[2])
+    local date = mw.text.trim(origArgs[3])
+    local format = mw.text.trim(origArgs[4])
+
+    local ret = ""
+    if format == "text" then
+        local list = mw.text.split("\n" .. text, "\n")
+        local quoted = table.concat(list, "\n> ")
+        ret = "\n\non " .. date .. replyTo .. " wrote:\n" .. quoted
+    else
+        local attr = mw.text.tag("div", {["class"] = "contactManager-attr"}, "on " .. date .. mw.text.encode(replyTo) .. " wrote:")
+
+        local quote =
+            mw.text.tag(
+            "blockquote",
+            {
+                ["class"] = "contactManager-quote",
+                ["style"] = "margin: 0.0px 0.0px 0.0px 0.8ex;border-left: 1.0px solid rgb(204,204,204);padding-left: 1.0ex"
+            },
+            text
+        )
+
+        ret = "<br/><br/>" .. mw.text.tag("div", {["class"] = "contactManager-quote"}, attr .. quote)
+    end
+
+   ret = base64.encode(ret)
+
+    return ret
+end
+-- =p.fn({"add\ndfdd","b","c","text"})
+return p
+

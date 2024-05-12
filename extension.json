@@ -1,7 +1,7 @@
 {
 	"name": "ContactManager",
 	"author": "thomas-topway-it",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"url": "https://www.mediawiki.org/wiki/Extension:ContactManager",
 	"descriptionmsg": "contactcmanager-extension-desc",
 	"license-name": "GPL-2.0-or-later",
@@ -29,6 +29,7 @@
 	"Hooks": {
 		"LoadExtensionSchemaUpdates": "ContactManagerHooks::onLoadExtensionSchemaUpdates",
 		"BeforeInitialize": "ContactManagerHooks::onBeforeInitialize",
+		"ParserFirstCallInit": "ContactManagerHooks::onParserFirstCallInit",
 		"BeforePageDisplay": "ContactManagerHooks::onBeforePageDisplay",
 		"BeforeCreateEchoEvent": "MediaWiki\\Extension\\ContactManager\\EchoInterface::onBeforeCreateEchoEvent",
 		"SkinBuildSidebar": "ContactManagerHooks::onSkinBuildSidebar",
@@ -87,6 +88,7 @@
 				"ContactManager.js"
 			],
 			"styles": [
+				"style.css"
 			],
 			"dependencies": [
 			]

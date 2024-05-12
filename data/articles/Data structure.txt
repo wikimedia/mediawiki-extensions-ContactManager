@@ -1,3 +1,5 @@
+Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
+
 
 * articles
 **[[ContactManager:Data structure]]
@@ -22,6 +24,11 @@
 **[[Template:ContactManager/PreloadMailbox]]
 **[[Template:ContactManager/Read email]]
 **[[Template:ContactManager/FoldersTable]]
+
+
+* modules
+**[[Module:ContactManager/Base64]]
+**[[Module:ContactManager/FormatReply]]
 
 
 *schemas

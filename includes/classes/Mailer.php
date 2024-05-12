@@ -44,8 +44,8 @@ class Mailer {
 	/** @var array */
 	private $obj;
 
-	/** @var bool */
-	private $wikitext;
+	/** @var string */
+	private $editor;
 
 	/** @var SymfonyMailer */
 	private $mailer;
@@ -56,13 +56,13 @@ class Mailer {
 	/**
 	 * @param User $user
 	 * @param array $obj
-	 * @param bool $wikitext
+	 * @param string $editor
 	 * @param array &$errors []
 	 */
-	public function __construct( $user, $obj, $wikitext, &$errors = [] ) {
+	public function __construct( $user, $obj, $editor, &$errors = [] ) {
 		$this->user = $user;
 		$this->obj = $obj;
-		$this->wikitext = $wikitext;
+		$this->editor = $editor;
 
 		$dns = null;
 		$username = null;
@@ -310,12 +310,20 @@ class Mailer {
 		$email = ( new Email() )
 			->from( $this->obj['from'] );
 
-		if ( $this->wikitext ) {
+		if ( $this->editor === 'VisualEditor' ) {
 			[ $text, $html ] = $this->parseWikitext( $this->obj['text'] );
 			$email->text( $text )
 				->html( $html );
 		} else {
-			$email->text( $this->obj['text'] );
+			if ( $this->obj['html'] ) {
+				$html = $this->obj['text_html'];
+				$html2Text = new \Html2Text\Html2Text( $html );
+				$text = $html2Text->getText();
+				$email->text( $text )
+					->html( $html );
+			} else {
+				$email->text( $this->obj['text'] );
+			}
 		}
 
 		if ( count( $this->obj['to'] ) ) {

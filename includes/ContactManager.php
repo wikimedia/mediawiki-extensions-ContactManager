@@ -36,6 +36,28 @@ class ContactManager {
 	}
 
 	/**
+	 * @param Parser $parser
+	 * @param mixed ...$argv
+	 * @return array
+	 */
+	public static function parserFunctionShadowRoot( Parser $parser, ...$argv ) {
+		$parserOutput = $parser->getOutput();
+
+		$ret = '<div id="' . $argv[1] . '"><template shadowrootmode="open">'
+			. base64_decode( $argv[0] ) . '</template></div>';
+
+		return [
+			$ret,
+			// should't be the opposite ?
+			// however with 'noparse' => true,
+			// the head tag is converted to 'pre'
+			// causing unintended behaviour
+			'noparse' => false,
+			'isHTML' => true,
+		];
+	}
+
+	/**
 	 * @param User $user
 	 * @param array $obj
 	 * @return bool
@@ -43,10 +65,10 @@ class ContactManager {
 	public static function sendEmail( $user, $obj ) {
 		$context = RequestContext::getMain();
 		$schema = \VisualData::getSchema( $context, $GLOBALS['wgContactManagerSchemasComposeEmail'] );
-		$wikitext = ( $schema['properties']['text']['wiki']['preferred-input'] === 'VisualEditor' );
+		$editor = $schema['properties']['text']['wiki']['preferred-input'];
 
 		$errors = [];
-		$mailer = new Mailer( $user, $obj, $wikitext, $errors );
+		$mailer = new Mailer( $user, $obj, $editor, $errors );
 		if ( count( $errors ) ) {
 			echo $errors[0];
 			return;

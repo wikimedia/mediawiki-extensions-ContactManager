@@ -24,11 +24,8 @@
 |overwrite-existing-article-on-create=true
 |preload-data?to={{{replyTo}}}
 |preload-data?subject=Re: {{{subject}}}
-|preload-data?text+base64={{#visualdataprint: {{{pagetitle}}}
-   |schema=ContactManager/Incoming mail
-   |?textHtml
-   |format=base64
-   }}
+|preload-data?text+base64={{ContactManager/FormatReply|{{#base64encode:{{{textPlain|}}} }}|{{{headers/fromaddress}}}|{{{date}}}|text }}
+|preload-data?text_html+base64={{ContactManager/FormatReply|{{#base64encode:{{{textHtml|}}} }}|{{{headers/fromaddress}}}|{{{date}}}|html }}
 |preload-data?mailbox={{#urldecode:{{#urlget:mailbox}}}}
 }}
 
