@@ -117,16 +117,12 @@
                 "showif-field": "transport",
                 "showif-condition": "=",
                 "showif-value": "mailer",
-                "options-values-parsed": {
-                    "Thomas \u003Cici.tbilisi@culturaitaliana.org\u003E": "Thomas \u003Cici.tbilisi@culturaitaliana.org\u003E"
-                }
+                "options-values-parsed": {}
             },
             "type": "string",
             "format": "text",
             "title": "from",
-            "enum": [
-                "Thomas \u003Cici.tbilisi@culturaitaliana.org\u003E"
-            ]
+            "enum": []
         },
         "to": {
             "wiki": {
