@@ -240,16 +240,15 @@
         },
         "subject": {
             "wiki": {
-                "name": "subject",
                 "type": "property",
-                "multiple-items": false,
-                "label": "subject",
-                "label-parsed": "subject",
+                "uuid": "65f73d69661e1",
+                "name": "subject",
                 "visibility": "visible",
+                "label": "subject",
+                "multiple-items": false,
                 "preferred-input": "OO.ui.TextInputWidget",
                 "input-config": [],
-                "required": false,
-                "uuid": "65f73d69661e1"
+                "required": false
             },
             "type": "string",
             "format": "text",
@@ -275,6 +274,7 @@
                 "name": "text_html",
                 "type": "property",
                 "multiple-items": false,
+                "required": true,
                 "label": "text",
                 "uuid": "65f73d69661e3",
                 "visibility": "condition",
@@ -282,8 +282,7 @@
                 "showif-condition": "=",
                 "showif-value": "true",
                 "preferred-input": "TinyMCE",
-                "input-config": [],
-                "required": false
+                "input-config": []
             },
             "type": "string",
             "format": "textarea",
@@ -291,19 +290,19 @@
         },
         "text": {
             "wiki": {
-                "type": "property",
-                "uuid": "663f2c32cd2a0",
                 "name": "text",
+                "type": "property",
+                "multiple-items": false,
+                "required": true,
+                "input-config": {
+                    "rows": 8
+                },
+                "uuid": "663f2c32cd2a0",
                 "visibility": "condition",
                 "showif-field": "html",
                 "showif-condition": "=",
                 "showif-value": "false",
-                "multiple-items": false,
-                "preferred-input": "OO.ui.MultilineTextInputWidget",
-                "input-config": {
-                    "rows": 8
-                },
-                "required": false
+                "preferred-input": "OO.ui.MultilineTextInputWidget"
             },
             "type": "string",
             "format": "textarea"
@@ -371,7 +370,10 @@
             "title": "mailbox"
         }
     },
+    "required": [
+        "text_html",
+        "text"
+    ],
     "type": "object",
     "title": "Compose email"
 }
-
