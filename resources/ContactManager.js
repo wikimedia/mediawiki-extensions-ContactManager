@@ -23,30 +23,30 @@
 // eslint-disable-next-line no-implicit-globals, no-undef
 ContactManager = ( function () {
 	function initJob( value, data ) {
-		return new Promise( function ( resolve, reject ) {
+		return new Promise( ( resolve, reject ) => {
 			const payload = {
 				action: 'contactmanager-createjob',
 				data: JSON.stringify( data ),
 				pageid: mw.config.get( 'wgArticleId' )
 			};
 
-			mw.loader.using( 'mediawiki.api', function () {
+			mw.loader.using( 'mediawiki.api', () => {
 				new mw.Api()
 					.postWithToken( 'csrf', payload )
-					.done( function ( res ) {
+					.done( ( res ) => {
 						// console.log( 'res', res );
 						if ( payload.action in res ) {
 							// eslint-disable-next-line no-alert
 							alert( 'job created' );
 						}
 					} )
-					.fail( function ( res ) {
+					.fail( ( res ) => {
 						// eslint-disable-next-line no-alert
 						alert( 'error' + res );
 						// console.log("getFolders fail", res);
 					} );
 			} );
-		} ).catch( function ( err ) {
+		} ).catch( ( err ) => {
 			// eslint-disable-next-line no-console
 			console.log( err );
 		} );
