@@ -11,6 +11,8 @@
 
 	"right-contactmanager-can-manage-mailboxes": "contactmanager can manage mailboxes",
 	"action-contactmanager-can-manage-mailboxes": "contactmanager can manage mailboxes",
+	"group-contactmanager-admin": "ContactManager admin",
+
 	"apihelp-contactmanager-createjob-summary": "apihelp contactmanager createjob summary",
 	"apihelp-contactmanager-createjob-param-pageid": "apihelp contactmanager createjob param pageid",
 	"apihelp-contactmanager-createjob-param-data": "apihelp contactmanager createjob param data"
