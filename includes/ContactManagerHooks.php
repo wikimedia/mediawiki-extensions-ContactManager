@@ -53,7 +53,7 @@ class ContactManagerHooks {
 		}
 		$importer = \VisualData::getImporter();
 		$error_messages = [];
-		$doImport = static function ( $pagename, $contents ) use ( $importer ) {
+		$doImport = static function ( $pagename, $contents ) use ( $importer, &$error_messages ) {
 			try {
 				$importer->doImportSelf( $pagename, $contents );
 			} catch ( Exception $e ) {
@@ -120,6 +120,10 @@ class ContactManagerHooks {
 				]
 			] );
 		} );
+
+		if ( count( $error_messages ) ) {
+			throw new MWException( 'error importing ' . count( $error_messages ) . ' articles' );
+		}
 	}
 
 	/**
