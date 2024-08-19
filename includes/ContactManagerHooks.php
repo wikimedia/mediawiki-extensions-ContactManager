@@ -53,8 +53,11 @@ class ContactManagerHooks {
 		}
 		$importer = \VisualData::getImporter();
 		$error_messages = [];
-		$doImport = static function ( $pagename, $contents ) use ( $importer, &$error_messages ) {
+		$context = RequestContext::getMain();
+		$doImport = static function ( $pagename, $contents ) use ( $context, $importer, &$error_messages ) {
 			try {
+				$title_ = Title::newFromText( $pagename );
+				$context->setTitle( $title_ );
 				$importer->doImportSelf( $pagename, $contents );
 			} catch ( Exception $e ) {
 				$error_messages[$pagename] = $e->getMessage();
