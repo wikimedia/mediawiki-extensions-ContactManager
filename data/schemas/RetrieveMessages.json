@@ -70,9 +70,12 @@
 							"preferred-input": "OO.ui.DropdownInputWidget",
 							"input-config": [],
 							"options-allow-null": false,
-							"options-askquery": "[[name::\u003Cmailbox\u003E]]",
-							"askquery-schema": "ContactManager/Mailbox folders",
-							"askquery-printouts": [ "folders/fullpath", "folders/shortpath" ],
+							"options-query": "[[name::\u003Cmailbox\u003E]]",
+							"query-schema": "ContactManager/Mailbox folders",
+							"query-printouts": [
+								"folders/fullpath",
+								"folders/shortpath"
+							],
 							"options-query-formula": "\u003Cfolders/fullpath\u003E",
 							"options-label-formula": "\u003Cfolders/shortpath\u003E",
 							"uuid": "66138f32ef41d"
@@ -100,7 +103,10 @@
 						"description": "will be used in the pagename formula, therefore it must not contain any of the  \u003Ca class=\"external text\" href=\"https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters\"\u003EProblem characters\u003C/a\u003E"
 					}
 				},
-				"required": [ "folder", "folder_name" ]
+				"required": [
+					"folder",
+					"folder_name"
+				]
 			},
 			"type": "array",
 			"title": "folders",
@@ -185,7 +191,33 @@
 						},
 						"type": "string",
 						"format": "text",
-						"title": "criteria"
+						"title": "criteria",
+						"enum": [
+							"ALL",
+							"ANSWERED",
+							"BCC",
+							"BEFORE",
+							"BODY",
+							"CC",
+							"DELETED",
+							"FLAGGED",
+							"FROM",
+							"KEYWORD",
+							"NEW",
+							"OLD",
+							"ON",
+							"RECENT",
+							"SEEN",
+							"SINCE",
+							"SUBJECT",
+							"TEXT",
+							"TO",
+							"UNANSWERED",
+							"UNDELETED",
+							"UNFLAGGED",
+							"UNKEYWORD",
+							"UNSEEN"
+						]
 					},
 					"string_value": {
 						"wiki": {
@@ -272,9 +304,11 @@
 					"input-config": [],
 					"options-allow-null": false,
 					"options-label-formula": "\u003Cname\u003E",
-					"options-askquery": "[[name::+]] [[{{FULLPAGENAME}}/~]]",
-					"askquery-schema": "ContactManager/Message filter",
-					"askquery-printouts": [ "name" ],
+					"options-query": "[[name::+]] [[{{FULLPAGENAME}}/~]]",
+					"query-schema": "ContactManager/Message filter",
+					"query-printouts": [
+						"name"
+					],
 					"options-query-formula": "\u003Cpagetitle\u003E",
 					"required": false,
 					"layout": "table"
@@ -305,7 +339,7 @@
 			"format": "text",
 			"title": "pagename-formula",
 			"description": "suggested value: {{FULLPAGENAME}}/messages/\u0026lt;folder_name\u0026gt;/\u0026lt;ContactManager/Incoming mail/id\u0026gt; -- all properties of the schema \u003Ca href=\"/index.php?title=VisualDataSchema:ContactManager/Incoming_mail\" title=\"VisualDataSchema:ContactManager/Incoming mail\"\u003EContactManager/Incoming mail\u003C/a\u003E can be used. Eg. \u0026lt;ContactManager/Incoming mail/id\u0026gt; or \u0026lt;ContactManager/Incoming mail/headers/subject\u0026gt;",
-			"default": "ContactManager:Mailboxes/gmail/messages/\u003Cfolder_name\u003E/\u003CContactManager/Incoming mail/id\u003E"
+			"default": ""
 		},
 		"attachments_ignore": {
 			"wiki": {
@@ -356,8 +390,31 @@
 			"type": "integer",
 			"title": "limit",
 			"description": "limit the number of messages retrieved (for testing purpose)"
+		},
+		"check_email_interval": {
+			"wiki": {
+				"type": "property",
+				"name": "check_email_interval",
+				"visibility": "visible",
+				"label": "check email every",
+				"default": "5",
+				"help-message": "(minutes)",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67141796052ff"
+			},
+			"type": "integer",
+			"title": "check email every",
+			"description": "(minutes)"
 		}
 	},
-	"required": [ "job", "mailbox", "pagename_formula" ],
+	"required": [
+		"job",
+		"mailbox",
+		"pagename_formula"
+	],
 	"type": "object"
 }
+

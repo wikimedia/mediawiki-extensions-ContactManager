@@ -53,13 +53,15 @@ class Mailer {
 	/** @var User */
 	private $user;
 
+	/** @var array */
+	public $errors = [];
+
 	/**
 	 * @param User $user
 	 * @param array $obj
 	 * @param string $editor
-	 * @param array &$errors []
 	 */
-	public function __construct( $user, $obj, $editor, &$errors = [] ) {
+	public function __construct( $user, $obj, $editor ) {
 		$this->user = $user;
 		$this->obj = $obj;
 		$this->editor = $editor;
@@ -73,7 +75,7 @@ class Mailer {
 		switch ( $obj['transport'] ) {
 			case 'mailbox':
 				if ( empty( $GLOBALS['wgContactManagerSMTP'][$obj['mailbox']] ) ) {
-					$errors[] = 'credentials not found';
+					$this->errors[] = 'credentials not found';
 					return false;
 				}
 
@@ -92,12 +94,12 @@ class Mailer {
 				$results = \VisualData::getQueryResults( $schema, $query );
 
 				if ( empty( $results[0]['data'] ) ) {
-					$errors[] = 'mailer not found';
+					$this->errors[] = 'mailer not found';
 					return false;
 				}
 				$data = $results[0]['data'];
 				if ( empty( $GLOBALS['wgContactManager' . strtoupper( $data['provider'] ) ][$data['name']] ) ) {
-					$errors[] = 'credentials not found';
+					$this->errors[] = 'credentials not found';
 					return false;
 				}
 
@@ -105,7 +107,7 @@ class Mailer {
 				$credentials = array_change_key_case( $credentials, CASE_LOWER );
 
 				if ( empty( $credentials[$data['transport']] ) ) {
-					$errors[] = 'transport not found';
+					$this->errors[] = 'transport not found';
 					return false;
 				}
 
@@ -247,7 +249,7 @@ class Mailer {
 
 		if ( !$dns ) {
 			if ( !$username ) {
-				$errors[] = 'transport not supported';
+				$this->errors[] = 'transport not supported';
 				return false;
 			}
 
@@ -350,7 +352,7 @@ class Mailer {
 		try {
 			$this->mailer->send( $email );
 		} catch ( TransportExceptionInterface | TransportException | Exception $e ) {
-			echo $e->getMessage();
+			$this->errors[] = $e->getMessage();
 			return false;
 		}
 

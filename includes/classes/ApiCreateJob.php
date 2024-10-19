@@ -70,7 +70,7 @@ class ApiCreateJob extends ApiBase {
 			// 	break;
 
 			default:
-				$job = new MailboxJob( $title, $data );
+				$job = new ContactManagerJob( $title, $data );
 
 				if ( !$job ) {
 					$this->dieWithError( 'apierror-contactmanager-unknown-job' );

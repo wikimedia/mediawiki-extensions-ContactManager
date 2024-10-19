@@ -39,6 +39,8 @@
 		"symfony/sendgrid-mailer": "^5.4",
 		"symfony/sendinblue-mailer": "^5.4",
 		"symfony/google-mailer": "^5.4",
-		"html2text/html2text": "^4.3"
+		"html2text/html2text": "^4.3",
+		"psr/log": "1.1.4",
+		"dragonmantank/cron-expression": "^3.3"
 	}
 }

@@ -125,14 +125,30 @@
 			"format": "text",
 			"title": "Suffix"
 		},
-		"full_name": {
+		"notes": {
 			"wiki": {
 				"type": "property",
-				"uuid": "6635df063ed8f",
+				"name": "notes",
+				"visibility": "visible",
+				"label": "notes",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.MultilineTextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67141cc2485c1"
+			},
+			"type": "string",
+			"format": "textarea",
+			"title": "notes"
+		},
+		"full_name": {
+			"wiki": {
 				"name": "full_name",
+				"type": "property",
+				"multiple-items": false,
 				"visibility": "hidden",
 				"label": "Full name",
-				"multiple-items": false,
+				"uuid": "6635df063ed8f",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
 				"required": false,
@@ -276,3 +292,4 @@
 	"type": "object",
 	"title": "Contact"
 }
+

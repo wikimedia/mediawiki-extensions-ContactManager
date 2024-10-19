@@ -166,11 +166,13 @@ class ContactManagerHooks {
 	 * @param array $jsonData
 	 * @param string $freetext
 	 * @param bool $isNewPage
+	 * @param array &$errors
 	 * @return void
 	 */
-	public static function VisualDataOnFormSubmit( $user, $targetTitle, $jsonData, $freetext, $isNewPage ) {
+	public static function VisualDataOnFormSubmit( $user, $targetTitle, $jsonData, $freetext, $isNewPage, &$errors ) {
 		if ( !empty( $jsonData['schemas'][$GLOBALS['wgContactManagerSchemasComposeEmail']] ) ) {
-			\ContactManager::sendEmail( $user, $jsonData['schemas'][$GLOBALS['wgContactManagerSchemasComposeEmail']] );
+			\ContactManager::sendEmail( $user,
+				$jsonData['schemas'][$GLOBALS['wgContactManagerSchemasComposeEmail']], $errors );
 		}
 	}
 

@@ -28,14 +28,14 @@ use RequestContext;
 use Title;
 use Wikimedia\ScopedCallback;
 
-class MailboxJob extends Job {
+class ContactManagerJob extends Job {
 
 	/**
 	 * @param Title $title
 	 * @param array|bool $params
 	 */
 	public function __construct( $title, $params = [] ) {
-		parent::__construct( 'MailboxJob', $title, $params );
+		parent::__construct( 'ContactManagerJob', $title, $params );
 	}
 
 	/**

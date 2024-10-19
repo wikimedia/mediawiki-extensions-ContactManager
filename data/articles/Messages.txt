@@ -1,13 +1,8 @@
 {{#if:{{#urlget:path}} |  | This article is meant to be accessed with a dynamic url }}
 [[{{#urlget:path}}#Folders|&larr; go back]]
   
-  
+
 =={{#urlget:folder}}== 
-
-showing {{#expr:{{#urlget:offset}}+1}} - {{#expr:{{#urlget:offset}}+40}}
-
-{{#querylink:ContactManager:Messages|newer messages|class=my-class|path={{#urldecode:{{#urlget:path}}}}|folder={{#urldecode:{{#urlget:folder}}}}|offset={{#expr:{{#urlget:offset}}-40}} }} | {{#querylink:ContactManager:Messages|older messages|class=my-class|path={{#urldecode:{{#urlget:path}}}}|folder={{#urldecode:{{#urlget:folder}}}}|offset={{#expr:{{#urlget:offset}}+40}} }}
-
 
 {{#visualdataquery: [[{{#urldecode:{{#urlget:path}}}}/messages/~]][[mailboxFolder::{{#urldecode:{{#urlget:folder}}}}]]
 |?pagetitle
@@ -19,12 +14,8 @@ showing {{#expr:{{#urlget:offset}}+1}} - {{#expr:{{#urlget:offset}}+40}}
 |schema=ContactManager/Incoming mail
 |template?action=ContactManager/Email action
 |template?pagetitle=ContactManager/Read email
-|format=table
+|format=datatables
 |order=date desc
-|offset={{#urlget:offset}}
-|limit=40
+|limit=20
 }}
-
-
-{{#querylink:ContactManager:Messages|newer messages|class=my-class|path={{#urldecode:{{#urlget:path}}}}|folder={{#urldecode:{{#urlget:folder}}}}|offset={{#expr:{{#urlget:offset}}-40}} }} | {{#querylink:ContactManager:Messages|older messages|class=my-class|path={{#urldecode:{{#urlget:path}}}}|folder={{#urldecode:{{#urlget:folder}}}}|offset={{#expr:{{#urlget:offset}}+40}} }}
 

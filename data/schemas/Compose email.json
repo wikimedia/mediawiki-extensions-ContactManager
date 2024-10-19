@@ -42,9 +42,9 @@
                 "preferred-input": "OO.ui.DropdownInputWidget",
                 "input-config": [],
                 "options-allow-null": false,
-                "options-askquery": "[[name::+]]",
-                "askquery-schema": "ContactManager/Mailer",
-                "askquery-printouts": [
+                "options-query": "[[name::+]]",
+                "query-schema": "ContactManager/Mailer",
+                "query-printouts": [
                     "name"
                 ],
                 "required": false,
@@ -52,14 +52,12 @@
                 "showif-condition": "=",
                 "showif-value": "mailer",
                 "options-values-parsed": {
-                    "sendgrid - topway-it": "sendgrid - topway-it"
                 }
             },
             "type": "string",
             "format": "text",
             "title": "mailer",
             "enum": [
-                "sendgrid - topway-it"
             ]
         },
         "from": {
@@ -74,9 +72,9 @@
                 "input-config": [],
                 "options-allow-null": false,
                 "options-label-formula": "\u003Cfrom\u003E",
-                "options-askquery": "[[name::+]]",
-                "askquery-schema": "ContactManager/Mailbox",
-                "askquery-printouts": [
+                "options-query": "[[name::+]]",
+                "query-schema": "ContactManager/Mailbox",
+                "query-printouts": [
                     "from"
                 ],
                 "options-query-formula": "\u003Cfrom\u003E",
@@ -85,14 +83,12 @@
                 "showif-condition": "=",
                 "showif-value": "mailbox",
                 "options-values-parsed": {
-                    "Thomas \u003Cthomas.topway.it@gmail.com\u003E": "Thomas \u003Cthomas.topway.it@gmail.com\u003E"
                 }
             },
             "type": "string",
             "format": "text",
             "title": "from",
             "enum": [
-                "Thomas \u003Cthomas.topway.it@gmail.com\u003E"
             ]
         },
         "from_mailer": {
@@ -107,9 +103,9 @@
                 "input-config": [],
                 "options-allow-null": false,
                 "options-label-formula": "\u003Cfrom\u003E",
-                "options-askquery": "[[name::+]]",
-                "askquery-schema": "ContactManager/Mailer",
-                "askquery-printouts": [
+                "options-query": "[[name::+]]",
+                "query-schema": "ContactManager/Mailer",
+                "query-printouts": [
                     "from"
                 ],
                 "options-query-formula": "\u003Cfrom\u003E",
@@ -144,9 +140,9 @@
                     "visibility": "visible",
                     "preferred-input": "MenuTagSearchMultiselect",
                     "input-config": [],
-                    "options-askquery": "[[full_name::\u003Cvalue\u003E~]]",
-                    "askquery-schema": "ContactManager/Contact",
-                    "askquery-printouts": [
+                    "options-query": "[[full_name::\u003Cvalue\u003E~]]",
+                    "query-schema": "ContactManager/Contact",
+                    "query-printouts": [
                         "full_name",
                         "email_addresses"
                     ],
@@ -182,9 +178,9 @@
                     "visibility": "visible",
                     "preferred-input": "MenuTagSearchMultiselect",
                     "input-config": [],
-                    "options-askquery": "[[full_name::\u003Cvalue\u003E~]]",
-                    "askquery-schema": "ContactManager/Contact",
-                    "askquery-printouts": [
+                    "options-query": "[[full_name::\u003Cvalue\u003E~]]",
+                    "query-schema": "ContactManager/Contact",
+                    "query-printouts": [
                         "full_name",
                         "email_addresses"
                     ],
@@ -220,9 +216,9 @@
                     "visibility": "visible",
                     "preferred-input": "MenuTagSearchMultiselect",
                     "input-config": [],
-                    "options-askquery": "[[full_name::\u003Cvalue\u003E~]]",
-                    "askquery-schema": "ContactManager/Contact",
-                    "askquery-printouts": [
+                    "options-query": "[[full_name::\u003Cvalue\u003E~]]",
+                    "query-schema": "ContactManager/Contact",
+                    "query-printouts": [
                         "full_name",
                         "email_addresses"
                     ],

@@ -22,8 +22,8 @@
  * @copyright Copyright ©2023, https://wikisphere.org
  */
 
+use MediaWiki\Extension\ContactManager\ContactManagerJob;
 use MediaWiki\Extension\ContactManager\Mailbox;
-use MediaWiki\Extension\ContactManager\MailboxJob;
 use MediaWiki\Extension\ContactManager\Mailer;
 use MediaWiki\MediaWikiServices;
 
@@ -60,20 +60,24 @@ class ContactManager {
 	/**
 	 * @param User $user
 	 * @param array $obj
+	 * @param array &$errors
 	 * @return bool
 	 */
-	public static function sendEmail( $user, $obj ) {
+	public static function sendEmail( $user, $obj, &$errors = [] ) {
 		$context = RequestContext::getMain();
 		$schema = \VisualData::getSchema( $context, $GLOBALS['wgContactManagerSchemasComposeEmail'] );
 		$editor = $schema['properties']['text']['wiki']['preferred-input'];
 
-		$errors = [];
-		$mailer = new Mailer( $user, $obj, $editor, $errors );
-		if ( count( $errors ) ) {
-			echo $errors[0];
-			return;
+		$mailer = new Mailer( $user, $obj, $editor );
+		if ( count( $mailer->errors ) ) {
+			$errors = $mailer->errors;
+			return false;
 		}
-		return $mailer->sendEmail();
+		if ( $mailer->sendEmail() === false ) {
+			$errors = $mailer->errors;
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -245,7 +249,7 @@ class ContactManager {
 					break;
 				}
 
-				$jobs[] = new MailboxJob( $title, array_merge( $params, [
+				$jobs[] = new ContactManagerJob( $title, array_merge( $params, [
 					'job' => 'retrieve-message',
 					'folder' => $folder['folder'],
 					'folder_name' => $folder['folder_name'],

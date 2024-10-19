@@ -1,7 +1,7 @@
 {
 	"name": "ContactManager",
 	"author": "thomas-topway-it",
-	"version": "1.2.2",
+	"version": "1.2.3",
 	"url": "https://www.mediawiki.org/wiki/Extension:ContactManager",
 	"descriptionmsg": "contactcmanager-extension-desc",
 	"license-name": "GPL-2.0-or-later",
@@ -77,7 +77,7 @@
 		}
 	],
 	"JobClasses": {
-		"MailboxJob": "MediaWiki\\Extension\\ContactManager\\MailboxJob"
+		"ContactManagerJob": "MediaWiki\\Extension\\ContactManager\\ContactManagerJob"
 	},
 	"ResourceModules": {
 		"ext.ContactManager": {
