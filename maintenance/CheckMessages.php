@@ -65,9 +65,8 @@ class CheckMessages extends Maintenance {
 		$results = \VisualData::getQueryResults( $schema, $query );
 
 		$data = [];
-		$data['pageid'] = $title->getArticleID();
 		$data['session'] = $context->exportSession();
-
+		$jobs = [];
 		foreach ( $results as $value ) {
 			$data_ = array_merge( $value['data'], $data );
 
@@ -83,16 +82,23 @@ class CheckMessages extends Maintenance {
 			}
 
 			if ( $cron->isDue() ) {
-				$job = new ContactManagerJob( $title, $data_ );
+				// must be a valid title, otherwise if an "inner"
+				// job is created, will trigger the error
+				// $params must be an array in $IP/includes/jobqueue/Job.php on line 101
+				$title_ = \Title::newFromText( $value['title'] );
+				$data_['pageid'] = $title_->getArticleID();
+
+				$job = new ContactManagerJob( $title_, $data_ );
 
 				if ( !$job ) {
 					// $this->dieWithError( 'apierror-contactmanager-unknown-job' );
 					continue;
 				}
 
-				\ContactManager::pushJobs( [ $job ] );
+				$jobs[] = $job;
 			}
 		}
+		\ContactManager::pushJobs( $jobs );
 	}
 }
 
