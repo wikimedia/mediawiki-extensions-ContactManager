@@ -141,7 +141,8 @@ class Mailer {
 										break;
 									case 'gmail':
 										$transport = 'gmail+smtp';
-										$username = $credentials['app-password'];
+										$username = $credentials['username'];
+										$password = $credentials['app-password'];
 										break;
 									case 'mandrill':
 										$transport = 'mandrill+smtp';
