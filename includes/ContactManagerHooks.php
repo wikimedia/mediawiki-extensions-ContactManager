@@ -47,7 +47,7 @@ class ContactManagerHooks {
 	/**
 	 * @param DatabaseUpdater|null $updater
 	 */
-	public static function onLoadExtensionSchemaUpdates( DatabaseUpdater $updater = null ) {
+	public static function onLoadExtensionSchemaUpdates( ?DatabaseUpdater $updater = null ) {
 		if ( !class_exists( 'VisualData' ) ) {
 			return;
 		}
