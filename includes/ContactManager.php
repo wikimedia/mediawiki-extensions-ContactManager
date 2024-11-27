@@ -269,7 +269,7 @@ class ContactManager {
 	public static function getAttachmentsFolder() {
 		return ( !empty( $GLOBALS['wgContactManagerAttachmentsFolder'] )
 			? $GLOBALS['wgContactManagerAttachmentsFolder']
-			: $GLOBALS['wgBaseDirectory'] . '/ContactManager' );
+			: MW_INSTALL_PATH . '/ContactManager' );
 	}
 
 	/**
