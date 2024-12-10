@@ -1,0 +1,273 @@
+{
+	"wiki": {
+		"type": "schema",
+		"name": "ContactManager/Message header",
+		"uuid": "6754671f1a5d3"
+	},
+	"properties": {
+		"subject": {
+			"wiki": {
+				"type": "property",
+				"name": "subject",
+				"visibility": "visible",
+				"label": "subject",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a5ee"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "subject"
+		},
+		"from": {
+			"wiki": {
+				"type": "property",
+				"name": "from",
+				"visibility": "visible",
+				"label": "from",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a5f2"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "from"
+		},
+		"to": {
+			"wiki": {
+				"type": "property",
+				"name": "to",
+				"visibility": "visible",
+				"label": "to",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a5f5"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "to"
+		},
+		"date": {
+			"wiki": {
+				"type": "property",
+				"name": "date",
+				"visibility": "visible",
+				"label": "date",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a5f7"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "date"
+		},
+		"message_id": {
+			"wiki": {
+				"type": "property",
+				"name": "message_id",
+				"visibility": "visible",
+				"label": "message_id",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a5f9"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "message_id"
+		},
+		"references": {
+			"wiki": {
+				"type": "property",
+				"name": "references",
+				"visibility": "visible",
+				"label": "references",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a5fc"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "references"
+		},
+		"in_reply_to": {
+			"wiki": {
+				"type": "property",
+				"name": "in_reply_to",
+				"visibility": "visible",
+				"label": "in_reply_to",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a600"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "in_reply_to"
+		},
+		"size": {
+			"wiki": {
+				"type": "property",
+				"name": "size",
+				"visibility": "visible",
+				"label": "size",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a602"
+			},
+			"type": "integer",
+			"title": "size"
+		},
+		"uid": {
+			"wiki": {
+				"type": "property",
+				"name": "uid",
+				"visibility": "visible",
+				"label": "uid",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a605"
+			},
+			"type": "integer",
+			"title": "uid"
+		},
+		"msgno": {
+			"wiki": {
+				"type": "property",
+				"name": "msgno",
+				"visibility": "visible",
+				"label": "msgno",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a607"
+			},
+			"type": "integer",
+			"title": "msgno"
+		},
+		"recent": {
+			"wiki": {
+				"type": "property",
+				"name": "recent",
+				"visibility": "visible",
+				"label": "recent",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a609"
+			},
+			"type": "boolean",
+			"title": "recent"
+		},
+		"flagged": {
+			"wiki": {
+				"type": "property",
+				"name": "flagged",
+				"visibility": "visible",
+				"label": "flagged",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a60c"
+			},
+			"type": "boolean",
+			"title": "flagged"
+		},
+		"answered": {
+			"wiki": {
+				"type": "property",
+				"name": "answered",
+				"visibility": "visible",
+				"label": "answered",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a60e"
+			},
+			"type": "boolean",
+			"title": "answered"
+		},
+		"deleted": {
+			"wiki": {
+				"type": "property",
+				"name": "deleted",
+				"visibility": "visible",
+				"label": "deleted",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a611"
+			},
+			"type": "boolean",
+			"title": "deleted"
+		},
+		"seen": {
+			"wiki": {
+				"type": "property",
+				"name": "seen",
+				"visibility": "visible",
+				"label": "seen",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a613"
+			},
+			"type": "boolean",
+			"title": "seen"
+		},
+		"draft": {
+			"wiki": {
+				"type": "property",
+				"name": "draft",
+				"visibility": "visible",
+				"label": "draft",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a615"
+			},
+			"type": "boolean",
+			"title": "draft"
+		},
+		"udate": {
+			"wiki": {
+				"type": "property",
+				"name": "udate",
+				"visibility": "visible",
+				"label": "udate",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "6754671f1a616"
+			},
+			"type": "integer",
+			"title": "udate"
+		}
+	},
+	"type": "object"
+}
+

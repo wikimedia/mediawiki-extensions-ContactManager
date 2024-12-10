@@ -18,7 +18,7 @@
  * @file
  * @ingroup extensions
  * @author thomas-topway-it <support@topway.it>
- * @copyright Copyright ©2023, https://wikisphere.org
+ * @copyright Copyright ©2023-2024, https://wikisphere.org
  */
 
 namespace MediaWiki\Extension\ContactManager;
@@ -26,19 +26,57 @@ namespace MediaWiki\Extension\ContactManager;
 class PHPImapMailbox extends \PhpImap\Mailbox {
 
 	/**
-	 * @param string $criteria
-	 * @return array|bool
+	 * @param string $sequence
+	 * @return array
 	 */
-	public function fetch_overview( $criteria ) {
-		$mails = imap_fetch_overview( $this->getImapStream(), $criteria, FT_UID );
-
+	public function fetch_overview( string $sequence ): array {
+		// $mails = imap_fetch_overview( $this->getImapStream(), $criteria, FT_UID );
+		$mails = \PhpImap\Imap::fetch_overview(
+			$this->getImapStream(),
+			$sequence,
+			( SE_UID === $this->imapSearchOption ) ? FT_UID : 0
+		);
 		if ( \count( $mails ) ) {
-			return $mails;
+			foreach ( $mails as $index => &$mail ) {
+				if ( isset( $mail->subject ) && !\is_string( $mail->subject ) ) {
+					throw new UnexpectedValueException( 'subject property at index ' .
+						(string)$index . ' of argument 1 passed to ' . __METHOD__ . '() was not a string!' );
+				}
+				if ( isset( $mail->from ) && !\is_string( $mail->from ) ) {
+					throw new UnexpectedValueException( 'from property at index ' .
+						(string)$index . ' of argument 1 passed to ' . __METHOD__ . '() was not a string!' );
+				}
+				if ( isset( $mail->sender ) && !\is_string( $mail->sender ) ) {
+					throw new UnexpectedValueException( 'sender property at index ' .
+						(string)$index . ' of argument 1 passed to ' . __METHOD__ . '() was not a string!' );
+				}
+				if ( isset( $mail->to ) && !\is_string( $mail->to ) ) {
+					throw new UnexpectedValueException( 'to property at index ' .
+						(string)$index . ' of argument 1 passed to ' . __METHOD__ . '() was not a string!' );
+				}
+				if ( isset( $mail->subject ) && !empty( \trim( $mail->subject ) ) ) {
+					$mail->subject = $this->decodeMimeStr( $mail->subject );
+				}
+				if ( isset( $mail->from ) && !empty( \trim( $mail->from ) ) ) {
+					$mail->from = $this->decodeMimeStr( $mail->from );
+				}
+				if ( isset( $mail->sender ) && !empty( \trim( $mail->sender ) ) ) {
+					$mail->sender = $this->decodeMimeStr( $mail->sender );
+				}
+				if ( isset( $mail->to ) && !empty( \trim( $mail->to ) ) ) {
+					$mail->to = $this->decodeMimeStr( $mail->to );
+				}
+			}
 		}
 
-		return [];
+		/** @var list<object> */
+		return $mails;
 	}
 
+	/**
+	 * @param int $mailId
+	 * @return string
+	 */
 	public function getMailHeaderRaw( int $mailId ): string {
 		return \PhpImap\Imap::fetchheader(
 			$this->getImapStream(),

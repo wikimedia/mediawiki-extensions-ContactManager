@@ -4,20 +4,18 @@
 
 =={{#urlget:folder}}== 
 
-{{#visualdataquery: [[{{#urldecode:{{#urlget:path}}}}/messages/~]][[mailboxFolder::{{#urldecode:{{#urlget:shortpath}}}}]]
+{{#visualdataquery: [[{{#urldecode:{{#urlget:path}}}}/headers/{{#urldecode:{{#urlget:folder}}}}/~]]
+|schema=ContactManager/Message header
 |?pagetitle
-|?date
+|?from
+|?to
 |?subject
-|?headers/fromaddress=From
-|?headers/toaddress=To
+|?date
 |pagetitle=
-|schema=ContactManager/Incoming mail
-|template?action=ContactManager/Email action
 |template?pagetitle=ContactManager/Read email
 |format=datatables
 |order=date desc
 |limit=20
 }}
-
 
 

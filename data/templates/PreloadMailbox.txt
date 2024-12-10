@@ -32,10 +32,15 @@
 
  
 {{#visualdataquery: [[name::+]] [[{{FULLPAGENAME}}]]
-|?folders/shortpath
-|pagetitle=
-|template?folders/shortpath=ContactManager/FoldersTable
 |schema=ContactManager/Mailbox folders
+|?folders/fullpath=
+|?folders/shortpath=folder
+|?headers
+|?messages
+|?name=
+|pagetitle=
+|template?messages=ContactManager/FoldersTableMessages
+|template?headers=ContactManager/FoldersTableHeaders
 }}
 
 
@@ -60,44 +65,6 @@
 |target-slot=main
 }}
 -->
-
-
-==Filters==
-
-{{#visualdataform: ContactManager/Message filter
-|title = Create filter
-|action = create
-|edit-page = 
-|return-page = {{FULLPAGENAME}}
-|view = popup
-|popup-size = medium
-|css-class =
-|pagename-formula = {{FULLPAGENAME}}/Filters/<name>
-|edit-freetext = true   
-|edit-categories = false
-|edit-content-model = false
-|edit-target-slot = false
-|target-slot = main
-|default-categories = 
-|default-content-model = wikitext
-|preload=
-|preload-data=
-|layout-align = top
-|popup-help = false 
-|layout = tabs
-|submit-button-text =
-|validate-button-text =
-|preload-data?mailbox={{ContactManager/GetMailbox|{{FULLPAGENAME}}}}
-}}
-
-
-{{#visualdataquery: [[name::+]] [[{{FULLPAGENAME}}/~]]
-|schema=ContactManager/Message filter
-|?name
-|?mailbox
-|?action
-|template?action=ContactManager/Message filter edit
-}}
 
 
 ==Compose message==
