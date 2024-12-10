@@ -26,9 +26,7 @@ namespace MediaWiki\Extension\ContactManager;
 
 use EmailReplyParser\Parser\EmailParser;
 use MediaWiki\Extension\VisualData\Importer as VisualDataImporter;
-use Parser;
 use RequestContext;
-use TheIconic\NameParser\Parser as IconicParser;
 use Title;
 
 if ( is_readable( __DIR__ . '/../../vendor/autoload.php' ) ) {
@@ -73,7 +71,7 @@ class ImportMessage {
 
 		$imapMailbox->switchMailbox( $folder );
 
-		$imapMailbox->setAttachmentsIgnore( (bool)$params['attachments_ignore'] );
+		$imapMailbox->setAttachmentsIgnore( !( (bool)$params['download_attachments'] ) );
 
 		$mail = $imapMailbox->getMail( $uid );
 
@@ -116,8 +114,7 @@ class ImportMessage {
 			echo $msg . PHP_EOL;
 		};
 
-		$pagenameFormula = $params['pagename_formula'];
-		$this->updateSinceAutoUpdate( $obj );
+		$pagenameFormula = $params['message_pagename_formula'];
 
 		$categories = [];
 		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories ) ) {
@@ -127,10 +124,10 @@ class ImportMessage {
 
 		$pagenameFormula = str_replace( '<folder_name>', $params['folder_name'], $pagenameFormula );
 
-		$pagenameFormula = $this->replaceFormula( $obj, $pagenameFormula,
+		$pagenameFormula = \ContactManager::replaceFormula( $obj, $pagenameFormula,
 			$GLOBALS['wgContactManagerSchemasIncomingMail'] );
 
-		$pagenameFormula = $this->replaceFormula( $obj['headers'], $pagenameFormula,
+		$pagenameFormula = \ContactManager::replaceFormula( $obj['headers'], $pagenameFormula,
 			$GLOBALS['wgContactManagerSchemasIncomingMail'] . '/headers' );
 
 		// echo 'pagenameFormula: ' . $pagenameFormula . "\n";
@@ -142,7 +139,7 @@ class ImportMessage {
 		$output = $context->getOutput();
 		$output->setTitle( $title_ );
 
-		$pagenameFormula = $this->parseWikitext( $output, $pagenameFormula );
+		$pagenameFormula = \ContactManager::parseWikitext( $output, $pagenameFormula );
 
 		$schema = $GLOBALS['wgContactManagerSchemasIncomingMail'];
 		$options = [
@@ -180,39 +177,8 @@ class ImportMessage {
 		];
 
 		foreach ( $allContacts as $email => $name ) {
-			$this->saveContact( $user, $context, $name, $email, $categories );
+			\ContactManager::saveContact( $user, $context, $name, $email, $categories );
 		}
-	}
-
-	/**
-	 * @param Output $output
-	 * @param string $str
-	 * @return string
-	 */
-	private function parseWikitext( $output, $str ) {
-		// return $this->parser->recursiveTagParseFully( $str );
-		return Parser::stripOuterParagraph( $output->parseAsContent( $str ) );
-	}
-
-	/**
-	 * @param array $properties
-	 * @param string $formula
-	 * @param string $prefix
-	 * @return string
-	 */
-	private function replaceFormula( $properties, $formula, $prefix ) {
-		preg_match_all( '/<\s*([^<>]+)\s*>/', $formula, $matches, PREG_PATTERN_ORDER );
-		foreach ( $properties as $property => $value ) {
-			if ( is_array( $value ) ) {
-				continue;
-			}
-			if ( in_array( "{$prefix}/{$property}", $matches[1] ) ) {
-				$formula = preg_replace( '/\<\s*' . preg_quote( "{$prefix}/{$property}", '/' )
-					. '\s*\>/', $value, $formula );
-			}
-		}
-
-		return $formula;
 	}
 
 	/**
@@ -224,170 +190,122 @@ class ImportMessage {
 	private function applyFilters( $obj, &$pagenameFormula, &$categories ) {
 		$params = $this->params;
 
-		foreach ( $params['filters'] as $value ) {
-			$title_ = Title::newFromText( $value );
+		foreach ( $params['filters_by_message_fields'] as $value ) {
+			$value_ = $obj[$v['field']];
 
-			if ( !$title_ || !$title_->isKnown() ) {
-				throw new MWException( 'job_pagetitle not set' );
-			}
-
-			$jsonData = \VisualData::getJsonData( $title_ );
-			$schemaData = $jsonData['schemas'][$GLOBALS['wgContactManagerSchemasMessageFilter']];
-
-			if ( !isset( $schemaData['fields'] ) || !is_array( $schemaData['fields'] ) ) {
-				continue;
-			}
-
-			foreach ( $schemaData['fields'] as $v ) {
-				$value_ = $obj[$v['field']];
-
-				$result_ = false;
-				switch ( $v['field'] ) {
-					case "id":
-					case "attachments/type":
-					case "attachments/encoding":
-					case "attachments/sizeInBytes":
-						$value_ = (int)$value_;
-						$result_ = ( $value_ >= $v['number_from']
-							&& $value_ <= $v['number_to'] );
-						break;
-
-					case "imapPath":
-					case "mailboxFolder":
-					case "headersRaw":
-					case "headers/subject":
-					case "headers/Subject":
-					case "headers/message_id":
-					case "headers/toaddress":
-					case "headers/fromaddress":
-					case "headers/ccaddress":
-					case "headers/reply_toaddress":
-					case "headers/senderaddress":
-					case "mimeVersion":
-					case "xVirusScanned":
-					case "organization":
-					case "contentType":
-					case "xMailer":
-					case "contentLanguage":
-					case "xSenderIp":
-					case "priority":
-					case "importance":
-					case "sensitivity":
-					case "autoSubmitted":
-					case "precedence":
-					case "failedRecipients":
-					case "subject":
-					case "fromHost":
-					case "fromName":
-					case "fromAddress":
-					case "senderHost":
-					case "senderName":
-					case "senderAddress":
-					case "xOriginalTo":
-					case "toString":
-					case "ccString":
-					case "messageId":
-					case "textPlain":
-					case "textHtml":
-					case "visible_text":
-					case "attachments/id":
-					case "attachments/contentId":
-					case "attachments/subtype":
-					case "attachments/description":
-					case "attachments/name":
-					case "attachments/disposition":
-					case "attachments/charset":
-					case "attachments/emlOrigin":
-					case "attachments/fileInfoRaw":
-					case "attachments/fileInfo":
-					case "attachments/mime":
-					case "attachments/mimeEncoding":
-					case "attachments/fileExtension":
-					case "attachments/mimeType":
-						$value_ = (string)$value_;
-						switch ( $v['match'] ) {
-							case 'contains':
-								$result_ = strpos( $value_, $v['value_text'] ) !== false;
-								break;
-							case 'does not contain':
-								$result_ = strpos( $value_, $v['value_text'] ) === false;
-								break;
-							case 'regex':
-								$result_ = preg_match( '/' . preg_quote( $v['value_text'], '/' ) . '/', $value_ );
-								break;
-						}
-						break;
-
-					case "date":
-					case "headers/date":
-					case "headers/Date":
-						$value_ = strtotime( $value_ );
-						$result_ = ( $value_ >= strtotime( $v['date_from'] )
-							&& $value_ <= strtotime( $v['date_to'] ) );
-						break;
-
-					case "isSeen":
-					case "isAnswered":
-					case "isRecent":
-					case "isFlagged":
-					case "isDeleted":
-					case "isDraft":
-						$value_ = (bool)$value_;
-						$result_ = $v['value_boolean'];
-						break;
-				}
-
-				// apply filter
-				if ( $result_ ) {
-					switch ( $v['action'] ) {
-						case "skip":
-							return false;
-						default:
-							if ( !empty( $v['pagename_formula'] ) ) {
-								$pagenameFormula = $v['pagename_formula'];
-							}
-
-							if ( !empty( $v['categories'] ) ) {
-								$categories = array_merge( $categories, $v['categories'] );
-							}
+			$result_ = false;
+			switch ( $v['field'] ) {
+				case 'id':
+				case 'attachments/type':
+				case 'attachments/encoding':
+				case 'attachments/sizeInBytes':
+					$value_ = (int)$value_;
+					$result_ = ( $value_ >= $v['number_from']
+						&& $value_ <= $v['number_to'] );
+					break;
+				case 'imapPath':
+				case 'mailboxFolder':
+				case 'headersRaw':
+				case 'headers/subject':
+				case 'headers/Subject':
+				case 'headers/message_id':
+				case 'headers/toaddress':
+				case 'headers/fromaddress':
+				case 'headers/ccaddress':
+				case 'headers/reply_toaddress':
+				case 'headers/senderaddress':
+				case 'mimeVersion':
+				case 'xVirusScanned':
+				case 'organization':
+				case 'contentType':
+				case 'xMailer':
+				case 'contentLanguage':
+				case 'xSenderIp':
+				case 'priority':
+				case 'importance':
+				case 'sensitivity':
+				case 'autoSubmitted':
+				case 'precedence':
+				case 'failedRecipients':
+				case 'subject':
+				case 'fromHost':
+				case 'fromName':
+				case 'fromAddress':
+				case 'senderHost':
+				case 'senderName':
+				case 'senderAddress':
+				case 'xOriginalTo':
+				case 'toString':
+				case 'ccString':
+				case 'messageId':
+				case 'textPlain':
+				case 'textHtml':
+				case 'visible_text':
+				case 'attachments/id':
+				case 'attachments/contentId':
+				case 'attachments/subtype':
+				case 'attachments/description':
+				case 'attachments/name':
+				case 'attachments/disposition':
+				case 'attachments/charset':
+				case 'attachments/emlOrigin':
+				case 'attachments/fileInfoRaw':
+				case 'attachments/fileInfo':
+				case 'attachments/mime':
+				case 'attachments/mimeEncoding':
+				case 'attachments/fileExtension':
+				case 'attachments/mimeType':
+					$value_ = (string)$value_;
+					switch ( $v['match'] ) {
+						case 'contains':
+							$result_ = strpos( $value_, $v['value_text'] ) !== false;
+							break;
+						case 'does not contain':
+							$result_ = strpos( $value_, $v['value_text'] ) === false;
+							break;
+						case 'regex':
+							$result_ = preg_match( '/' . preg_quote( $v['value_text'], '/' ) . '/', $value_ );
+							break;
 					}
+					break;
+
+				case 'date':
+				case 'headers/date':
+				case 'headers/Date':
+					$value_ = strtotime( $value_ );
+					$result_ = ( $value_ >= strtotime( $v['date_from'] )
+						&& $value_ <= strtotime( $v['date_to'] ) );
+					break;
+
+				case 'isSeen':
+				case 'isAnswered':
+				case 'isRecent':
+				case 'isFlagged':
+				case 'isDeleted':
+				case 'isDraft':
+					$value_ = (bool)$value_;
+					$result_ = $v['value_boolean'];
+					break;
+			}
+
+			// apply filter
+			if ( $result_ ) {
+				switch ( $v['action'] ) {
+					case 'skip':
+						return false;
+					default:
+						if ( !empty( $v['message_pagename_formula'] ) ) {
+							$pagenameFormula = $v['message_pagename_formula'];
+						}
+
+						if ( !empty( $v['categories'] ) ) {
+								$categories = array_merge( $categories, $v['categories'] );
+						}
 				}
 			}
 		}
 
 		return true;
-	}
-
-	/**
-	 * @param array $obj
-	 * @return bool
-	 */
-	private function updateSinceAutoUpdate( $obj ) {
-		$user = $this->user;
-		$params = $this->params;
-
-		// *** update SINCE 'date_value'
-		$title_ = Title::newFromText( $params['job_pagetitle'] );
-
-		if ( !$title_ || !$title_->isKnown() ) {
-			throw new MWException( 'job_pagetitle not set' );
-		}
-
-		$jsonData = \VisualData::getJsonData( $title_ );
-		$schemaData = $jsonData['schemas'][$GLOBALS['wgContactManagerSchemasRetrieveMessages']];
-
-		if ( !empty( $schemaData['criteria'] ) ) {
-			$date_ = date( 'j F Y', strtotime( $obj['date'] ) );
-			foreach ( $schemaData['criteria'] as $key => $value ) {
-				if ( $value['criteria'] === 'SINCE' && !empty( $value['since_autoupdate'] ) ) {
-					$jsonData['schemas'][$GLOBALS['wgContactManagerSchemasRetrieveMessages']]
-						['criteria'][$key]['date_value'] = $date_;
-
-				}
-			}
-			$title_ = Title::newFromText( $params['job_pagetitle'] );
-			\VisualData::updateCreateSchemas( $user, $title_, $jsonData['schemas'] );
-		}
 	}
 
 	/**
@@ -410,62 +328,4 @@ class ImportMessage {
 		// import file in the wiki
 	}
 
-	/**
-	 * @param User $user
-	 * @param Context $context
-	 * @param string $name
-	 * @param string $email
-	 * @param array $categories
-	 */
-	public function saveContact( $user, $context, $name, $email, $categories ) {
-		if ( empty( $name ) ) {
-			$name = substr( $email, 0, strpos( $email, '@' ) );
-		}
-
-		$schema = $GLOBALS['wgContactManagerSchemasContact'];
-		$options = [
-			'main-slot' => true,
-			'limit' => INF,
-			'category-field' => 'categories'
-		];
-		$importer = new VisualDataImporter( $user, $context, $schema, $options );
-
-		$iconicParser = new IconicParser;
-		$parsedName = $iconicParser->parse( $name );
-		$fullName = $parsedName->getFullname();
-
-		$schema = $GLOBALS['wgContactManagerSchemasContact'];
-		$query = '[[full_name::' . $fullName . ']]';
-		$results = \VisualData::getQueryResults( $schema, $query );
-
-		// @TODO merge additional email address if
-		// different from existing
-		if ( count( $results ) ) {
-			return;
-		}
-
-		$pagenameFormula = str_replace( '$1', $fullName, $GLOBALS['wgContactManagerContactsArticle'] );
-
-		$data = [
-			'first_name' => $parsedName->getFirstname(),
-			'last_name' => $parsedName->getLastname(),
-			'salutation' => $parsedName->getSalutation(),
-			'middle_name' => $parsedName->getMiddlename(),
-			'nickname' => $parsedName->getNickname(),
-			'initials' => $parsedName->getInitials(),
-			'suffix' => $parsedName->getSuffix(),
-			'full_name' => $parsedName->getFullname(),
-			'email_addresses' => [
-				$email
-			]
-		];
-
-		$showMsg = static function ( $msg ) {
-			echo $msg . PHP_EOL;
-		};
-
-		$data['categories'] = $categories;
-
-		$importer->importData( $pagenameFormula, $data, $showMsg );
-	}
 }

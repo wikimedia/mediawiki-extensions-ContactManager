@@ -26,11 +26,12 @@
 
 {{#visualdataquery:[[full_name::+]][[ContactManager:Contacts/~]]
 |schema=ContactManager/Contact
-|limit=10
+|limit=20
 |?full_name
 |?email_addresses
 |?action
 |template?action=ContactManager/Contact edit
 |order=full_name asc 
+|format=datatables
 }}
 

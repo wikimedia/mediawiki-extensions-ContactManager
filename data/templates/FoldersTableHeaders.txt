@@ -1,0 +1,8 @@
+{{#querylink:ContactManager:Headers|headers|folder={{#visualdataquery:[[folders/folder::{{{folders/fullpath}}}]]
+   |schema=ContactManager/Retrieve messages
+   |?folders/folder_name
+   |format=raw
+   |limit=1
+  }}
+|path={{{pagetitle}}}|mailbox={{{name}}} }}
+

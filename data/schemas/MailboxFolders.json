@@ -1,8 +1,8 @@
 {
 	"wiki": {
 		"type": "schema",
+		"uuid": "675364b327879",
 		"name": "ContactManager/Mailbox folders",
-		"title-parsed": "Mailbox folders",
 		"title": "Mailbox folders"
 	},
 	"properties": {
@@ -12,10 +12,12 @@
 				"type": "property",
 				"multiple-items": false,
 				"required": true,
+				"label": "name",
 				"label-parsed": "name",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": []
+				"input-config": [],
+				"uuid": "675364b32787c"
 			},
 			"type": "string",
 			"format": "text",
@@ -24,16 +26,17 @@
 		"folders": {
 			"wiki": {
 				"name": "folders",
-				"title-parsed": "folders",
 				"title": "folders",
 				"unique-items": false,
-				"type": "schema"
+				"type": "schema",
+				"uuid": "6754228693935"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
+					"uuid": "6754109bcfe73",
 					"layout": "section"
 				},
 				"properties": {
@@ -42,11 +45,13 @@
 							"name": "fullpath",
 							"type": "property",
 							"multiple-items": false,
+							"label": "fullpath",
 							"label-parsed": "fullpath",
 							"visibility": "visible",
 							"preferred-input": "OO.ui.TextInputWidget",
 							"input-config": [],
-							"required": false
+							"required": false,
+							"uuid": "675364b32788c"
 						},
 						"type": "string",
 						"format": "text",
@@ -57,11 +62,13 @@
 							"name": "attributes",
 							"type": "property",
 							"multiple-items": false,
+							"label": "attributes",
 							"label-parsed": "attributes",
 							"visibility": "visible",
 							"preferred-input": "OO.ui.TextInputWidget",
 							"input-config": [],
-							"required": false
+							"required": false,
+							"uuid": "675364b32788e"
 						},
 						"type": "string",
 						"format": "text",
@@ -72,11 +79,13 @@
 							"name": "delimiter",
 							"type": "property",
 							"multiple-items": false,
+							"label": "delimiter",
 							"label-parsed": "delimiter",
 							"visibility": "visible",
 							"preferred-input": "OO.ui.TextInputWidget",
 							"input-config": [],
-							"required": false
+							"required": false,
+							"uuid": "675364b32788f"
 						},
 						"type": "string",
 						"format": "text",
@@ -87,15 +96,135 @@
 							"name": "shortpath",
 							"type": "property",
 							"multiple-items": false,
+							"label": "shortpath",
 							"label-parsed": "shortpath",
 							"visibility": "visible",
 							"preferred-input": "OO.ui.TextInputWidget",
 							"input-config": [],
-							"required": false
+							"required": false,
+							"uuid": "675364b327890"
 						},
 						"type": "string",
 						"format": "text",
 						"title": "shortpath"
+					},
+					"status": {
+						"wiki": {
+							"type": "schema",
+							"uuid": "67536541d59e4",
+							"name": "status",
+							"title": "status",
+							"layout": "section"
+						},
+						"properties": {
+							"flags": {
+								"wiki": {
+									"name": "flags",
+									"type": "property",
+									"multiple-items": false,
+									"label": "flags",
+									"visibility": "visible",
+									"preferred-input": "OO.ui.NumberInputWidget",
+									"input-config": [],
+									"required": false,
+									"uuid": "67536541d59e5"
+								},
+								"type": "integer",
+								"title": "flags"
+							},
+							"messages": {
+								"wiki": {
+									"name": "messages",
+									"type": "property",
+									"multiple-items": false,
+									"label": "messages",
+									"visibility": "visible",
+									"preferred-input": "OO.ui.NumberInputWidget",
+									"input-config": [],
+									"required": false,
+									"uuid": "67536541d59e7"
+								},
+								"type": "integer",
+								"title": "messages"
+							},
+							"recent": {
+								"wiki": {
+									"name": "recent",
+									"type": "property",
+									"multiple-items": false,
+									"label": "recent",
+									"visibility": "visible",
+									"preferred-input": "OO.ui.NumberInputWidget",
+									"input-config": [],
+									"required": false,
+									"uuid": "67536541d59e8"
+								},
+								"type": "integer",
+								"title": "recent"
+							},
+							"unseen": {
+								"wiki": {
+									"name": "unseen",
+									"type": "property",
+									"multiple-items": false,
+									"label": "unseen",
+									"visibility": "visible",
+									"preferred-input": "OO.ui.NumberInputWidget",
+									"input-config": [],
+									"required": false,
+									"uuid": "67536541d59e9"
+								},
+								"type": "integer",
+								"title": "unseen"
+							},
+							"uidnext": {
+								"wiki": {
+									"type": "property",
+									"uuid": "67536541d59ea",
+									"name": "uidnext",
+									"visibility": "visible",
+									"label": "uidnext",
+									"multiple-items": false,
+									"preferred-input": "OO.ui.NumberInputWidget",
+									"input-config": [],
+									"required": false
+								},
+								"type": "integer",
+								"title": "uidnext"
+							},
+							"uidvalidity": {
+								"wiki": {
+									"name": "uidvalidity",
+									"type": "property",
+									"multiple-items": false,
+									"label": "uidvalidity",
+									"visibility": "visible",
+									"preferred-input": "OO.ui.NumberInputWidget",
+									"input-config": [],
+									"required": false,
+									"uuid": "67536541d59ec"
+								},
+								"type": "integer",
+								"title": "uidvalidity"
+							},
+							"_last_known_UID": {
+								"wiki": {
+									"name": "_last_known_UID",
+									"type": "property",
+									"multiple-items": false,
+									"label": "last known UID",
+									"visibility": "visible",
+									"preferred-input": "OO.ui.NumberInputWidget",
+									"input-config": [],
+									"required": false,
+									"uuid": "6754109bcfe87"
+								},
+								"type": "integer",
+								"title": "last known UID"
+							}
+						},
+						"type": "object",
+						"title": "status"
 					}
 				}
 			},
@@ -104,7 +233,10 @@
 			"uniqueItems": false
 		}
 	},
-	"required": [ "name" ],
+	"required": [
+		"name"
+	],
 	"type": "object",
 	"title": "Mailbox folders"
 }
+

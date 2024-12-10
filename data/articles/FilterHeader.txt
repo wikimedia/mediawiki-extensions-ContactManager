@@ -1,0 +1,17 @@
+* subject
+* from
+* to
+* date
+* message_id
+* references
+* in_reply_to
+* size
+* uid
+* msgno
+* recent
+* flagged
+* answered
+* deleted
+* seen
+* draft
+* udate

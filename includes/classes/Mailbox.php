@@ -87,6 +87,20 @@ class Mailbox {
 	 * @param array &$errors []
 	 * @return array|null
 	 */
+	public function statusMailbox( &$errors = [] ) {
+		if ( !$this->mailbox ) {
+			$errors[] = 'no mailbox';
+			return;
+		}
+		$ret = $this->mailbox->statusMailbox();
+
+		return (array)$ret;
+	}
+
+	/**
+	 * @param array &$errors []
+	 * @return array|null
+	 */
 	public function getFolders( &$errors = [] ) {
 		if ( !$this->mailbox ) {
 			$errors[] = 'no mailbox';

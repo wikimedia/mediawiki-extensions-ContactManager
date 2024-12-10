@@ -24,6 +24,7 @@
 namespace MediaWiki\Extension\ContactManager;
 
 use Job;
+use MediaWiki\Session\SessionManager;
 use RequestContext;
 use Title;
 use Wikimedia\ScopedCallback;
@@ -55,11 +56,12 @@ class ContactManagerJob extends Job {
 
 		// use 'session' => $this->getContext()->exportSession()
 		// if ( isset( $this->params['session'] ) ) {
+		if ( !SessionManager::getGlobalSession()->isPersistent() ) {
 			$callback = RequestContext::importScopedSession( $this->params['session'] );
 			$this->addTeardownCallback( static function () use ( &$callback ) {
 				ScopedCallback::consume( $callback );
 			} );
-		// }
+		}
 		$context = RequestContext::getMain();
 		$user = $context->getUser();
 
@@ -88,9 +90,12 @@ class ContactManagerJob extends Job {
 				break;
 			case 'retrieve-message':
 			case 'get-message':
-				// \ContactManager::getMessage( $user, $this->params, $errors );
 				$importMessage = new ImportMessage( $user, $this->params, $errors );
 				$importMessage->doImport();
+				break;
+			case 'record-header':
+				$recordHeader = new RecordHeader( $user, $this->params, $errors );
+				$recordHeader->doImport();
 				break;
 			case 'get-contacts':
 			case 'retrieve-contacts':
