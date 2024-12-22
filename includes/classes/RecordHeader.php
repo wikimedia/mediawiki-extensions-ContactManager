@@ -26,6 +26,7 @@ namespace MediaWiki\Extension\ContactManager;
 
 use Email\Parse as EmailParse;
 use MediaWiki\Extension\VisualData\Importer as VisualDataImporter;
+// use MWException;
 use RequestContext;
 use Title;
 
@@ -41,6 +42,9 @@ class RecordHeader {
 	/** @var array */
 	private $params;
 
+	/** @var array */
+	private $errors;
+
 	/**
 	 * @param User $user
 	 * @param array $params
@@ -49,6 +53,7 @@ class RecordHeader {
 	public function __construct( $user, $params, &$errors = [] ) {
 		$this->user = $user;
 		$this->params = $params;
+		$this->errors = &$errors;
 	}
 
 	/**
@@ -57,7 +62,6 @@ class RecordHeader {
 	public function doImport() {
 		$params = $this->params;
 		$user = $this->user;
-		$errors = [];
 
 		$showMsg = static function ( $msg ) {
 			echo $msg . PHP_EOL;
@@ -68,23 +72,23 @@ class RecordHeader {
 		$context->setTitle( $title );
 		$output = $context->getOutput();
 
-		$headerPagenameFormula_ = $params['header_pagename_formula'];
+		$pagenameFormula_ = $params['header_pagename_formula'];
 		$header = $params['obj'];
 		$folder = $params['folder'];
 		$obj = $header;
 
 		$categories_ = $params['categories'];
-		if ( !$this->applyFilters( $obj, $headerPagenameFormula_, $categories_ ) ) {
+		if ( !$this->applyFilters( $obj, $pagenameFormula_, $categories_ ) ) {
 			echo 'skip message ' . $header['uid'] . PHP_EOL;
 			return;
 		}
 
-		$headerPagenameFormula_ = str_replace( '<folder_name>', $folder['folder_name'], $headerPagenameFormula_ );
+		$pagenameFormula_ = str_replace( '<folder_name>', $folder['folder_name'], $pagenameFormula_ );
 
-		$headerPagenameFormula_ = \ContactManager::replaceFormula( $obj, $headerPagenameFormula_,
+		$pagenameFormula_ = \ContactManager::replaceFormula( $obj, $pagenameFormula_,
 		$GLOBALS['wgContactManagerSchemasMessageHeader'] );
 
-		$headerPagenameFormula_ = \ContactManager::parseWikitext( $output, $headerPagenameFormula_ );
+		$pagenameFormula_ = \ContactManager::parseWikitext( $output, $pagenameFormula_ );
 
 		$schema_ = $GLOBALS['wgContactManagerSchemasMessageHeader'];
 		$options_ = [
@@ -96,12 +100,8 @@ class RecordHeader {
 
 		$obj['categories'] = $categories_;
 
-		$importer->importData( $headerPagenameFormula_, $obj, $showMsg );
-		$title_ = Title::newFromText( $headerPagenameFormula_ );
-
-		if ( $title_->getArticleID() === 0 ) {
-			throw new MWException( 'article title not set' );
-		}
+		$importer->importData( $pagenameFormula_, $obj, $showMsg );
+		$title_ = Title::newFromText( $pagenameFormula_ );
 
 		if ( !empty( $params['save_contacts'] ) ) {
 			$allContacts = [];
@@ -113,6 +113,7 @@ class RecordHeader {
 					}
 				}
 			}
+
 			foreach ( $allContacts as $email => $name ) {
 				\ContactManager::saveContact( $user, $context, $name, $email, $categories_ );
 			}
@@ -127,6 +128,7 @@ class RecordHeader {
 	 */
 	private function applyFilters( $obj, &$pagenameFormula, &$categories ) {
 		$params = $this->params;
+
 		foreach ( $params['filters_by_headers'] as $v ) {
 			$result_ = false;
 			$value_ = $obj[$v['header']];

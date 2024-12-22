@@ -352,7 +352,7 @@ class Mailer {
 
 		try {
 			$this->mailer->send( $email );
-		} catch ( TransportExceptionInterface | TransportException | Exception $e ) {
+		} catch ( TransportExceptionInterface | TransportException | \Exception $e ) {
 			$this->errors[] = $e->getMessage();
 			return false;
 		}

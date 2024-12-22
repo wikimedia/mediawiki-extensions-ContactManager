@@ -1,17 +1,17 @@
 {
 	"wiki": {
 		"type": "schema",
-		"name": "ContactManager/Message header",
-		"uuid": "6754671f1a5d3"
+		"uuid": "6754671f1a5d3",
+		"name": "ContactManager/Message header"
 	},
 	"properties": {
 		"subject": {
 			"wiki": {
-				"type": "property",
 				"name": "subject",
-				"visibility": "visible",
-				"label": "subject",
+				"type": "property",
 				"multiple-items": false,
+				"label": "subject",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
 				"required": false,
@@ -23,11 +23,11 @@
 		},
 		"from": {
 			"wiki": {
-				"type": "property",
 				"name": "from",
-				"visibility": "visible",
-				"label": "from",
+				"type": "property",
 				"multiple-items": false,
+				"label": "from",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
 				"required": false,
@@ -39,11 +39,11 @@
 		},
 		"to": {
 			"wiki": {
-				"type": "property",
 				"name": "to",
-				"visibility": "visible",
-				"label": "to",
+				"type": "property",
 				"multiple-items": false,
+				"label": "to",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
 				"required": false,
@@ -56,26 +56,26 @@
 		"date": {
 			"wiki": {
 				"type": "property",
+				"uuid": "6754671f1a5f7",
 				"name": "date",
 				"visibility": "visible",
 				"label": "date",
 				"multiple-items": false,
-				"preferred-input": "OO.ui.TextInputWidget",
+				"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
 				"input-config": [],
-				"required": false,
-				"uuid": "6754671f1a5f7"
+				"required": false
 			},
 			"type": "string",
-			"format": "text",
+			"format": "datetime",
 			"title": "date"
 		},
 		"message_id": {
 			"wiki": {
-				"type": "property",
 				"name": "message_id",
-				"visibility": "visible",
-				"label": "message_id",
+				"type": "property",
 				"multiple-items": false,
+				"label": "message_id",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
 				"required": false,
@@ -87,11 +87,11 @@
 		},
 		"references": {
 			"wiki": {
-				"type": "property",
 				"name": "references",
-				"visibility": "visible",
-				"label": "references",
+				"type": "property",
 				"multiple-items": false,
+				"label": "references",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
 				"required": false,
@@ -103,11 +103,11 @@
 		},
 		"in_reply_to": {
 			"wiki": {
-				"type": "property",
 				"name": "in_reply_to",
-				"visibility": "visible",
-				"label": "in_reply_to",
+				"type": "property",
 				"multiple-items": false,
+				"label": "in_reply_to",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
 				"required": false,
@@ -119,11 +119,11 @@
 		},
 		"size": {
 			"wiki": {
-				"type": "property",
 				"name": "size",
-				"visibility": "visible",
-				"label": "size",
+				"type": "property",
 				"multiple-items": false,
+				"label": "size",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.NumberInputWidget",
 				"input-config": [],
 				"required": false,
@@ -134,11 +134,11 @@
 		},
 		"uid": {
 			"wiki": {
-				"type": "property",
 				"name": "uid",
-				"visibility": "visible",
-				"label": "uid",
+				"type": "property",
 				"multiple-items": false,
+				"label": "uid",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.NumberInputWidget",
 				"input-config": [],
 				"required": false,
@@ -149,11 +149,11 @@
 		},
 		"msgno": {
 			"wiki": {
-				"type": "property",
 				"name": "msgno",
-				"visibility": "visible",
-				"label": "msgno",
+				"type": "property",
 				"multiple-items": false,
+				"label": "msgno",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.NumberInputWidget",
 				"input-config": [],
 				"required": false,
@@ -164,11 +164,11 @@
 		},
 		"recent": {
 			"wiki": {
-				"type": "property",
 				"name": "recent",
-				"visibility": "visible",
-				"label": "recent",
+				"type": "property",
 				"multiple-items": false,
+				"label": "recent",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.ToggleSwitchWidget",
 				"input-config": [],
 				"required": false,
@@ -179,11 +179,11 @@
 		},
 		"flagged": {
 			"wiki": {
-				"type": "property",
 				"name": "flagged",
-				"visibility": "visible",
-				"label": "flagged",
+				"type": "property",
 				"multiple-items": false,
+				"label": "flagged",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.ToggleSwitchWidget",
 				"input-config": [],
 				"required": false,
@@ -194,11 +194,11 @@
 		},
 		"answered": {
 			"wiki": {
-				"type": "property",
 				"name": "answered",
-				"visibility": "visible",
-				"label": "answered",
+				"type": "property",
 				"multiple-items": false,
+				"label": "answered",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.ToggleSwitchWidget",
 				"input-config": [],
 				"required": false,
@@ -209,11 +209,11 @@
 		},
 		"deleted": {
 			"wiki": {
-				"type": "property",
 				"name": "deleted",
-				"visibility": "visible",
-				"label": "deleted",
+				"type": "property",
 				"multiple-items": false,
+				"label": "deleted",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.ToggleSwitchWidget",
 				"input-config": [],
 				"required": false,
@@ -224,11 +224,11 @@
 		},
 		"seen": {
 			"wiki": {
-				"type": "property",
 				"name": "seen",
-				"visibility": "visible",
-				"label": "seen",
+				"type": "property",
 				"multiple-items": false,
+				"label": "seen",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.ToggleSwitchWidget",
 				"input-config": [],
 				"required": false,
@@ -239,11 +239,11 @@
 		},
 		"draft": {
 			"wiki": {
-				"type": "property",
 				"name": "draft",
-				"visibility": "visible",
-				"label": "draft",
+				"type": "property",
 				"multiple-items": false,
+				"label": "draft",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.ToggleSwitchWidget",
 				"input-config": [],
 				"required": false,
@@ -254,11 +254,11 @@
 		},
 		"udate": {
 			"wiki": {
-				"type": "property",
 				"name": "udate",
-				"visibility": "visible",
-				"label": "udate",
+				"type": "property",
 				"multiple-items": false,
+				"label": "udate",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.NumberInputWidget",
 				"input-config": [],
 				"required": false,

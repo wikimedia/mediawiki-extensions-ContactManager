@@ -64,7 +64,7 @@
 |submit-button-text =
 |validate-button-text =
 |overwrite-existing-article-on-create=true
-|preload-data?mailbox={{ContactManager/GetMailbox|{{FULLPAGENAME}}}}
+|preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
 }}
 
 -->

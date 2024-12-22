@@ -22,11 +22,11 @@
 
 // eslint-disable-next-line no-implicit-globals, no-undef
 ContactManager = ( function () {
-	function initJob( value, data ) {
+	function initJob( value, schemaData ) {
 		return new Promise( ( resolve, reject ) => {
 			const payload = {
 				action: 'contactmanager-createjob',
-				data: JSON.stringify( data ),
+				data: JSON.stringify( schemaData ),
 				pageid: mw.config.get( 'wgArticleId' )
 			};
 

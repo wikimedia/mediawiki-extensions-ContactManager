@@ -51,15 +51,22 @@ class ContactManagerHooks {
 		if ( !class_exists( 'VisualData' ) ) {
 			return;
 		}
+		echo 'ContactManager -onLoadExtensionSchemaUpdates' . PHP_EOL;
+
 		$importer = \VisualData::getImporter();
 		$error_messages = [];
 		$context = RequestContext::getMain();
+
 		$doImport = static function ( $pagename, $contents ) use ( $context, $importer, &$error_messages ) {
+			echo 'ContactManager -importing ' . $pagename;
+
 			try {
+				echo ' (success)' . PHP_EOL;
 				$title_ = Title::newFromText( $pagename );
 				$context->setTitle( $title_ );
 				$importer->doImportSelf( $pagename, $contents );
 			} catch ( Exception $e ) {
+				echo ' (error)' . PHP_EOL;
 				$error_messages[$pagename] = $e->getMessage();
 			}
 		};

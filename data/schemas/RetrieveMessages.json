@@ -118,13 +118,13 @@
 				"name": "fetch",
 				"type": "property",
 				"multiple-items": false,
+				"required": true,
 				"label": "fetch",
 				"uuid": "675494eea5d80",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.DropdownInputWidget",
 				"input-config": [],
 				"options-allow-null": false,
-				"required": false,
 				"options-values-parsed": {
 					"UIDs incremental": "UIDs incremental",
 					"Search": "Search",
@@ -209,19 +209,19 @@
 				"min-items": 1,
 				"unique-items": false,
 				"type": "schema",
-				"uuid": "675550803cb19"
+				"uuid": "67600f380337e"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
-					"uuid": "67555058efcbd",
+					"uuid": "675550803cb19",
 					"layout": "section",
 					"visibility": "condition",
 					"showif-field": "fetch",
 					"showif-condition": "=",
-					"showif-value": "search"
+					"showif-value": "Search"
 				},
 				"properties": {
 					"criteria": {
@@ -236,7 +236,7 @@
 							"input-config": [],
 							"required": false,
 							"options-allow-null": false,
-							"options-wikilist": "ContactManager:SearchCriteria",
+							"options-wikilist": "ContactManager:Search criteria",
 							"uuid": "660bd584cf31e",
 							"options-values-parsed": {
 								"ALL": "ALL",
@@ -466,14 +466,14 @@
 				"name": "header_pagename_formula",
 				"type": "property",
 				"multiple-items": false,
+				"required": true,
 				"label": "header pagename formula",
 				"help-message": "the overall functioning relies on the prefix \u003Cnowiki\u003E{{FULLPAGENAME}}/headers/\u003Cfolder_name\u003E/\u003C/nowiki\u003E and it shouldn't be edited, while in the suffix  all properties of the schema [[VisualDataSchema:ContactManager/Message header|ContactManager/Message header]] can be used. Eg. \u003Cnowiki\u003E.../\u003Cfolder_name\u003E/\u003CContactManager/Message header/from\u003E/\u003CContactManager/Message header/uid\u003E\u003C/nowiki\u003E",
 				"default": "{{FULLPAGENAME}}/headers/\u003Cfolder_name\u003E/\u003CContactManager/Message header/uid\u003E",
 				"uuid": "67557ccc79b74",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"required": false
+				"input-config": []
 			},
 			"type": "string",
 			"format": "text",
@@ -483,20 +483,20 @@
 		},
 		"message_pagename_formula": {
 			"wiki": {
-				"type": "property",
-				"uuid": "6625fa058fb0f",
 				"name": "message_pagename_formula",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"label": "message pagename-formula",
+				"help-message": "the overall functioning relies on the prefix \u003Cnowiki\u003E{{FULLPAGENAME}}/messages/\u003C/nowiki\u003E and it shouldn't be edited, while in the suffix all properties of the schema [[VisualDataSchema:ContactManager/Incoming mail|ContactManager/Incoming mail]] can be used. Eg. \u003Cnowiki\u003E.../\u003Cfolder_name\u003E/\u003CContactManager/Incoming mail/fromName\u003E/\u003CContactManager/Incoming mail/id\u003E\u003C/nowiki\u003E",
+				"default": "{{FULLPAGENAME}}/messages/\u003Cfolder_name\u003E/\u003CContactManager/Incoming mail/id\u003E",
+				"uuid": "6625fa058fb0f",
 				"visibility": "condition",
 				"showif-field": "fetch_message",
 				"showif-condition": "=",
 				"showif-value": "true",
-				"label": "message pagename-formula",
-				"help-message": "the overall functioning relies on the prefix \u003Cnowiki\u003E{{FULLPAGENAME}}/messages/\u003C/nowiki\u003E and it shouldn't be edited, while in the suffix all properties of the schema [[VisualDataSchema:ContactManager/Incoming mail|ContactManager/Incoming mail]] can be used. Eg. \u003Cnowiki\u003E.../\u003Cfolder_name\u003E/\u003CContactManager/Incoming mail/fromName\u003E/\u003CContactManager/Incoming mail/id\u003E\u003C/nowiki\u003E",
-				"multiple-items": false,
 				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"required": true,
-				"default": "{{FULLPAGENAME}}/messages/\u003Cfolder_name\u003E/\u003CContactManager/Incoming mail/id\u003E"
+				"input-config": []
 			},
 			"type": "string",
 			"format": "text",
@@ -580,7 +580,7 @@
 							"preferred-input": "OO.ui.DropdownInputWidget",
 							"input-config": [],
 							"options-allow-null": false,
-							"options-wikilist": "ContactManager:FilterHeader",
+							"options-wikilist": "ContactManager:Filter header",
 							"options-values-parsed": {
 								"subject": "subject",
 								"from": "from",
@@ -897,7 +897,7 @@
 							"preferred-input": "OO.ui.DropdownInputWidget",
 							"input-config": [],
 							"options-allow-null": false,
-							"options-wikilist": "ContactManager:FilterMetadata",
+							"options-wikilist": "ContactManager:Filter metadata",
 							"options-values-parsed": {
 								"id": "id",
 								"imapPath": "imapPath",
@@ -1280,6 +1280,8 @@
 	"required": [
 		"job",
 		"mailbox",
+		"fetch",
+		"header_pagename_formula",
 		"message_pagename_formula"
 	],
 	"type": "object"

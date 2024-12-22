@@ -164,39 +164,40 @@
 				"uuid": "66144a4b5f764",
 				"name": "headers",
 				"title": "Headers",
-				"layout": "section"
+				"layout": "section",
+				"visibility": "visible"
 			},
 			"properties": {
 				"date": {
 					"wiki": {
-						"name": "date",
 						"type": "property",
-						"multiple-items": false,
-						"label": "Date",
 						"uuid": "66144a4b5f765",
+						"name": "date",
 						"visibility": "visible",
-						"preferred-input": "OO.ui.TextInputWidget",
+						"label": "Date",
+						"multiple-items": false,
+						"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
 						"input-config": [],
 						"required": false
 					},
 					"type": "string",
-					"format": "text",
+					"format": "datetime",
 					"title": "Date"
 				},
 				"Date": {
 					"wiki": {
-						"name": "Date",
 						"type": "property",
-						"multiple-items": false,
-						"label": "Date",
 						"uuid": "66144a4b5f766",
+						"name": "Date",
 						"visibility": "visible",
-						"preferred-input": "OO.ui.TextInputWidget",
+						"label": "Date",
+						"multiple-items": false,
+						"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
 						"input-config": [],
 						"required": false
 					},
 					"type": "string",
-					"format": "text",
+					"format": "datetime",
 					"title": "Date"
 				},
 				"subject": {
@@ -1315,7 +1316,11 @@
 						"title": "mimeType"
 					}
 				},
-				"required": [ "id", "sizeInBytes", "disposition" ]
+				"required": [
+					"id",
+					"sizeInBytes",
+					"disposition"
+				]
 			},
 			"type": "array",
 			"title": "Attachments",
@@ -1488,3 +1493,4 @@
 	"type": "object",
 	"title": "ContactManager/Incoming mail"
 }
+

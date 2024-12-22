@@ -1,6 +1,3 @@
-{{#querylink:ContactManager:Messages|&larr; go back|folder={{#urldecode:{{#urlget:folder}}}}|mailbox={{#urldecode:{{#urlget:mailbox}}}}|path={{#urldecode:{{#urlget:path}}}}}}
-
-
 {| class="wikitable infobox"
 ! date
 | {{{date}}}
@@ -43,8 +40,8 @@
 |overwrite-existing-article-on-create=true
 |preload-data?to={{{replyTo}}}
 |preload-data?subject=Re: {{{subject}}}
-|preload-data?text+base64={{ContactManager/FormatReply|{{#base64encode:{{{textPlain|}}} }}|{{{headers/fromaddress}}}|{{{date}}}|text }} 
-|preload-data?text_html+base64={{ContactManager/FormatReply|{{#base64encode:{{{textHtml|}}} }}|{{{headers/fromaddress}}}|{{{date}}}|html }}
+|preload-data?text+base64={{ContactManager/Format reply|{{#base64encode:{{{textPlain|}}} }}|{{{headers/fromaddress}}}|{{{date}}}|text }} 
+|preload-data?text_html+base64={{ContactManager/Format reply|{{#base64encode:{{{textHtml|}}} }}|{{{headers/fromaddress}}}|{{{date}}}|html }}
 |preload-data?mailbox={{#urldecode:{{#urlget:mailbox}}}}
 }}
 

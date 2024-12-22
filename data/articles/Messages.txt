@@ -6,18 +6,17 @@
 
 {{#visualdataquery: [[{{#urldecode:{{#urlget:path}}}}/messages/~]][[mailboxFolder::{{#urldecode:{{#urlget:shortpath}}}}]]
 |?pagetitle
-|?date
-|?subject
-|?headers/fromaddress=From
-|?headers/toaddress=To
+|?subject=subject
+|?headers/fromaddress=from
+|?headers/toaddress=to
+|?date=date
 |pagetitle=
 |schema=ContactManager/Incoming mail
-|template?action=ContactManager/Email action
-|template?pagetitle=ContactManager/Read email
+|template?pagetitle=ContactManager/Read email field
 |format=datatables
+|datatables-searchPanes=true
+|datatables-searchPanes.columns=2
 |order=date desc
 |limit=20
 }}
-
-
 

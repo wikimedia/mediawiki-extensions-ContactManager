@@ -22,4 +22,3 @@
 |submit-button-text =
 |validate-button-text =
 }}
-

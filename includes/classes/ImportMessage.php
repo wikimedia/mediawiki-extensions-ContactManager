@@ -26,6 +26,7 @@ namespace MediaWiki\Extension\ContactManager;
 
 use EmailReplyParser\Parser\EmailParser;
 use MediaWiki\Extension\VisualData\Importer as VisualDataImporter;
+// use MWException;
 use RequestContext;
 use Title;
 
@@ -41,6 +42,9 @@ class ImportMessage {
 	/** @var array */
 	private $params;
 
+	/** @var array */
+	private $errors;
+
 	/**
 	 * @param User $user
 	 * @param array $params
@@ -49,6 +53,7 @@ class ImportMessage {
 	public function __construct( $user, $params, &$errors = [] ) {
 		$this->user = $user;
 		$this->params = $params;
+		$this->errors = &$errors;
 	}
 
 	/**
@@ -57,8 +62,7 @@ class ImportMessage {
 	public function doImport() {
 		$params = $this->params;
 		$user = $this->user;
-		$errors = [];
-		$mailbox = new Mailbox( $params['mailbox'], $errors );
+		$mailbox = new Mailbox( $params['mailbox'], $this->errors );
 
 		if ( !$mailbox ) {
 			return false;
@@ -70,6 +74,13 @@ class ImportMessage {
 		$imapMailbox = $mailbox->getImapMailbox();
 
 		$imapMailbox->switchMailbox( $folder );
+
+		// *** attention, this is empty if called from
+		// 'get messafge' and the toggle 'fetch message'
+		// is false in the ContactManager/Retrieve messages form
+		if ( !array_key_exists( 'download_attachments', $params ) ) {
+			$params['download_attachments'] = false;
+		}
 
 		$imapMailbox->setAttachmentsIgnore( !( (bool)$params['download_attachments'] ) );
 
@@ -84,12 +95,53 @@ class ImportMessage {
 			}
 		}
 
+		$decode = [
+			'headers' => [
+				'subject',
+				'Subject',
+				'toaddress',
+				'to' => [
+					'x' => [ 'personal' ]
+				],
+				'fromaddress',
+				'from' => [
+					'x' => [ 'personal' ]
+				],
+				'reply_toaddress',
+				'reply_to' => [
+					'x' => [ 'personal' ]
+				],
+				'senderaddress',
+				'sender' => [
+					'x' => [ 'personal' ]
+				],
+			]
+		];
+
+		$recIterator = static function ( &$arr1, $arr2 ) use ( &$recIterator, &$imapMailbox ) {
+			foreach ( $arr1 as $key => $value ) {
+				if ( is_array( $value ) ) {
+					$key_ = ( is_int( $key ) && array_key_exists( 'x', $arr2 ) ?
+						'x' : $key );
+					if ( array_key_exists( $key_, $arr2 ) ) {
+						$recIterator( $arr1[$key], $arr2[$key_] );
+					}
+				} elseif ( !empty( $value ) && in_array( $key, $arr2 ) ) {
+					$arr1[$key] = $imapMailbox->decodeMimeStr( $value );
+				}
+			}
+		};
+		$recIterator( $obj, $decode );
+
 		$allContacts = [];
 		// replace the unwanted format
 		// email => name with "name <email>"
 		foreach ( [ 'to', 'cc', 'bcc', 'replyTo' ] as $value ) {
 			$formattedRecipients = [];
 			foreach ( $obj[$value] as $k => $v ) {
+				if ( !empty( $v ) ) {
+					$v = trim( $v, '"' );
+				}
 				$formattedRecipients[] = ( $v ? "$v <$k>" : $k );
 
 				if ( !array_key_exists( $k, $allContacts ) || !empty( $v ) ) {
@@ -113,6 +165,22 @@ class ImportMessage {
 		$showMsg = static function ( $msg ) {
 			echo $msg . PHP_EOL;
 		};
+
+		$context = RequestContext::getMain();
+		$schema = \VisualData::getSchema( $context, $GLOBALS['wgContactManagerSchemasRetrieveMessages'] );
+
+		// *** attention, this is empty if called from
+		// 'get message' and the toggle 'fetch message'
+		// is false in the ContactManager/Retrieve messages form
+		if ( !array_key_exists( 'message_pagename_formula', $params ) ) {
+			// @FIXME unfortunately we cannot use the following
+			// since {{FULLPAGENAME}} resolve to ContactManager:Read_email
+			// instead than ContactManager:Mailboxes/<mailbox>
+			// $params['message_pagename_formula'] =
+			// $schema['properties']['message_pagename_formula']['wiki']['default'];
+			$params['message_pagename_formula'] = 'ContactManager:Mailboxes/' . $params['mailbox']
+				. '/messages/' . $params['folder_name'] . '/<ContactManager/Incoming mail/id>';
+		}
 
 		$pagenameFormula = $params['message_pagename_formula'];
 
@@ -141,6 +209,12 @@ class ImportMessage {
 
 		$pagenameFormula = \ContactManager::parseWikitext( $output, $pagenameFormula );
 
+		if ( empty( $pagenameFormula ) ) {
+			$this->errors[] = 'empty pagename formula';
+			return;
+			// throw new MWException( 'invalid title' );
+		}
+
 		$schema = $GLOBALS['wgContactManagerSchemasIncomingMail'];
 		$options = [
 			'main-slot' => true,
@@ -149,14 +223,16 @@ class ImportMessage {
 		];
 		$importer = new VisualDataImporter( $user, $context, $schema, $options );
 
-		//
 		$obj['categories'] = $categories;
 
 		$importer->importData( $pagenameFormula, $obj, $showMsg );
+		// $importer->importData( $pagenameFormula, $obj, $showMsg );
 		$title = Title::newFromText( $pagenameFormula );
 
-		if ( $title->getArticleID() === 0 ) {
-			throw new MWException( 'article title not set' );
+		if ( !$title ) {
+			$this->errors[] = 'invalid title';
+			return;
+			// throw new MWException( 'invalid title' );
 		}
 
 		$attachmentsFolder = \ContactManager::getAttachmentsFolder();
@@ -172,6 +248,7 @@ class ImportMessage {
 			$this->handleUpload( $value );
 		}
 
+		// @TODO add input on schema
 		$categories = [
 			'Contacts from ' . $params['mailbox']
 		];
@@ -189,6 +266,13 @@ class ImportMessage {
 	 */
 	private function applyFilters( $obj, &$pagenameFormula, &$categories ) {
 		$params = $this->params;
+
+		// *** attention, this is empty if called from
+		// 'get message' and the toggle 'fetch message'
+		// is false in the ContactManager/Retrieve messages form
+		if ( !array_key_exists( 'download_attachments', $params ) ) {
+			$params['filters_by_message_fields'] = [];
+		}
 
 		foreach ( $params['filters_by_message_fields'] as $value ) {
 			$value_ = $obj[$v['field']];

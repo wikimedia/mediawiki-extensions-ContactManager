@@ -44,16 +44,40 @@ class CheckMessages extends Maintenance {
 
 		// name,  description, required = false,
 		//	withArg = false, shortName = false, multiOccurrence = false
-		//	$this->addOption( 'format', 'import format (csv or json)', true, true );
+		$this->addOption( 'delete', 'force delete', false, false );
 	}
 
 	/**
-	 * inheritDoc
+	 * @inheritDoc
 	 */
 	public function execute() {
+		$delete = $this->getOption( 'delete' ) ?? false;
 		$user = User::newSystemUser( 'Maintenance script', [ 'steal' => true ] );
 		$services = MediaWikiServices::getInstance();
 		$services->getUserGroupManager()->addUserToGroup( $user, 'bureaucrat' );
+
+		if ( method_exists( $services, 'getJobQueueGroup' ) ) {
+			// MW 1.37+
+			$jobQueueGroup = $services->getJobQueueGroup();
+		} else {
+			$jobQueueGroup = JobQueueGroup::singleton();
+		}
+
+		// @see JobQueue
+		// $queueJobs = $jobQueueGroup->get( 'ContactManagerJob' )->getAllQueuedJobs();
+		$count = $jobQueueGroup->get( 'ContactManagerJob' )->getSize();
+		// while ( $queueJobs->valid() ) {
+		// 	print_r($queueJobs->current());
+		// 	$queueJobs->next();
+		// }
+
+		if ( $count ) {
+			if ( $delete ) {
+				$jobQueueGroup->get( 'ContactManagerJob' )->delete();
+			} else {
+				return 'Queued jobs (ContactManagerJob). Wait until they end or run with --delete parameter';
+			}
+		}
 
 		$title = SpecialPage::getTitleFor( 'Badtitle' );
 		$context = RequestContext::getMain();
@@ -69,6 +93,10 @@ class CheckMessages extends Maintenance {
 		$jobs = [];
 		foreach ( $results as $value ) {
 			$data_ = array_merge( $value['data'], $data );
+
+			if ( $data_['fetch'] !== 'UIDs incremental' ) {
+				continue;
+			}
 
 			if ( empty( $data_['check_email_interval'] ) ) {
 				continue;

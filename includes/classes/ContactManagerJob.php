@@ -89,7 +89,6 @@ class ContactManagerJob extends Job {
 				\ContactManager::getMessages( $user, $this->params, $errors );
 				break;
 			case 'retrieve-message':
-			case 'get-message':
 				$importMessage = new ImportMessage( $user, $this->params, $errors );
 				$importMessage->doImport();
 				break;

@@ -1,3 +1,6 @@
+{{#querylink:ContactManager:Contacts|Purge Page Cache|action=purge}}
+
+
 {{#visualdataform: ContactManager/Contact
 |title = Add Contact 
 |action = create
@@ -29,8 +32,6 @@
 |limit=20
 |?full_name
 |?email_addresses
-|?action
-|template?action=ContactManager/Contact edit
 |order=full_name asc 
 |format=datatables
 }}

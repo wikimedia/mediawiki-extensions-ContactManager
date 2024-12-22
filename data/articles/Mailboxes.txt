@@ -13,7 +13,7 @@
 |target-slot = jsondata	
 |default-categories = 
 |default-content-model = wikitext
-|preload=Template:ContactManager/PreloadMailbox
+|preload=Template:ContactManager/Preload mailbox
 |preload-data=
 |layout-align = top
 |popup-help = false 

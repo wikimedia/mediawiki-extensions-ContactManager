@@ -1,13 +1,29 @@
-{{#visualdataprint:{{#urlget:pageid}} 
-|schema=ContactManager/Incoming mail
-|?date   
-|?headers/fromaddress
-|?subject
-|?replyTo=
-|?textPlain=
-|?textHtml=
-|?headersRaw=
-|format=template
-|template=ContactManager/Email
+{{#querylink:ContactManager:{{#if: {{#urlget:pageid}} | messages | headers }}|&larr; go back|folder={{#urldecode:{{#urlget:folder}}}}|shortpath={{#urldecode:{{#urlget:shortpath}}}}|mailbox={{#urldecode:{{#urlget:mailbox}}}}|path={{#urldecode:{{#urlget:path}}}}}}
+
+{{#ifeq: {{PAGEID: ContactManager:Mailboxes/{{#urlget:mailbox}}/messages/{{#urlget:folder}}/{{#urlget:uid}} }} | 0 |  
+  {{#VisualDataButton: Get message
+    |callback = ContactManager.initJob
+    |icon=reload 
+    |schema = ContactManager/Retrieve messages
+    |preload-data=ContactManager:Mailboxes/{{#urlget:mailbox}}/Jobs/GetMessages
+    |preload-data?job=retrieve-message
+    |preload-data?uid={{#urlget:uid}}
+    |preload-data?folder={{#urlget:shortpath}}
+    |preload-data?folder_name={{#urlget:folder}} 
+  }}
+|
+  {{#visualdataprint:{{#if: {{#urlget:pageid}} | {{#urlget:pageid}} | 
+   ContactManager:Mailboxes/{{#urlget:mailbox}}/messages/{{#urlget:folder}}/{{#urlget:uid}} }}
+    |schema=ContactManager/Incoming mail
+    |?date   
+    |?headers/fromaddress
+    |?subject
+    |?replyTo=
+    |?textPlain=
+    |?textHtml=
+    |?headersRaw=
+    |format=template
+    |template=ContactManager/Email
+  }}
 }}
 

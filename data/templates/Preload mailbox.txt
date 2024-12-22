@@ -6,7 +6,7 @@
 |schema = ContactManager/Define job
 |edit-page={{FULLPAGENAME}}/Jobs/MailboxInfo
 |preload-data?job=mailbox-info
-|preload-data?mailbox={{ContactManager/GetMailbox|{{FULLPAGENAME}}}}
+|preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
 |target-slot = main 
 }}
 
@@ -26,7 +26,7 @@
 |schema = ContactManager/Define job
 |edit-page={{FULLPAGENAME}}/Jobs/GetFolders
 |preload-data?job=get-folders
-|preload-data?mailbox={{ContactManager/GetMailbox|{{FULLPAGENAME}}}}
+|preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
 |target-slot=main
 }}
 
@@ -39,8 +39,8 @@
 |?messages
 |?name=
 |pagetitle=
-|template?messages=ContactManager/FoldersTableMessages
-|template?headers=ContactManager/FoldersTableHeaders
+|template?messages=ContactManager/Folders table messages
+|template?headers=ContactManager/Folders table headers
 }}
 
 
@@ -50,7 +50,7 @@
 |schema = ContactManager/Retrieve messages
 |edit-page={{FULLPAGENAME}}/Jobs/GetMessages
 |preload-data?job=retrieve-messages
-|preload-data?mailbox={{ContactManager/GetMailbox|{{FULLPAGENAME}}}}
+|preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
 |target-slot=main
 }}
 
@@ -61,7 +61,7 @@
 |callback = ContactManager.initJob
 |schema = ContactManager/Define job
 |edit-page={{FULLPAGENAME}}/Jobs/GetContacts
-|preload-data?mailbox={{ContactManager/GetMailbox|{{FULLPAGENAME}}}}
+|preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
 |target-slot=main
 }}
 -->
@@ -94,6 +94,6 @@
 |submit-button-text =
 |validate-button-text =
 |overwrite-existing-article-on-create=true
-|preload-data?mailbox={{ContactManager/GetMailbox|{{FULLPAGENAME}}}}
+|preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
 }}
 

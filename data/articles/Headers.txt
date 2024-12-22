@@ -7,15 +7,17 @@
 {{#visualdataquery: [[{{#urldecode:{{#urlget:path}}}}/headers/{{#urldecode:{{#urlget:folder}}}}/~]]
 |schema=ContactManager/Message header
 |?pagetitle
+|?subject
 |?from
 |?to
-|?subject
 |?date
+|?uid=
 |pagetitle=
-|template?pagetitle=ContactManager/Read email
+|template?pagetitle=ContactManager/Read email field header
 |format=datatables
+|datatables-searchPanes=true
+|datatables-searchPanes.columns=2
 |order=date desc
 |limit=20
 }}
-
 

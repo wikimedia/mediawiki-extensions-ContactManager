@@ -19,10 +19,9 @@
  * @file
  * @ingroup extensions
  * @author thomas-topway-it <support@topway.i>
- * @copyright Copyright ©2023, https://wikisphere.org
+ * @copyright Copyright ©2023-2024, https://wikisphere.org
  */
 
-use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\Extension\ContactManager\ImportMessage;
 use MediaWiki\Extension\ContactManager\Mailbox;
 use MediaWiki\Extension\ContactManager\Mailer;
@@ -189,11 +188,11 @@ class ContactManager {
 		}
 
 		$imapMailbox = $mailbox->getImapMailbox();
-		$imapMailbox->setAttachmentsIgnore( (bool)$params['attachments_ignore'] );
+		$imapMailbox->setAttachmentsIgnore( true );
 
-		if ( $params['fetch'] === 'search' ) {
+		if ( strtolower( $params['fetch'] ) === 'search' ) {
 			$criteria = [];
-			foreach ( $params['criteria'] as $key => $value ) {
+			foreach ( $params['search_criteria'] as $key => $value ) {
 				switch ( $value['criteria'] ) {
 					case 'SINCE':
 					case 'BEFORE':
@@ -288,26 +287,35 @@ class ContactManager {
 			// if ( !empty( $params['fetch_folder_status'] ) ) {
 			}
 
-			// @TODO implement UI for fetch_overview
-			// $latest_uid = 1;
-			// $mails = $imapMailbox->fetch_overview( "$latest_uid:*" );
-
-			switch ( $params['fetch'] ) {
+			switch ( strtolower( $params['fetch'] ) ) {
 				case 'search':
 					$UIDs = $imapMailbox->searchMailbox( implode( ' ', $criteria ) );
-					$UIDsHeaderSequence = $UIDsMessageSequence = implode( ',', array_values( $UIDs ) );
+					$UIDs = array_values( $UIDs );
+					$len_ = count( $UIDs );
+					if ( $len_ === $UIDs[$len_ - 1] - $UIDs[0] ) {
+						$UIDs = $UIDs[0] . ':' . $UIDs[$len_ - 1];
+					} else {
+						$UIDs = implode( ',', $UIDs );
+					}
+					$UIDsHeaderSequence = $UIDsMessageSequence = $UIDs;
 					break;
-				case 'UIDs greater than or equal':
+				case 'uids greater than or equal':
+					if ( $params['UID_from'] < 1 ) {
+						$params['UID_from'] = 1;
+					}
 					$UIDsHeaderSequence = $UIDsMessageSequence = $params['UID_from'] . ':' . $status_['messages'];
 					break;
-				case 'UIDs less than or equal':
+				case 'uids less than or equal':
 					$UIDsHeaderSequence = $UIDsMessageSequence = '1:' . $params['UID_to'];
 					break;
-				case 'UIDs range':
+				case 'uids range':
+					if ( $params['UID_from'] < 1 ) {
+						$params['UID_from'] = 1;
+					}
 					$UIDsHeaderSequence = $UIDsMessageSequence = $params['UID_from'] . ':' . $params['UID_to'];
 					break;
 				default:
-				case 'UIDs incremental':
+				case 'uids incremental':
 					// get latest knows UID for this folder
 					$schema_ = $GLOBALS['wgContactManagerSchemasMessageHeader'];
 					// phpcs:ignore Generic.Files.LineLength.TooLong
@@ -335,13 +343,29 @@ class ContactManager {
 					$UIDsHeaderSequence = ( $lastKnowHeaderUid + 1 ) . ':' . $status_['messages'];
 			}
 
-			// get headers
-			// $mailsInfo = $imapMailbox->getMailsInfo( $UIDs_sequence );
 			$overviewHeader = $imapMailbox->fetch_overview( $UIDsHeaderSequence );
-
 			foreach ( $overviewHeader as $header ) {
 				$header = (array)$header;
 
+				// *** an unquoted comma in the name is safe,
+				// since only 1 recipient is captured by
+				// imap_fetch_overview
+				$header['from'] = preg_replace( '/(["\'])(.*?)\1/', '$2', str_replace( '\\', '', $header['from'] ) );
+
+				if ( !empty( $header['to'] ) ) {
+					$header['to'] = preg_replace( '/(["\'])(.*?)\1/', '$2', str_replace( '\\', '', $header['to'] ) );
+				} else {
+					$header['to'] = '';
+				}
+
+				$recordHeader = new RecordHeader( $user, array_merge( $params, [
+					'folder' => $folder,
+					'obj' => $header
+				] ), $errors );
+
+				$recordHeader->doImport();
+
+				// *** alternatively use
 				// $job_ = new ContactManagerJob( $title, array_merge( $params, [
 				// 	'job' => 'record-header',
 				// 	'folder' => $folder,
@@ -355,18 +379,6 @@ class ContactManager {
 				// what we want, since the $lastKnowMessageUid
 				// won't be reliable
 				// $jobs[] = $job_;
-
-				// *** alternatively use the following
-				$recordHeader = new RecordHeader( $user, array_merge( $params, [
-					'folder' => $folder,
-					'obj' => $header
-				] ), $errors );
-
-				$recordHeader->doImport();
-
-				// *** important !!
-				// @see JobRunner -> doExecuteJob
-				DeferredUpdates::doUpdates();
 			}
 
 			if ( !empty( $params['fetch_message'] ) ) {
@@ -378,6 +390,16 @@ class ContactManager {
 				foreach ( $overviewMessage as $header ) {
 					$header = (array)$header;
 
+					$importMessage = new ImportMessage( $user, array_merge( $params, [
+						// 'job' => 'retrieve-message',
+						'folder' => $folder['folder'],
+						'folder_name' => $folder['folder_name'],
+						'uid' => $header['uid']
+					] ), $errors );
+
+					$importMessage->doImport();
+
+					// *** alternatively use
 					// $jobs[] = new ContactManagerJob( $title, array_merge( $params, [
 					// 	'job' => 'retrieve-message',
 					// 	'folder' => $folder['folder'],
@@ -392,20 +414,6 @@ class ContactManager {
 					// what we want, since the $lastKnowMessageUid
 					// won't be reliable
 					// $jobs[] = $job_;
-
-					// *** alternatively use the following
-					$importMessage = new ImportMessage( $user, array_merge( $params, [
-						// 'job' => 'retrieve-message',
-						'folder' => $folder['folder'],
-						'folder_name' => $folder['folder_name'],
-						'uid' => $header['uid']
-					] ), $errors );
-
-					$importMessage->doImport();
-
-					// *** important !!
-					// @see JobRunner -> doExecuteJob
-					DeferredUpdates::doUpdates();
 				}
 			}
 		}
@@ -452,6 +460,41 @@ class ContactManager {
 	}
 
 	/**
+	 * @param TheIconic\NameParser\Name $parsedName
+	 */
+	private static function fixIconicParserErrors( $parsedName ) {
+		// @see TheIconic\NameParser\Part\AbstractPart
+		$camelcaseReplace = static function ( $matches ) {
+			if ( function_exists( 'mb_convert_case' ) ) {
+				return mb_convert_case( $matches[0], MB_CASE_TITLE, 'UTF-8' );
+			}
+			return ucfirst( strtolower( $matches[0] ) );
+		};
+
+		// @see TheIconic\NameParser\Part\AbstractPart
+		$isValid = static function ( $word ) use ( &$camelcaseReplace ) {
+			if ( preg_match( '/\p{L}(\p{Lu}*\p{Ll}\p{Ll}*\p{Lu}|\p{Ll}*\p{Lu}\p{Lu}*\p{Ll})\p{L}*/u', $word ) ) {
+				return $word;
+			}
+			return preg_replace_callback( '/[\p{L}0-9]+/ui', $camelcaseReplace, $word );
+		};
+
+		$parts = $parsedName->getParts();
+
+		// remove invalid parts
+		$parts_ = [];
+		foreach ( $parts as $part ) {
+			// *** when negative, could be a bug of the Iconic library
+			if ( $part instanceof \TheIconic\NameParser\Part\AbstractPart ) {
+				if ( $isValid( $part->getValue() ) ) {
+					$parts_[] = $part;
+				}
+			}
+		}
+		$parsedName->setParts( $parts_ );
+	}
+
+	/**
 	 * @param User $user
 	 * @param Context $context
 	 * @param string $name
@@ -473,20 +516,21 @@ class ContactManager {
 
 		$iconicParser = new IconicParser;
 		$parsedName = $iconicParser->parse( $name );
-		$fullName = $parsedName->getFullname();
+		self::fixIconicParserErrors( $parsedName );
+
+		$fullName = trim( $parsedName->getFullname() );
+		// if ( empty( $fullName ) ) {
+		if ( empty( $parsedName->getGivenName() ) || empty( $parsedName->getLastname() ) ) {
+			$fullName = implode( ' ', $parsedName->getAll( false ) );
+		}
 
 		$schema = $GLOBALS['wgContactManagerSchemasContact'];
 		$query = '[[full_name::' . $fullName . ']]';
 		$results = \VisualData::getQueryResults( $schema, $query );
 
-		// @TODO merge additional email address if
-		// different from existing
-		if ( count( $results ) ) {
-			return;
-		}
-
 		$pagenameFormula = str_replace( '$1', $fullName, $GLOBALS['wgContactManagerContactsArticle'] );
 
+		// must reflect VisualDataSchema:ContactManager/Contact
 		$data = [
 			'first_name' => $parsedName->getFirstname(),
 			'last_name' => $parsedName->getLastname(),
@@ -495,11 +539,34 @@ class ContactManager {
 			'nickname' => $parsedName->getNickname(),
 			'initials' => $parsedName->getInitials(),
 			'suffix' => $parsedName->getSuffix(),
-			'full_name' => $parsedName->getFullname(),
+			'full_name' => $fullName,
 			'email_addresses' => [
 				$email
-			]
+			],
+			'phone_numbers' => [
+			],
+			'links' => [
+			],
+			'picture' => ''
 		];
+
+		// merge additional email address if
+		// different from existing
+		if ( count( $results ) ) {
+			if ( !empty( $results[0]['data'] ) ) {
+				$data_ = $results[0]['data'];
+				foreach ( $data as $k => $v ) {
+					if ( empty( $data_[$k] ) ) {
+						 continue;
+					}
+					if ( is_array( $data[$k] ) ) {
+						$data[$k] = array_unique( array_merge( (array)$data_[$k], (array)$data[$k] ) );
+					} elseif ( empty( $v ) ) {
+						 $data[$k] = $data_[$k];
+					}
+				}
+			}
+		}
 
 		$showMsg = static function ( $msg ) {
 			echo $msg . PHP_EOL;

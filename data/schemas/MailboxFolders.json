@@ -29,15 +29,16 @@
 				"title": "folders",
 				"unique-items": false,
 				"type": "schema",
-				"uuid": "6754228693935"
+				"uuid": "675ec86bd3b02"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
-					"uuid": "6754109bcfe73",
-					"layout": "section"
+					"uuid": "6754228693935",
+					"layout": "section",
+					"visibility": "visible"
 				},
 				"properties": {
 					"fullpath": {
@@ -114,7 +115,8 @@
 							"uuid": "67536541d59e4",
 							"name": "status",
 							"title": "status",
-							"layout": "section"
+							"layout": "section",
+							"visibility": "visible"
 						},
 						"properties": {
 							"flags": {
@@ -179,12 +181,12 @@
 							},
 							"uidnext": {
 								"wiki": {
-									"type": "property",
-									"uuid": "67536541d59ea",
 									"name": "uidnext",
-									"visibility": "visible",
-									"label": "uidnext",
+									"type": "property",
 									"multiple-items": false,
+									"label": "uidnext",
+									"uuid": "67536541d59ea",
+									"visibility": "visible",
 									"preferred-input": "OO.ui.NumberInputWidget",
 									"input-config": [],
 									"required": false
@@ -206,21 +208,6 @@
 								},
 								"type": "integer",
 								"title": "uidvalidity"
-							},
-							"_last_known_UID": {
-								"wiki": {
-									"name": "_last_known_UID",
-									"type": "property",
-									"multiple-items": false,
-									"label": "last known UID",
-									"visibility": "visible",
-									"preferred-input": "OO.ui.NumberInputWidget",
-									"input-config": [],
-									"required": false,
-									"uuid": "6754109bcfe87"
-								},
-								"type": "integer",
-								"title": "last known UID"
 							}
 						},
 						"type": "object",
