@@ -10,6 +10,7 @@
 |-
 |}
 
+[[{{{pagetitle}}}|'''Source''']]
 <!--
 |return-page ={{#queryurl:ContactManager:Read email|open|pageid={{{articleid}}}|mailbox={{#urldecode:{{#urlget:mailbox}}}}|folder={{#urldecode:{{#urlget:folder}}}}|path={{#urldecode:{{#urlget:path}}}}}}
 -->
