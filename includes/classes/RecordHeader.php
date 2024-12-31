@@ -155,7 +155,7 @@ class RecordHeader {
 							$result_ = strpos( $value_, $v['value_text'] ) === false;
 							break;
 						case 'regex':
-							$result_ = preg_match( '/' . preg_quote( $v['value_text'], '/' ) . '/', $value_ );
+							$result_ = preg_match( '/' . str_replace( '/', '\/', $v['value_text'] ) . '/', $value_ );
 							break;
 					}
 					break;
