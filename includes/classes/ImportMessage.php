@@ -118,6 +118,7 @@ class ImportMessage {
 			]
 		];
 
+		// decodeMimeStr of the items above
 		$recIterator = static function ( &$arr1, $arr2 ) use ( &$recIterator, &$imapMailbox ) {
 			foreach ( $arr1 as $key => $value ) {
 				if ( is_array( $value ) ) {
@@ -133,7 +134,12 @@ class ImportMessage {
 		};
 		$recIterator( $obj, $decode );
 
+		// @TODO get Delivered-To
+		// for the use with Conversations
+
 		$allContacts = [];
+		$allContacts[$obj['fromAddress']] = $obj['fromName'];
+
 		// replace the unwanted format
 		// email => name with "name <email>"
 		foreach ( [ 'to', 'cc', 'bcc', 'replyTo' ] as $value ) {
@@ -158,7 +164,9 @@ class ImportMessage {
 
 		$obj['textPlain'] = $mail->textPlain;
 		$obj['textHtml'] = $mail->textHtml;
-		$obj['visible_text'] = $parsedEmail->getVisibleText();
+
+		// custom entries
+		$obj['visibleText'] = $parsedEmail->getVisibleText();
 		$obj['attachments'] = array_values( $attachments );
 		$obj['hasAttachments'] = count( $obj['attachments'] ) ? true : false;
 
@@ -256,6 +264,8 @@ class ImportMessage {
 		foreach ( $allContacts as $email => $name ) {
 			\ContactManager::saveContact( $user, $context, $name, $email, $categories );
 		}
+
+		// @TODO $this->saveConversation( $user, $context, $allContacts );
 	}
 
 	/**

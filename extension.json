@@ -104,6 +104,7 @@
 		"ContactManagerSchemasDefineJob": "ContactManager/Define job",
 		"ContactManagerSchemasMessageFilter": "ContactManager/Message filter",
 		"ContactManagerSchemasComposeEmail": "ContactManager/Compose email",
+		"ContactManagerSchemasConversation": "ContactManager/Conversation",
 		"ContactManagerSchemasMailer": "ContactManager/Mailer",
 		"ContactManagerSchemasContact": "ContactManager/Contact",
 		"ContactManagerMailboxInfoArticle": "ContactManager:Mailboxes/$1",

@@ -45,9 +45,20 @@ class ContactManager {
 	 */
 	public static function parserFunctionShadowRoot( Parser $parser, ...$argv ) {
 		$parserOutput = $parser->getOutput();
+		$str = base64_decode( $argv[0], true );
+
+		if ( $str === false ) {
+			$errorMessage = 'must be base64 encoded';
+			return [
+				// . $spinner
+				'<div style="color:red;font-weight:bold">' . $errorMessage . '</div>',
+				'noparse' => true,
+				'isHTML' => true
+			];
+		}
 
 		$ret = '<div id="' . $argv[1] . '"><template shadowrootmode="open">'
-			. base64_decode( $argv[0] ) . '</template></div>';
+			. $str . '</template></div>';
 
 		return [
 			$ret,

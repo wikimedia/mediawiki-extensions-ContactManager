@@ -1,7 +1,12 @@
-{{#querylink:ContactManager:{{#if: {{#urlget:pageid}} | messages | headers }}|&larr; go back|folder={{#urldecode:{{#urlget:folder}}}}|shortpath={{#urldecode:{{#urlget:shortpath}}}}|mailbox={{#urldecode:{{#urlget:mailbox}}}}|path={{#urldecode:{{#urlget:path}}}}}}
+{{#querylink:ContactManager:{{#if: {{#urlget:pageid}} | messages | headers }}|&larr; go back
+|folder={{#urldecode:{{#urlget:folder}}}}
+|shortpath={{#urldecode:{{#urlget:shortpath}}}}
+|mailbox={{#urldecode:{{#urlget:mailbox}}}}
+|path={{#urldecode:{{#urlget:path}}}}
+}}
 
-{{#if: {{#visualdataquery: [[id::{{#urlget:uid}}]] [[mailboxFolder:: {{#urlget:shortpath}} ]] |schema=ContactManager/Incoming mail |format=pageid }} |
-{{#visualdataprint: {{#visualdataquery: [[id::{{#urlget:uid}}]] [[mailboxFolder:: {{#urlget:shortpath}} ]] |schema=ContactManager/Incoming mail |format=pageid }} 
+{{#if: {{#urlget:pageid}} | 
+  {{#visualdataprint: {{#urlget:pageid}}
     |schema=ContactManager/Incoming mail
     |?date   
     |?headers/fromaddress
@@ -9,19 +14,43 @@
     |?replyTo=
     |?textPlain=
     |?textHtml=
+    |?visibleText=
     |?headersRaw=
     |format=template
     |template=ContactManager/Email
   }} 
-| {{#VisualDataButton: Get message
-    |callback = ContactManager.initJob
-    |icon=reload 
-    |schema = ContactManager/Retrieve messages
-    |preload-data=ContactManager:Mailboxes/{{#urlget:mailbox}}/Jobs/GetMessages
-    |preload-data?job=retrieve-message
-    |preload-data?uid={{#urlget:uid}}
-    |preload-data?folder={{#urlget:shortpath}}
-    |preload-data?folder_name={{#urlget:folder}} 
+|
+  {{#if: {{#visualdataquery: [[id::{{#urlget:uid}}]] [[mailboxFolder:: {{#urlget:shortpath}} ]] 
+    |schema=ContactManager/Incoming mail 
+    |format=pageid 
+  }} |
+    {{#visualdataprint: {{#visualdataquery: [[id::{{#urlget:uid}}]] [[mailboxFolder:: {{#urlget:shortpath}} ]] 
+      |schema=ContactManager/Incoming mail 
+      |format=pageid 
+    }} 
+      |schema=ContactManager/Incoming mail
+      |?date   
+      |?headers/fromaddress
+      |?subject
+      |?replyTo=
+      |?textPlain=
+      |?textHtml=
+      |?visibleText=
+      |?headersRaw=
+      |format=template
+      |template=ContactManager/Email
+    }} 
+  | 
+    {{#VisualDataButton: Get message
+      |callback = ContactManager.initJob
+      |icon=reload 
+      |schema = ContactManager/Retrieve messages
+      |preload-data=ContactManager:Mailboxes/{{#urlget:mailbox}}/Jobs/GetMessages
+      |preload-data?job=retrieve-message
+      |preload-data?uid={{#urlget:uid}}
+      |preload-data?folder={{#urlget:shortpath}}
+      |preload-data?folder_name={{#urlget:folder}} 
+    }}
   }}
 }}
 

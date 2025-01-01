@@ -15,7 +15,7 @@ function p.fn(frame)
     if format == "text" then
         local list = mw.text.split("\n" .. text, "\n")
         local quoted = table.concat(list, "\n> ")
-        ret = "\n\non " .. date .. replyTo .. " wrote:\n" .. quoted
+        ret = "\n\non " .. date .. " " .. replyTo .. " wrote:\n" .. quoted
     else
         local attr = mw.text.tag("div", {["class"] = "contactManager-attr"}, "on " .. date .. mw.text.encode(replyTo) .. " wrote:")
 
