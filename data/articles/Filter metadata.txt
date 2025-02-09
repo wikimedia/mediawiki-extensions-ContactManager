@@ -45,7 +45,7 @@
 * messageId
 * textPlain
 * textHtml
-* visible_text
+* visibleText
 * attachments/id
 * attachments/contentId
 * attachments/type

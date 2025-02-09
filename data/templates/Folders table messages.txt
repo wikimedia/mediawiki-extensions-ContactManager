@@ -6,4 +6,3 @@
    |limit=1
   }}
 |path={{{pagetitle}}}|mailbox={{{name}}} }}
-

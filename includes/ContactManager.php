@@ -22,6 +22,8 @@
  * @copyright Copyright ©2023-2024, https://wikisphere.org
  */
 
+use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\RFCValidation;
 use MediaWiki\Extension\ContactManager\ImportMessage;
 use MediaWiki\Extension\ContactManager\Mailbox;
 use MediaWiki\Extension\ContactManager\Mailer;
@@ -35,6 +37,9 @@ if ( is_readable( __DIR__ . '/../vendor/autoload.php' ) ) {
 }
 
 class ContactManager {
+	// @see Symfony\Component\Mime\Address
+	private const FROM_STRING_PATTERN = '~(?<displayName>[^<]*)<(?<addrSpec>.*)>[^>]*~';
+
 	public static function initialize() {
 	}
 
@@ -437,6 +442,29 @@ class ContactManager {
 		}
 
 		self::pushJobs( $jobs );
+	}
+
+	/**
+	 * @see Symfony\Component\Mime\Address
+	 * @param string $address
+	 * @return array|false
+	 */
+	public static function parseRecipient( $address ) {
+		$return = static function ( $address, $name = '' ) {
+			$validator = new EmailValidator();
+			return ( $validator->isValid( $address, new RFCValidation() ) ?
+				[ $name, $address ] : false );
+		};
+
+		if ( strpos( $address, '<' ) === false ) {
+			return $return( $address );
+		}
+
+		if ( !preg_match( self::FROM_STRING_PATTERN, $address, $matches ) ) {
+			return false;
+		}
+
+		return $return( $matches['addrSpec'], trim( $matches['displayName'], ' \'"' ) );
 	}
 
 	/**

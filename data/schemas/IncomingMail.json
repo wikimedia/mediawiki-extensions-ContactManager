@@ -1013,9 +1013,9 @@
 			"format": "text",
 			"title": "MessageId"
 		},
-		"visible_text": {
+		"visibleText": {
 			"wiki": {
-				"name": "visible_text",
+				"name": "visibleText",
 				"type": "property",
 				"multiple-items": false,
 				"label": "Visible text",

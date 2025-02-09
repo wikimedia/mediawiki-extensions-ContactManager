@@ -1,375 +1,478 @@
 {
-    "wiki": {
-        "type": "schema",
-        "uuid": "65f73d69661ce",
-        "name": "ContactManager/Compose email",
-        "title": "Compose email"
-    },
-    "properties": {
-        "transport": {
-            "wiki": {
-                "name": "transport",
-                "type": "property",
-                "multiple-items": false,
-                "label": "transport",
-                "uuid": "6635f23ad06bf",
-                "visibility": "visible",
-                "preferred-input": "OO.ui.DropdownInputWidget",
-                "input-config": [],
-                "options-allow-null": false,
-                "required": false,
-                "options-values-parsed": {
-                    "mailbox": "mailbox",
-                    "mailer": "mailer"
-                }
-            },
-            "type": "string",
-            "format": "text",
-            "title": "transport",
-            "enum": [
-                "mailbox",
-                "mailer"
-            ]
-        },
-        "mailer": {
-            "wiki": {
-                "name": "mailer",
-                "type": "property",
-                "multiple-items": false,
-                "label": "mailer",
-                "uuid": "6636aafd53818",
-                "visibility": "condition",
-                "preferred-input": "OO.ui.DropdownInputWidget",
-                "input-config": [],
-                "options-allow-null": false,
-                "options-query": "[[name::+]]",
-                "query-schema": "ContactManager/Mailer",
-                "query-printouts": [
-                    "name"
-                ],
-                "required": false,
-                "showif-field": "transport",
-                "showif-condition": "=",
-                "showif-value": "mailer",
-                "options-values-parsed": {
-                }
-            },
-            "type": "string",
-            "format": "text",
-            "title": "mailer",
-            "enum": [
-            ]
-        },
-        "from": {
-            "wiki": {
-                "name": "from",
-                "type": "property",
-                "multiple-items": false,
-                "label": "from",
-                "uuid": "663605d67d11f",
-                "visibility": "condition",
-                "preferred-input": "OO.ui.DropdownInputWidget",
-                "input-config": [],
-                "options-allow-null": false,
-                "options-label-formula": "\u003Cfrom\u003E",
-                "options-query": "[[name::+]]",
-                "query-schema": "ContactManager/Mailbox",
-                "query-printouts": [
-                    "from"
-                ],
-                "options-query-formula": "\u003Cfrom\u003E",
-                "required": false,
-                "showif-field": "transport",
-                "showif-condition": "=",
-                "showif-value": "mailbox",
-                "options-values-parsed": {
-                }
-            },
-            "type": "string",
-            "format": "text",
-            "title": "from",
-            "enum": [
-            ]
-        },
-        "from_mailer": {
-            "wiki": {
-                "name": "from_mailer",
-                "type": "property",
-                "multiple-items": false,
-                "label": "from",
-                "uuid": "6637044859838",
-                "visibility": "condition",
-                "preferred-input": "OO.ui.DropdownInputWidget",
-                "input-config": [],
-                "options-allow-null": false,
-                "options-label-formula": "\u003Cfrom\u003E",
-                "options-query": "[[name::+]]",
-                "query-schema": "ContactManager/Mailer",
-                "query-printouts": [
-                    "from"
-                ],
-                "options-query-formula": "\u003Cfrom\u003E",
-                "required": false,
-                "showif-field": "transport",
-                "showif-condition": "=",
-                "showif-value": "mailer",
-                "options-values-parsed": {}
-            },
-            "type": "string",
-            "format": "text",
-            "title": "from",
-            "enum": []
-        },
-        "to": {
-            "wiki": {
-                "name": "to",
-                "min-items": 0,
-                "unique-items": true,
-                "type": "schema",
-                "uuid": "6636ad628488e"
-            },
-            "items": {
-                "type": "string",
-                "wiki": {
-                    "name": "to",
-                    "type": "property",
-                    "multiple-items": true,
-                    "label": "to",
-                    "default": [],
-                    "uuid": "6635dd2221ea3",
-                    "visibility": "visible",
-                    "preferred-input": "MenuTagSearchMultiselect",
-                    "input-config": [],
-                    "options-query": "[[full_name::\u003Cvalue\u003E~]]",
-                    "query-schema": "ContactManager/Contact",
-                    "query-printouts": [
-                        "full_name",
-                        "email_addresses"
-                    ],
-                    "options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail_addresses\u003E\u003E",
-                    "required": false,
-                    "layout": "table"
-                },
-                "format": "text",
-                "title": "to",
-                "default": []
-            },
-            "type": "array",
-            "minItems": 0,
-            "uniqueItems": true
-        },
-        "cc": {
-            "wiki": {
-                "name": "cc",
-                "min-items": 0,
-                "unique-items": true,
-                "type": "schema",
-                "uuid": "6636ad628488f"
-            },
-            "items": {
-                "type": "string",
-                "wiki": {
-                    "name": "cc",
-                    "type": "property",
-                    "multiple-items": true,
-                    "label": "cc",
-                    "default": [],
-                    "uuid": "6635dd2221ea4",
-                    "visibility": "visible",
-                    "preferred-input": "MenuTagSearchMultiselect",
-                    "input-config": [],
-                    "options-query": "[[full_name::\u003Cvalue\u003E~]]",
-                    "query-schema": "ContactManager/Contact",
-                    "query-printouts": [
-                        "full_name",
-                        "email_addresses"
-                    ],
-                    "options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail_addresses\u003E\u003E",
-                    "required": false,
-                    "layout": "table"
-                },
-                "format": "text",
-                "title": "cc",
-                "default": []
-            },
-            "type": "array",
-            "minItems": 0,
-            "uniqueItems": true
-        },
-        "bcc": {
-            "wiki": {
-                "name": "bcc",
-                "min-items": 0,
-                "unique-items": true,
-                "type": "schema",
-                "uuid": "6636ad628488g"
-            },
-            "items": {
-                "type": "string",
-                "wiki": {
-                    "name": "to",
-                    "type": "property",
-                    "multiple-items": true,
-                    "label": "bcc",
-                    "default": [],
-                    "uuid": "6635dd2221ea5",
-                    "visibility": "visible",
-                    "preferred-input": "MenuTagSearchMultiselect",
-                    "input-config": [],
-                    "options-query": "[[full_name::\u003Cvalue\u003E~]]",
-                    "query-schema": "ContactManager/Contact",
-                    "query-printouts": [
-                        "full_name",
-                        "email_addresses"
-                    ],
-                    "options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail_addresses\u003E\u003E",
-                    "required": false,
-                    "layout": "table"
-                },
-                "format": "text",
-                "title": "bcc",
-                "default": []
-            },
-            "type": "array",
-            "minItems": 0,
-            "uniqueItems": true
-        },
-        "subject": {
-            "wiki": {
-                "type": "property",
-                "uuid": "65f73d69661e1",
-                "name": "subject",
-                "visibility": "visible",
-                "label": "subject",
-                "multiple-items": false,
-                "preferred-input": "OO.ui.TextInputWidget",
-                "input-config": [],
-                "required": false
-            },
-            "type": "string",
-            "format": "text",
-            "title": "subject"
-        },
-        "html": {
-            "wiki": {
-                "name": "html",
-                "type": "property",
-                "multiple-items": false,
-                "label": "html",
-                "visibility": "visible",
-                "preferred-input": "OO.ui.ToggleSwitchWidget",
-                "input-config": [],
-                "required": false,
-                "uuid": "663f2c32cd292"
-            },
-            "type": "boolean",
-            "title": "html"
-        },
-        "text_html": {
-            "wiki": {
-                "name": "text_html",
-                "type": "property",
-                "multiple-items": false,
-                "required": true,
-                "label": "text",
-                "uuid": "65f73d69661e3",
-                "visibility": "condition",
-                "showif-field": "html",
-                "showif-condition": "=",
-                "showif-value": "true",
-                "preferred-input": "TinyMCE",
-                "input-config": []
-            },
-            "type": "string",
-            "format": "textarea",
-            "title": "text"
-        },
-        "text": {
-            "wiki": {
-                "name": "text",
-                "type": "property",
-                "multiple-items": false,
-                "required": true,
-                "input-config": {
-                    "rows": 8
-                },
-                "uuid": "663f2c32cd2a0",
-                "visibility": "condition",
-                "showif-field": "html",
-                "showif-condition": "=",
-                "showif-value": "false",
-                "preferred-input": "OO.ui.MultilineTextInputWidget"
-            },
-            "type": "string",
-            "format": "textarea"
-        },
-        "attachments": {
-            "wiki": {
-                "name": "attachments",
-                "title-parsed": "attachments",
-                "title": "attachments",
-                "unique-items": false,
-                "type": "schema",
-                "uuid": "65f73d69661e5"
-            },
-            "items": {
-                "type": "string",
-                "wiki": {
-                    "name": "",
-                    "type": "property",
-                    "multiple-items": true,
-                    "input-config": {
-                        "accept": [
-                            "image/png",
-                            "image/gif",
-                            "image/jpeg",
-                            "image/pjpeg",
-                            "image/jpeg",
-                            "image/pjpeg",
-                            "image/webp",
-                            "application/pdf"
-                        ]
-                    },
-                    "default": [],
-                    "value-prefix": "File:",
-                    "default-parsed": [],
-                    "visibility": "visible",
-                    "preferred-input": "OO.ui.SelectFileWidget",
-                    "required": false,
-                    "layout": "table",
-                    "uuid": "65f73d69661e7"
-                },
-                "format": "text",
-                "default": []
-            },
-            "type": "array",
-            "title": "attachments",
-            "uniqueItems": false
-        },
-        "mailbox": {
-            "wiki": {
-                "name": "mailbox",
-                "type": "property",
-                "multiple-items": false,
-                "visibility": "hidden",
-                "label": "mailbox",
-                "uuid": "6636abf4b72b9",
-                "preferred-input": "OO.ui.TextInputWidget",
-                "input-config": [],
-                "required": false
-            },
-            "options": {
-                "hidden": true
-            },
-            "type": "string",
-            "format": "text",
-            "title": "mailbox"
-        }
-    },
-    "required": [
-        "text_html",
-        "text"
-    ],
-    "type": "object",
-    "title": "Compose email"
+	"wiki": {
+		"type": "schema",
+		"uuid": "65f73d69661ce",
+		"name": "ContactManager/Compose email",
+		"title": "Compose email"
+	},
+	"properties": {
+		"transport": {
+			"wiki": {
+				"name": "transport",
+				"type": "property",
+				"multiple-items": false,
+				"label": "transport",
+				"uuid": "6635f23ad06bf",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.DropdownInputWidget",
+				"input-config": [],
+				"options-allow-null": false,
+				"required": false,
+				"options-values-parsed": {
+					"mailbox": "mailbox",
+					"mailer": "mailer"
+				}
+			},
+			"type": "string",
+			"format": "text",
+			"title": "transport",
+			"enum": [
+				"mailbox",
+				"mailer"
+			]
+		},
+		"mailer": {
+			"wiki": {
+				"name": "mailer",
+				"type": "property",
+				"multiple-items": false,
+				"label": "mailer",
+				"uuid": "6636aafd53818",
+				"visibility": "condition",
+				"showif-field": "transport",
+				"showif-condition": "=",
+				"showif-value": "mailer",
+				"preferred-input": "OO.ui.DropdownInputWidget",
+				"input-config": [],
+				"options-allow-null": false,
+				"options-label-formula": "\u003Cname\u003E (\u003Cprovider\u003E)",
+				"options-query": "[[name::+]]",
+				"query-schema": "ContactManager/Mailer",
+				"query-printouts": [
+					"name",
+					"provider"
+				],
+				"options-query-formula": "\u003Cname\u003E - \u003Cprovider\u003E",
+				"required": false,
+				"options-values-parsed": {}
+			},
+			"type": "string",
+			"format": "text",
+			"title": "mailer",
+			"enum": []
+		},
+		"substitutions": {
+			"wiki": {
+				"name": "substitutions",
+				"type": "property",
+				"multiple-items": false,
+				"label": "substitutions",
+				"help-message": "in the message text, use any property in the ''ContactManager/Contact'' schema surrounded by \"%\" (for instance %first_name%) to perform substitutions for each recipient",
+				"uuid": "67a73b7651ea1",
+				"visibility": "condition",
+				"showif-field": "mailer",
+				"showif-condition": "regex",
+				"showif-value": "- sendgrid$",
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "boolean",
+			"title": "substitutions",
+			"description": "in the message text, use any property in the \u003Ci\u003EContactManager/Contact\u003C/i\u003E schema surrounded by \"%\" (for instance %first_name%) to perform substitutions for each recipient"
+		},
+		"template_id": {
+			"wiki": {
+				"name": "template_id",
+				"type": "property",
+				"multiple-items": false,
+				"label": "template id",
+				"help-message": "optionally set a Sendgrid template id https://www.twilio.com/docs/sendgrid/ui/sending-email/how-to-send-an-email-with-dynamic-templates",
+				"visibility": "condition",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"showif-field": "html",
+				"showif-condition": "=",
+				"showif-value": "false",
+				"uuid": "67a73fda64409"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "template id",
+			"description": "optionally set a Sendgrid template id \u003Ca rel=\"nofollow\" class=\"external free\" href=\"https://www.twilio.com/docs/sendgrid/ui/sending-email/how-to-send-an-email-with-dynamic-templates\"\u003Ehttps://www.twilio.com/docs/sendgrid/ui/sending-email/how-to-send-an-email-with-dynamic-templates\u003C/a\u003E"
+		},
+		"from": {
+			"wiki": {
+				"name": "from",
+				"type": "property",
+				"multiple-items": false,
+				"label": "from",
+				"uuid": "663605d67d11f",
+				"visibility": "condition",
+				"preferred-input": "OO.ui.DropdownInputWidget",
+				"input-config": [],
+				"options-allow-null": false,
+				"options-label-formula": "\u003Cfrom\u003E",
+				"options-query": "[[name::+]]",
+				"query-schema": "ContactManager/Mailbox",
+				"query-printouts": [
+					"from"
+				],
+				"options-query-formula": "\u003Cfrom\u003E",
+				"required": false,
+				"showif-field": "transport",
+				"showif-condition": "=",
+				"showif-value": "mailbox",
+				"options-values-parsed": {}
+			},
+			"type": "string",
+			"format": "text",
+			"title": "from",
+			"enum": [
+			]
+		},
+		"from_mailer": {
+			"wiki": {
+				"name": "from_mailer",
+				"type": "property",
+				"multiple-items": false,
+				"label": "from",
+				"uuid": "6637044859838",
+				"visibility": "condition",
+				"preferred-input": "OO.ui.DropdownInputWidget",
+				"input-config": [],
+				"options-allow-null": false,
+				"options-label-formula": "\u003Cfrom\u003E",
+				"options-query": "[[name::+]]",
+				"query-schema": "ContactManager/Mailer",
+				"query-printouts": [
+					"from"
+				],
+				"options-query-formula": "\u003Cfrom\u003E",
+				"required": false,
+				"showif-field": "transport",
+				"showif-condition": "=",
+				"showif-value": "mailer",
+				"options-values-parsed": {}
+			},
+			"type": "string",
+			"format": "text",
+			"title": "from",
+			"enum": []
+		},
+		"to": {
+			"wiki": {
+				"name": "to",
+				"min-items": 0,
+				"unique-items": true,
+				"type": "schema",
+				"uuid": "6636ad628488e"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "to",
+					"type": "property",
+					"multiple-items": true,
+					"label": "to",
+					"default": [],
+					"uuid": "6635dd2221ea3",
+					"visibility": "visible",
+					"preferred-input": "MenuTagSearchMultiselect",
+					"input-config": [],
+					"options-query": "[[full_name::\u003Cvalue\u003E~]]",
+					"query-schema": "ContactManager/Contact",
+					"query-printouts": [
+						"full_name",
+						"email_addresses"
+					],
+					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail_addresses\u003E\u003E",
+					"required": false,
+					"layout": "table"
+				},
+				"format": "text",
+				"title": "to",
+				"default": []
+			},
+			"type": "array",
+			"minItems": 0,
+			"uniqueItems": true
+		},
+		"cc": {
+			"wiki": {
+				"name": "cc",
+				"min-items": 0,
+				"unique-items": true,
+				"type": "schema",
+				"uuid": "6636ad628488f"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "cc",
+					"type": "property",
+					"multiple-items": true,
+					"label": "cc",
+					"default": [],
+					"uuid": "6635dd2221ea4",
+					"visibility": "visible",
+					"preferred-input": "MenuTagSearchMultiselect",
+					"input-config": [],
+					"options-query": "[[full_name::\u003Cvalue\u003E~]]",
+					"query-schema": "ContactManager/Contact",
+					"query-printouts": [
+						"full_name",
+						"email_addresses"
+					],
+					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail_addresses\u003E\u003E",
+					"required": false,
+					"layout": "table"
+				},
+				"format": "text",
+				"title": "cc",
+				"default": []
+			},
+			"type": "array",
+			"minItems": 0,
+			"uniqueItems": true
+		},
+		"bcc": {
+			"wiki": {
+				"name": "bcc",
+				"min-items": 0,
+				"unique-items": true,
+				"type": "schema",
+				"uuid": "6636ad628488g"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "to",
+					"type": "property",
+					"multiple-items": true,
+					"label": "bcc",
+					"default": [],
+					"uuid": "6635dd2221ea5",
+					"visibility": "visible",
+					"preferred-input": "MenuTagSearchMultiselect",
+					"input-config": [],
+					"options-query": "[[full_name::\u003Cvalue\u003E~]]",
+					"query-schema": "ContactManager/Contact",
+					"query-printouts": [
+						"full_name",
+						"email_addresses"
+					],
+					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail_addresses\u003E\u003E",
+					"required": false,
+					"layout": "table"
+				},
+				"format": "text",
+				"title": "bcc",
+				"default": []
+			},
+			"type": "array",
+			"minItems": 0,
+			"uniqueItems": true
+		},
+		"bcc_categories": {
+			"wiki": {
+				"name": "bcc_categories",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "67a8baa6252e8"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "bcc_categories",
+					"type": "property",
+					"uuid": "679101fb3bccc",
+					"visibility": "visible",
+					"label": "bcc categories",
+					"help-message": "all the contacts belonging to the inserted categories will be mailed",
+					"multiple-items": true,
+					"preferred-input": "mw.widgets.CategoryMultiselectWidget",
+					"input-config": [],
+					"required": false,
+					"default": []
+				},
+				"format": "text",
+				"title": "bcc categories",
+				"description": "all the contacts belonging to the inserted categories will be mailed",
+				"default": []
+			},
+			"type": "array",
+			"uniqueItems": false
+		},
+		"exclude_bcc_categories": {
+			"wiki": {
+				"name": "exclude_bcc_categories",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "679101cc686de"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "new_property",
+					"type": "property",
+					"multiple-items": true,
+					"label": "exclude recipients from bcc categories",
+					"help-message": "(optionally enter one or more email addresses if you need to exclude them)",
+					"default": [],
+					"uuid": "679101aeb2040",
+					"visibility": "visible",
+					"preferred-input": "OO.ui.TagMultiselectWidget",
+					"input-config": [],
+					"required": false,
+					"layout": "table"
+				},
+				"format": "email",
+				"title": "exclude recipients from bcc categories",
+				"description": "(optionally enter one or more email addresses if you need to exclude them)",
+				"default": []
+			},
+			"type": "array",
+			"uniqueItems": false
+		},
+		"subject": {
+			"wiki": {
+				"name": "subject",
+				"type": "property",
+				"multiple-items": false,
+				"label": "subject",
+				"uuid": "65f73d69661e1",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "text",
+			"title": "subject"
+		},
+		"html": {
+			"wiki": {
+				"name": "html",
+				"type": "property",
+				"multiple-items": false,
+				"label": "html",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "663f2c32cd292"
+			},
+			"type": "boolean",
+			"title": "html"
+		},
+		"text_html": {
+			"wiki": {
+				"name": "text_html",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"label": "text",
+				"uuid": "65f73d69661e3",
+				"visibility": "condition",
+				"showif-field": "html",
+				"showif-condition": "=",
+				"showif-value": "true",
+				"preferred-input": "TinyMCE",
+				"input-config": []
+			},
+			"type": "string",
+			"format": "textarea",
+			"title": "text"
+		},
+		"text": {
+			"wiki": {
+				"name": "text",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"input-config": {
+					"rows": 8
+				},
+				"uuid": "663f2c32cd2a0",
+				"visibility": "condition",
+				"showif-field": "html",
+				"showif-condition": "=",
+				"showif-value": "false",
+				"preferred-input": "OO.ui.MultilineTextInputWidget"
+			},
+			"type": "string",
+			"format": "textarea"
+		},
+		"attachments": {
+			"wiki": {
+				"name": "attachments",
+				"title-parsed": "attachments",
+				"title": "attachments",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "65f73d69661e5"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "",
+					"type": "property",
+					"multiple-items": true,
+					"input-config": {
+						"accept": [
+							"image/png",
+							"image/gif",
+							"image/jpeg",
+							"image/pjpeg",
+							"image/jpeg",
+							"image/pjpeg",
+							"image/webp",
+							"application/pdf"
+						]
+					},
+					"default": [],
+					"value-prefix": "File:",
+					"default-parsed": [],
+					"visibility": "visible",
+					"preferred-input": "OO.ui.SelectFileWidget",
+					"required": false,
+					"layout": "table",
+					"uuid": "65f73d69661e7"
+				},
+				"format": "text",
+				"default": []
+			},
+			"type": "array",
+			"title": "attachments",
+			"uniqueItems": false
+		},
+		"mailbox": {
+			"wiki": {
+				"name": "mailbox",
+				"type": "property",
+				"multiple-items": false,
+				"visibility": "hidden",
+				"label": "mailbox",
+				"uuid": "6636abf4b72b9",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"options": {
+				"hidden": true
+			},
+			"type": "string",
+			"format": "text",
+			"title": "mailbox"
+		}
+	},
+	"required": [
+		"text_html",
+		"text"
+	],
+	"type": "object",
+	"title": "Compose email"
 }
+

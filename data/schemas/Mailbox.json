@@ -7,15 +7,15 @@
 	"properties": {
 		"name": {
 			"wiki": {
-				"type": "property",
-				"uuid": "663695326d82e",
 				"name": "name",
-				"visibility": "visible",
-				"label": "name",
+				"type": "property",
 				"multiple-items": false,
+				"required": true,
+				"label": "name",
+				"uuid": "663695326d82e",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"required": true
+				"input-config": []
 			},
 			"type": "string",
 			"format": "text",
@@ -69,8 +69,42 @@
 			"type": "string",
 			"format": "text",
 			"title": "reply-to"
+		},
+		"delivered-to": {
+			"wiki": {
+				"name": "delivered-to",
+				"title": "delivered-to",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "678d87daac022"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "delivered-to",
+					"type": "property",
+					"uuid": "678d86d7939af",
+					"visibility": "hidden",
+					"multiple-items": true,
+					"preferred-input": "OO.ui.TextInputWidget (email)",
+					"input-config": [],
+					"required": false,
+					"default": []
+				},
+				"options": {
+					"hidden": true
+				},
+				"format": "email",
+				"default": []
+			},
+			"type": "array",
+			"title": "delivered-to",
+			"uniqueItems": false
 		}
 	},
-	"required": [ "name" ],
+	"required": [
+		"name"
+	],
 	"type": "object"
 }
+

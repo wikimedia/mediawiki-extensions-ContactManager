@@ -28,6 +28,7 @@ if ( is_readable( __DIR__ . '/../../vendor/autoload.php' ) ) {
 	include_once __DIR__ . '/../../vendor/autoload.php';
 }
 
+use MediaWiki\Extension\ContactManager\Transport\SendgridApiTransport;
 use MediaWiki\MediaWikiServices;
 use Parser;
 use ParserOptions;
@@ -35,6 +36,8 @@ use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Mailer as SymfonyMailer;
 use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mailer\Transport\AbstractApiTransport;
+use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 use Title;
 use User;
@@ -43,6 +46,9 @@ class Mailer {
 
 	/** @var array */
 	private $obj;
+
+	/** @var AbstractApiTransport */
+	private $transportClass = null;
 
 	/** @var string */
 	private $editor;
@@ -60,6 +66,7 @@ class Mailer {
 	 * @param User $user
 	 * @param array $obj
 	 * @param string $editor
+	 * @return bool
 	 */
 	public function __construct( $user, $obj, $editor ) {
 		$this->user = $user;
@@ -70,6 +77,7 @@ class Mailer {
 		$username = null;
 		$password = null;
 		$host = null;
+		$transportScheme = null;
 
 		// @see https://symfony.com/doc/5.x/mailer.html
 		switch ( $obj['transport'] ) {
@@ -82,7 +90,7 @@ class Mailer {
 				$credentials = $GLOBALS['wgContactManagerSMTP'][$obj['mailbox']];
 				$credentials = array_change_key_case( $credentials, CASE_LOWER );
 
-				$transport = 'smtp';
+				$transportScheme = 'smtp';
 				$username = $credentials['username'];
 				$password = $credentials['password'];
 				$host = $credentials['server'] . ':' . $credentials['port'];
@@ -90,7 +98,8 @@ class Mailer {
 			case 'mailer':
 				$this->obj['from'] = $this->obj['from_mailer'];
 				$schema = $GLOBALS['wgContactManagerSchemasMailer'];
-				$query = '[[name::' . $obj['mailer'] . ']]';
+				$mailer = preg_replace( '/\s*-[^-]+$/', '', $obj['mailer'] );
+				$query = '[[name::' . $mailer . ']]';
 				$results = \VisualData::getQueryResults( $schema, $query );
 
 				if ( empty( $results[0]['data'] ) ) {
@@ -117,7 +126,7 @@ class Mailer {
 				// @see https://symfony.com/doc/5.x/mailer.html
 				switch ( $data['provider'] ) {
 					case 'smtp':
-						$transport = 'smtp';
+						$transportScheme = 'smtp';
 						$username = $credentials['username'];
 						$password = $credentials['password'];
 						$host = $credentials['server'] . ':' . $credentials['port'];
@@ -135,40 +144,40 @@ class Mailer {
 								switch ( $data['provider'] ) {
 									case 'amazon':
 										// ses+smtp://USERNAME:PASSWORD@default
-										$transport = 'ses+smtp';
+										$transportScheme = 'ses+smtp';
 										$username = $credentials['username'];
 										$password = $credentials['password'];
 										break;
 									case 'gmail':
-										$transport = 'gmail+smtp';
+										$transportScheme = 'gmail+smtp';
 										$username = $credentials['username'];
 										$password = $credentials['app-password'];
 										break;
 									case 'mandrill':
-										$transport = 'mandrill+smtp';
+										$transportScheme = 'mandrill+smtp';
 										$username = $credentials['username'];
 										$password = $credentials['password'];
 										break;
 									case 'mailgun':
-										$transport = 'mailgun+smtp';
+										$transportScheme = 'mailgun+smtp';
 										$username = $credentials['username'];
 										$password = $credentials['password'];
 										break;
 									case 'mailjet':
-										$transport = 'mailjet+smtp';
+										$transportScheme = 'mailjet+smtp';
 										$username = $credentials['access_key'];
 										$password = $credentials['secret_key'];
 										break;
 									case 'postmark':
-										$transport = 'postmark+smtp';
+										$transportScheme = 'postmark+smtp';
 										$username = $credentials['id'];
 										break;
 									case 'sendgrid':
-										$transport = 'sendgrid+smtp';
+										$transportScheme = 'sendgrid+smtp';
 										$username = $credentials['key'];
 										break;
 									case 'sendinblue':
-										$transport = 'sendinblue+smtp';
+										$transportScheme = 'sendinblue+smtp';
 										$username = $credentials['username'];
 										$password = $credentials['password'];
 										break;
@@ -181,18 +190,18 @@ class Mailer {
 							case 'http':
 								switch ( $data['provider'] ) {
 									case 'amazon':
-										$transport = 'ses+htpps';
+										$transportScheme = 'ses+htpps';
 										$username = $credentials['access_key'];
 										$password = $credentials['secret_key'];
 										break;
 									case 'gmail':
 										break;
 									case 'mandrill':
-										$transport = 'mandrill+htpps';
+										$transportScheme = 'mandrill+htpps';
 										$username = $credentials['key'];
 										break;
 									case 'mailgun':
-										$transport = 'mailgun+htpps';
+										$transportScheme = 'mailgun+htpps';
 										$username = $credentials['key'];
 										$password = $credentials['domain'];
 										break;
@@ -206,36 +215,37 @@ class Mailer {
 							case 'api':
 								switch ( $data['provider'] ) {
 									case 'amazon':
-										$transport = 'ses+api';
+										$transportScheme = 'ses+api';
 										$username = $credentials['access_key'];
 										$password = $credentials['secret_key'];
 										break;
 									case 'gmail':
 										break;
 									case 'mandrill':
-										$transport = 'mandrill+api';
+										$transportScheme = 'mandrill+api';
 										$username = $credentials['key'];
 										break;
 									case 'mailgun':
-										$transport = 'mailgun+api';
+										$transportScheme = 'mailgun+api';
 										$username = $credentials['key'];
 										$password = $credentials['domain'];
 										break;
 									case 'mailjet':
-										$transport = 'mailjet+api';
+										$transportScheme = 'mailjet+api';
 										$username = $credentials['access_key'];
 										$password = $credentials['secret_key'];
 										break;
 									case 'postmark':
-										$transport = 'postmark+api';
+										$transportScheme = 'postmark+api';
 										$username = $credentials['key'];
 										break;
 									case 'sendgrid':
-										$transport = 'sendgrid+api';
+										$transportScheme = 'sendgrid+api';
 										$username = $credentials['key'];
+										$this->transportClass = new SendgridApiTransport( $username );
 										break;
 									case 'sendinblue':
-										$transport = 'sendinblue+api';
+										$transportScheme = 'sendinblue+api';
 										$username = $credentials['key'];
 										break;
 									case 'ohmysmtp':
@@ -248,6 +258,11 @@ class Mailer {
 				}
 		}
 
+		if ( $this->transportClass ) {
+			$this->mailer = new SymfonyMailer( $this->transportClass );
+			return true;
+		}
+
 		if ( !$dns ) {
 			if ( !$username ) {
 				$this->errors[] = 'transport not supported';
@@ -255,7 +270,7 @@ class Mailer {
 			}
 
 			// ses+smtp://USERNAME:PASSWORD@default
-			$dns = $transport . '://' . urlencode( $username );
+			$dns = $transportScheme . '://' . urlencode( $username );
 
 			if ( $password ) {
 				$dns .= ':' . urlencode( $password );
@@ -266,6 +281,8 @@ class Mailer {
 
 		$transport = Transport::fromDsn( $dns );
 		$this->mailer = new SymfonyMailer( $transport );
+
+		return true;
 	}
 
 	/**
@@ -307,38 +324,212 @@ class Mailer {
 	}
 
 	/**
+	 * @param array $recipients
+	 * @return array
+	 */
+	public function getContactDataFromRecipients( $recipients ) {
+		if ( !count( $recipients ) ) {
+			return [];
+		}
+
+		$parsedRecipients = array_filter( array_map( static function ( $value ) {
+			return \ContactManager::parseRecipient( $value );
+		}, $recipients ) );
+
+		if ( !count( $parsedRecipients ) ) {
+			return [];
+		}
+
+		$names = [];
+		$emailAddresses = [];
+		foreach ( $parsedRecipients as $value ) {
+			$names[] = trim( $value[0] );
+			$emailAddresses[] = trim( $value[1] );
+		}
+		$schema = $GLOBALS['wgContactManagerSchemasContact'];
+		$query = '[[' . implode( '||', array_map( static function ( $value ) {
+			return "full_name::$value";
+		}, $names ) ) . ']]';
+
+		$ret = \VisualData::getQueryResults( $schema, $query );
+
+		// @TODO log errors
+		if ( array_key_exists( 'errors', $ret ) ) {
+			return [];
+		}
+
+		return $this->filterResultObjectEmailAddresses( $ret, $emailAddresses );
+	}
+
+	/**
+	 * @param array $result
+	 * @param array $addresses
+	 * @return array
+	 */
+	public function filterResultObjectEmailAddresses( $result, $addresses ) {
+		// remove unselected email addresses
+		foreach ( $result as $key => $value ) {
+			if ( !array_key_exists( 'email_addresses', $value['data'] ) ) {
+				$value['data']['email_addresses'] = [];
+			}
+			$result[$key]['data']['email_addresses'] = array_values(
+				array_intersect( $value['data']['email_addresses'], $addresses )
+			);
+		}
+		return $result;
+	}
+
+	private function prepareData() {
+		$contactsData = [
+			'to' => [],
+			'cc' => [],
+			'bcc' => [],
+			'bcc_categories' => [],
+		];
+
+		if ( !empty( $this->obj['substitutions'] ) ) {
+			$contactsData['to'] = $this->getContactDataFromRecipients( $this->obj['to'] );
+			$contactsData['cc'] = $this->getContactDataFromRecipients( $this->obj['cc'] );
+			$contactsData['bcc'] = $this->getContactDataFromRecipients( $this->obj['bcc'] );
+		}
+
+		if ( !empty( $this->obj['bcc_categories'] ) ) {
+			$schema = $GLOBALS['wgContactManagerSchemasContact'];
+			$query = '[[' . implode( '||', array_map( static function ( $value ) {
+				return "Category:$value";
+			}, $this->obj['bcc_categories'] ) ) . ']]';
+
+			$contactsData['bcc_categories'] = \VisualData::getQueryResults( $schema, $query );
+
+			if ( array_key_exists( 'exclude_bcc_categories', $this->obj )
+				&& is_array( $this->obj['exclude_bcc_categories'] )
+			) {
+				foreach ( $contactsData['bcc_categories'] as $key => $value ) {
+					$contactsData['bcc_categories'][$key]['data']['email_addresses'] = array_diff(
+						$value['data']['email_addresses'],
+						$this->obj['exclude_bcc_categories']
+					);
+				}
+			}
+		}
+
+		// append to bcc, use standard personalizations object
+		if ( empty( $this->obj['substitutions'] ) ) {
+			foreach ( $contactsData as $key => $value ) {
+				foreach ( $value as $k => $v ) {
+					$data_ = $v['data'];
+					if ( empty( $data_['email_addresses'][0] ) ) {
+						continue;
+					}
+					$this->obj['bcc'][] = new Address( $data_['email_addresses'][0], $data_['full_name'] );
+				}
+			}
+			return;
+		}
+
+		// identify the properties needed for substitutions
+		$filterProperties = [ 'full_name' => '', 'email_addresses' => '' ];
+		foreach ( $contactsData as $value ) {
+			if ( count( $value ) ) {
+				$schemaProperties = array_keys( $value[0]['data'] );
+				foreach ( $schemaProperties as $property ) {
+					if ( strpos( $this->obj['text'], "%$property%" ) !== false
+						|| strpos( $this->obj['html'], "%$property%" ) !== false
+					) {
+						$filterProperties[$property] = '';
+					}
+				}
+				break;
+			}
+		}
+
+		foreach ( $contactsData as $key => $value ) {
+			foreach ( $value as $k => $v ) {
+				$contactsData[$key][$k]['data'] = array_intersect_key( $v['data'], $filterProperties );
+			}
+		}
+
+		// @FIXME this is sendgrid api v3 specific, extend with other
+		// providers as needed
+		$substitutionKey = ( empty( $this->obj['template_id'] ) ? 'substitutions'
+			: 'dynamic_template_data' );
+
+		$personalizations = [];
+		foreach ( $contactsData as $key => $value ) {
+			foreach ( $value as $k => $v ) {
+				$data_ = $v['data'];
+				if ( empty( $data_['email_addresses'][0] ) ) {
+					continue;
+				}
+				$email_ = $data_['email_addresses'][0];
+				unset( $data_['email_addresses'] );
+				$personalizations[] = [
+					( $key !== 'bcc_categories' ? $key : 'bcc' ) => [
+						'email' => $email_,
+						'name' => $data_['full_name'],
+					],
+					$substitutionKey => ( $substitutionKey === 'dynamic_template_data' ?
+						$data_ : array_combine( array_map( static function ( $value ) {
+							return "-$value-";
+						}, array_keys( $data_ ) ), array_values( $data_ ) ) )
+				];
+			}
+		}
+
+		$this->transportClass->setPersonalizations( $contactsData );
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function sendEmail() {
-		$email = ( new Email() )
-			->from( $this->obj['from'] );
+		if ( $this->transportClass && method_exists( $this->transportClass, 'setPersonalizations' ) ) {
+			$this->prepareData();
+		}
+
+		$email = new Email();
+		$email->from( $this->obj['from'] );
 
 		if ( $this->editor === 'VisualEditor' ) {
 			[ $text, $html ] = $this->parseWikitext( $this->obj['text'] );
-			$email->text( $text )
-				->html( $html );
+			$email->text( $text );
+			$email->html( $html );
+
 		} else {
 			if ( $this->obj['html'] ) {
 				$html = $this->obj['text_html'];
 				$html2Text = new \Html2Text\Html2Text( $html );
 				$text = $html2Text->getText();
-				$email->text( $text )
-					->html( $html );
+				$email->text( $text );
+				$email->html( $html );
+
 			} else {
 				$email->text( $this->obj['text'] );
 			}
 		}
 
+		// this is equivalent to $email->to( ...$this->obj['to'] );
+		// however it filters the invalid email addresses
+		$getParsedRecipients = static function ( $recipients ) {
+			$arr = array_filter( array_map( static function ( $value ) {
+				return \ContactManager::parseRecipient( $value );
+			}, $recipients ) );
+
+			return array_map( static function ( $value ) {
+				return new Address( $value[1], $value[0] );
+			}, $arr );
+		};
+
 		if ( count( $this->obj['to'] ) ) {
-			$email->to( implode( ', ', $this->obj['to'] ) );
+			$email->to( ...$getParsedRecipients( $this->obj['to'] ) );
 		}
 
 		if ( count( $this->obj['cc'] ) ) {
-			$email->to( implode( ', ', $this->obj['cc'] ) );
+			$email->to( ...$getParsedRecipients( $this->obj['cc'] ) );
 		}
 
 		if ( count( $this->obj['bcc'] ) ) {
-			$email->to( implode( ', ', $this->obj['bcc'] ) );
+			$email->to( ...$getParsedRecipients( $this->obj['bcc'] ) );
 		}
 
 		if ( empty( $this->obj['subject'] ) ) {
@@ -352,6 +543,7 @@ class Mailer {
 
 		try {
 			$this->mailer->send( $email );
+
 		} catch ( TransportExceptionInterface | TransportException | \Exception $e ) {
 			$this->errors[] = $e->getMessage();
 			return false;

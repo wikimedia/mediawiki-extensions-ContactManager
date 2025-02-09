@@ -1,0 +1,106 @@
+{
+	"wiki": {
+		"type": "schema",
+		"uuid": "677586fa18383",
+		"name": "ContactManager/Conversation"
+	},
+	"properties": {
+		"mailbox": {
+			"wiki": {
+				"type": "property",
+				"name": "mailbox",
+				"visibility": "visible",
+				"label": "mailbox",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": true,
+				"uuid": "678d8c642256d"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "mailbox"
+		},
+		"participants": {
+			"wiki": {
+				"name": "participants",
+				"min-items": 1,
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "677586fa18387"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "",
+					"type": "schema",
+					"layout": "section",
+					"visibility": "visible",
+					"uuid": "677586fa18388"
+				},
+				"properties": {
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false,
+							"uuid": "677586fa18389"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					},
+					"email": {
+						"wiki": {
+							"name": "email",
+							"type": "property",
+							"multiple-items": false,
+							"label": "email",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false,
+							"uuid": "677586fa18398"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "email"
+					}
+				}
+			},
+			"type": "array",
+			"minItems": 1,
+			"uniqueItems": false
+		},
+		"md5": {
+			"wiki": {
+				"name": "md5",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"visibility": "hidden",
+				"label": "md5",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"uuid": "6782878c0302f"
+			},
+			"options": {
+				"hidden": true
+			},
+			"type": "string",
+			"format": "text",
+			"title": "md5"
+		}
+	},
+	"required": [
+		"mailbox",
+		"md5"
+	],
+	"type": "object"
+}
+

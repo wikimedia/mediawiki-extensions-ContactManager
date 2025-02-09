@@ -58,15 +58,15 @@ class ContactManagerHooks {
 		$context = RequestContext::getMain();
 
 		$doImport = static function ( $pagename, $contents ) use ( $context, $importer, &$error_messages ) {
-			echo 'ContactManager -importing ' . $pagename;
+			echo '(ContactManager) importing ' . $pagename;
 
 			try {
-				echo ' (success)' . PHP_EOL;
 				$title_ = Title::newFromText( $pagename );
 				$context->setTitle( $title_ );
 				$importer->doImportSelf( $pagename, $contents );
+				echo ' (success)' . PHP_EOL;
 			} catch ( Exception $e ) {
-				echo ' (error)' . PHP_EOL;
+				echo ' ( ***error)' . PHP_EOL;
 				$error_messages[$pagename] = $e->getMessage();
 			}
 		};
@@ -132,7 +132,7 @@ class ContactManagerHooks {
 		} );
 
 		if ( count( $error_messages ) ) {
-			throw new MWException( 'error importing ' . count( $error_messages ) . ' articles' );
+			echo '(ContactManager) ***error importing ' . count( $error_messages ) . ' articles' . PHP_EOL;
 		}
 	}
 

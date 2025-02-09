@@ -946,7 +946,7 @@
 								"messageId": "messageId",
 								"textPlain": "textPlain",
 								"textHtml": "textHtml",
-								"visible_text": "visible_text",
+								"visibleText": "visibleText",
 								"attachments/id": "attachments/id",
 								"attachments/contentId": "attachments/contentId",
 								"attachments/type": "attachments/type",

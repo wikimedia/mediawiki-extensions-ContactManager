@@ -26,13 +26,22 @@
 }}
 
 
-
 {{#visualdataquery:[[full_name::+]][[ContactManager:Contacts/~]]
 |schema=ContactManager/Contact
-|limit=20
+|limit=40
 |?full_name
 |?email_addresses
+|?categories
 |order=full_name asc 
 |format=datatables
+|datatables-buttons=colvis,copy, csv, excel, download, print
+|datatables-synch=true
+|datatables-synch.interval=10
+|datatables-synch.property=Modification date
+|datatables-searchPanes=true
+|datatables-searchPanes.columns=1,3
+|datatables-searchPanes.threshold=1
+|categories=true
 }}
+
 

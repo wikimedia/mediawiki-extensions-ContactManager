@@ -134,9 +134,6 @@ class ImportMessage {
 		};
 		$recIterator( $obj, $decode );
 
-		// @TODO get Delivered-To
-		// for the use with Conversations
-
 		$allContacts = [];
 		$allContacts[$obj['fromAddress']] = $obj['fromName'];
 
@@ -169,6 +166,30 @@ class ImportMessage {
 		$obj['visibleText'] = $parsedEmail->getVisibleText();
 		$obj['attachments'] = array_values( $attachments );
 		$obj['hasAttachments'] = count( $obj['attachments'] ) ? true : false;
+
+		// get Delivered-To
+		// for the use with Conversations
+		$deliveredTo = $imapMailbox->getMailHeaderFieldValue( $mail->headersRaw, 'Delivered-To' );
+		$obj['deliveredTo'] = $deliveredTo;
+
+		// update the delivered-to list
+		$schema_ = $GLOBALS['wgContactManagerSchemasMailbox'];
+		$query_ = '[[name::' . $params['mailbox'] . ']]';
+		$results_ = \VisualData::getQueryResults( $schema_, $query_ );
+		$mailboxData = $results_[0]['data'];
+		if ( !array_key_exists( 'delivered-to', $mailboxData )
+			|| !is_array( $mailboxData['delivered-to'] )
+		) {
+			$mailboxData['delivered-to'] = [];
+		}
+		if ( !in_array( $deliveredTo, $mailboxData['delivered-to'] ) ) {
+			$mailboxData['delivered-to'][] = $deliveredTo;
+			$jsonData_ = [
+				$GLOBALS['wgContactManagerSchemasMailbox'] => $mailboxData
+			];
+			$title_ = Title::newFromText( $results_[0]['title'] );
+			\VisualData::updateCreateSchemas( $user, $title_, $jsonData_ );
+		}
 
 		$showMsg = static function ( $msg ) {
 			echo $msg . PHP_EOL;
@@ -265,7 +286,58 @@ class ImportMessage {
 			\ContactManager::saveContact( $user, $context, $name, $email, $categories );
 		}
 
-		// @TODO $this->saveConversation( $user, $context, $allContacts );
+		$this->saveConversation( $user, $context, $params, $allContacts );
+	}
+
+	/**
+	 * @param User $user
+	 * @param Context $context
+	 * @param array $params
+	 * @param array $allContacts
+	 */
+	private function saveConversation( $user, $context, $params, $allContacts ) {
+		$participants = [];
+		$participantsEmail = [];
+		foreach ( $allContacts as $email => $name ) {
+			$participants[] = [ 'name' => $name, 'email' => $email ];
+			$participantsEmail[] = $email;
+		}
+
+		// , is not supported in email address
+		$md5 = md5( implode( ',', $participantsEmail ) );
+
+		$schema = $GLOBALS['wgContactManagerSchemasConversation'];
+		$options = [
+			'main-slot' => true,
+			'limit' => INF,
+			'category-field' => 'categories'
+		];
+		$importer = new VisualDataImporter( $user, $context, $schema, $options );
+
+		$schema = $GLOBALS['wgContactManagerSchemasConversation'];
+		$query = '[[md5::' . $md5 . ']]';
+		$results = \VisualData::getQueryResults( $schema, $query );
+
+		// @TODO names may be updated
+		// if ( count( $results ) ) {
+		// 	return;
+		// }
+
+		// use numeric increment
+		$pagenameFormula = 'ContactManager:Mailboxes/' . $params['mailbox']
+				. '/conversations/#count';
+
+		$data = [
+			'mailbox' => $params['mailbox'],
+			'participants' => $participants,
+			'md5' => $md5,
+		];
+
+		$showMsg = static function ( $msg ) {
+			echo $msg . PHP_EOL;
+		};
+
+		$importer->importData( $pagenameFormula, $data, $showMsg );
 	}
 
 	/**
@@ -334,7 +406,7 @@ class ImportMessage {
 				case 'messageId':
 				case 'textPlain':
 				case 'textHtml':
-				case 'visible_text':
+				case 'visibleText':
 				case 'attachments/id':
 				case 'attachments/contentId':
 				case 'attachments/subtype':

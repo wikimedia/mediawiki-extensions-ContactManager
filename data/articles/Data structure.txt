@@ -2,20 +2,24 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 
 
 * articles
-**[[ContactManager:Data structure]]
-**[[ContactManager:Mailboxes]]
-**[[ContactManager:Contacts]]
-**[[ContactManager:Mailers]]
-**[[ContactManager:Messages]]
-** [[ContactManager:Read email]]
-** [[ContactManager:Search criteria]]
+
+** [[ContactManager:Contacts]]
+** [[ContactManager:Conversation]]
+** [[ContactManager:Data structure]]
 ** [[ContactManager:Filter metadata]]
 ** [[ContactManager:Filter header]]
+** [[ContactManager:Headers]]
+** [[ContactManager:Mailboxes]]
+** [[ContactManager:Mailers]]
+** [[ContactManager:Messages]]
+** [[ContactManager:Read email]]
+** [[ContactManager:Search criteria]]
 
 
 * templates
 **[[Template:ContactManager/Contact edit]]
 **[[Template:ContactManager/Email]]
+**[[Template:ContactManager/Format reply]]
 **[[Template:ContactManager/Get mailbox]]
 **[[Template:ContactManager/Mailbox edit]]
 **[[Template:ContactManager/Mailer edit]]
@@ -23,7 +27,6 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 **[[Template:ContactManager/Read email]]
 **[[Template:ContactManager/Folders table messages]]
 **[[Template:ContactManager/Folders table headers]]
-**[[Template:ContactManager/Format reply]]
 
 
 * modules
@@ -34,12 +37,13 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 *schemas
 **[[VisualDataSchema:ContactManager/ComposeEmail]]
 **[[VisualDataSchema:ContactManager/Contact]]
+**[[VisualDataSchema:ContactManager/Conversation]]
 **[[VisualDataSchema:ContactManager/Define job]]
-**[[VisualDataSchema:ContactManager/Message header]]
 **[[VisualDataSchema:ContactManager/Incoming mail]]
 **[[VisualDataSchema:ContactManager/Mailbox]]
 **[[VisualDataSchema:ContactManager/Mailbox folders]]
 **[[VisualDataSchema:ContactManager/Mailbox info]]
 **[[VisualDataSchema:ContactManager/Mailer]]
+**[[VisualDataSchema:ContactManager/Message header]]
 **[[VisualDataSchema:ContactManager/Retrieve messages]]
 

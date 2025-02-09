@@ -1,0 +1,15 @@
+{{#visualdataquery: [[fromAddress::{{#replace:{{#urldecode:{{#urlget:email}}}}|,|{{!}}{{!}}fromAddress:: }}||to::~{{#replace:{{#urldecode:{{#urlget:email}}}}|,|~{{!}}{{!}}to::~ }}||cc::~{{#replace:{{#urldecode:{{#urlget:email}}}}|,|~{{!}}{{!}}cc::~ }}||bcc::~{{#replace:{{#urldecode:{{#urlget:email}}}}|,|~{{!}}{{!}}bcc::~ }}]]
+|schema=ContactManager/Incoming mail
+|?fromName
+|?fromAddress
+|?date
+|?date
+|?subject
+|?toString
+|?attachments
+|?visibleText
+|template=ContactManager/Conversation
+|format=template
+|order=date desc
+}}
+

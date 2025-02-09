@@ -29,6 +29,7 @@
 		"php-imap/php-imap": "^5.0",
 		"theiconic/name-parser": "^1.2",
 		"willdurand/email-reply-parser": "^2.10",
+		"egulias/email-validator": "^2.1.10|^3|^4",
 		"symfony/mailer": "^5.4",
 		"symfony/amazon-mailer": "^5.4",
 		"symfony/mailchimp-mailer": "^5.4",

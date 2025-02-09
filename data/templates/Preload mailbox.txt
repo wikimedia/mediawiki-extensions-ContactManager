@@ -56,15 +56,25 @@
 
 
 
-<!--
-{{#VisualDataButton: Save contacts
-|callback = ContactManager.initJob
-|schema = ContactManager/Define job
-|edit-page={{FULLPAGENAME}}/Jobs/GetContacts
-|preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
-|target-slot=main
+== Conversations ==
+{{#visualdataquery: [[{{FULLPAGENAME}}/conversations/~]] [[participants/email::!{{#replace:{{#visualdataprint:{{FULLPAGENAME}}
+  |schema=ContactManager/Mailbox
+  |?delivered-to
+  |format=raw
+  }}|,|{{!}}{{!}}participants/email::! }}]]
+|schema=ContactManager/Conversation   
+|limit=40
+|?participants field=participants
+|?participants/email=
+|?participants/name=
+|?pagetitle=
+|template?participants field=ContactManager/Conversations table participants field
+|template?participants=ContactManager/Conversations table participants
+|order=full_name asc
+|format=datatable
+|mode=nested 
 }}
--->
+
 
 
 ==Compose message==
@@ -74,7 +84,7 @@
 |title = New email
 |action = create
 |edit-page = 
-|return-page = {{FULLPAGENAME}}
+|return-page = {{FULLPAGENAME}}/Sent email
 |view = inline
 |popup-size = large
 |css-class =

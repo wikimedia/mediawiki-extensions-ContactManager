@@ -8,8 +8,8 @@
 |?pagetitle
 |?subject=subject
 |?headers/fromaddress=from
-|?headers/toaddress=to
-|?date=date
+|?to
+|?date
 |pagetitle=
 |schema=ContactManager/Incoming mail
 |template?pagetitle=ContactManager/Read email field
@@ -20,5 +20,8 @@
 |datatables-synch.interval=100
 |order=date desc
 |limit=20
+|categories=false
+|mode=nested
 }}
+
 

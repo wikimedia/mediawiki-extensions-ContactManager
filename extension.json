@@ -38,7 +38,8 @@
 	"SpecialPages": {
 	},
 	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\ContactManager\\": "includes/classes/"
+		"MediaWiki\\Extension\\ContactManager\\": "includes/classes/",
+		"MediaWiki\\Extension\\ContactManager\\Transport\\": "includes/classes/transports/"
 	},
 	"GroupPermissions": {
 		"sysop": {
