@@ -464,19 +464,22 @@ class Mailer {
 				$email_ = $data_['email_addresses'][0];
 				unset( $data_['email_addresses'] );
 				$personalizations[] = [
+					// must be an array
 					( $key !== 'bcc_categories' ? $key : 'bcc' ) => [
-						'email' => $email_,
-						'name' => $data_['full_name'],
+						[
+							'email' => $email_,
+							'name' => $data_['full_name'],
+						]
 					],
 					$substitutionKey => ( $substitutionKey === 'dynamic_template_data' ?
 						$data_ : array_combine( array_map( static function ( $value ) {
-							return "-$value-";
+							return "%$value%";
 						}, array_keys( $data_ ) ), array_values( $data_ ) ) )
 				];
 			}
 		}
 
-		$this->transportClass->setPersonalizations( $contactsData );
+		$this->transportClass->setPersonalizations( $personalizations );
 	}
 
 	/**

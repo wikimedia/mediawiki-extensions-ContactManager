@@ -17,6 +17,8 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 
 
 * templates
+**[[Template:ContactManager/Conversations table participants]]
+**[[Template:ContactManager/Conversations table participants field]]
 **[[Template:ContactManager/Contact edit]]
 **[[Template:ContactManager/Email]]
 **[[Template:ContactManager/Format reply]]

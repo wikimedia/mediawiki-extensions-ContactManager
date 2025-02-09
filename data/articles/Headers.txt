@@ -3,13 +3,12 @@
   
 
 =={{#urlget:folder}}== 
-
+<!-- |?to -->
 {{#visualdataquery: [[{{#urldecode:{{#urlget:path}}}}/headers/{{#urldecode:{{#urlget:folder}}}}/~]]
 |schema=ContactManager/Message header
 |?pagetitle
 |?subject
 |?from
-|?to
 |?date
 |?uid=
 |pagetitle=
@@ -20,6 +19,6 @@
 |datatables-synch=true
 |datatables-synch.interval=100
 |order=date desc
-|limit=20
+|limit=60
 }}
 

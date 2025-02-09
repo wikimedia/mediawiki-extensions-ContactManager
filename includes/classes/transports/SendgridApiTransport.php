@@ -177,7 +177,9 @@ class SendgridApiTransport extends AbstractApiTransport {
 
 		} else {
 			$payload['subject'] = $email->getSubject();
-			$payload['custom_args'] = $customArguments;
+			if ( \count( $customArguments ) > 0 ) {
+				$payload['custom_args'] = $customArguments;
+			}
 		}
 
 		return $payload;

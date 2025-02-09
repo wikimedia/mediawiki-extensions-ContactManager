@@ -315,13 +315,13 @@ class ImportMessage {
 		$importer = new VisualDataImporter( $user, $context, $schema, $options );
 
 		$schema = $GLOBALS['wgContactManagerSchemasConversation'];
-		$query = '[[md5::' . $md5 . ']]';
+		$query = '[[ContactManager:Mailboxes/' . $params['mailbox'] . '/conversations~]][[md5::' . $md5 . ']]';
 		$results = \VisualData::getQueryResults( $schema, $query );
 
 		// @TODO names may be updated
-		// if ( count( $results ) ) {
-		// 	return;
-		// }
+		if ( !array_exists( 'errors', $results ) && count( $results ) ) {
+			return;
+		}
 
 		// use numeric increment
 		$pagenameFormula = 'ContactManager:Mailboxes/' . $params['mailbox']
