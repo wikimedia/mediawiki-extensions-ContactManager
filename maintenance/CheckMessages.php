@@ -86,12 +86,17 @@ class CheckMessages extends Maintenance {
 
 		$schema = $GLOBALS['wgContactManagerSchemasRetrieveMessages'];
 		$query = '[[job::retrieve-messages]]';
-		$results = \VisualData::getQueryResults( $schema, $query );
+		$printouts = [
+			'fetch',
+			'check_email_interval',
+		];
+		$results = \VisualData::getQueryResults( $schema, $query, $printouts );
 
 		$data = [];
 		$data['session'] = $context->exportSession();
 		$jobs = [];
 		foreach ( $results as $value ) {
+			// add session parameter
 			$data_ = array_merge( $value['data'], $data );
 
 			if ( $data_['fetch'] !== 'UIDs incremental' ) {
@@ -110,6 +115,13 @@ class CheckMessages extends Maintenance {
 			}
 
 			if ( $cron->isDue() ) {
+				// repeat the query with all the printouts
+				// (this is slower)
+				$query_ = $value['pageid'];
+				$printouts_ = [];
+				$value = \VisualData::getQueryResults( $schema, $query_, $printouts_ );
+				$data_ = array_merge( $value['data'], $data );
+
 				// must be a valid title, otherwise if an "inner"
 				// job is created, will trigger the error
 				// $params must be an array in $IP/includes/jobqueue/Job.php on line 101

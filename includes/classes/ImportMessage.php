@@ -319,7 +319,7 @@ class ImportMessage {
 		$results = \VisualData::getQueryResults( $schema, $query );
 
 		// @TODO names may be updated
-		if ( !array_exists( 'errors', $results ) && count( $results ) ) {
+		if ( !array_key_exists( 'errors', $results ) && count( $results ) ) {
 			return;
 		}
 
@@ -352,7 +352,7 @@ class ImportMessage {
 		// *** attention, this is empty if called from
 		// 'get message' and the toggle 'fetch message'
 		// is false in the ContactManager/Retrieve messages form
-		if ( !array_key_exists( 'download_attachments', $params ) ) {
+		if ( !array_key_exists( 'filters_by_message_fields', $params ) ) {
 			$params['filters_by_message_fields'] = [];
 		}
 
