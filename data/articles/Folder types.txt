@@ -1,0 +1,6 @@
+* Inbox
+* Sent
+* Draft
+* Trash
+* Spam
+* Other (Promotions/Newsletters/Social/Forums/Updates/etc.)

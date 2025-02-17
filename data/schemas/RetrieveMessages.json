@@ -47,29 +47,31 @@
 				"min-items": 1,
 				"unique-items": false,
 				"type": "schema",
-				"uuid": "6635d6f5c2621"
+				"uuid": "67b0b31b326dc"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
-					"uuid": "662c8dadf35cb",
-					"layout": "section"
+					"uuid": "67b0b2fb07384",
+					"layout": "section",
+					"visibility": "visible"
 				},
 				"properties": {
 					"folder": {
 						"wiki": {
-							"name": "folder",
 							"type": "property",
-							"multiple-items": false,
-							"required": true,
-							"label": "folder",
-							"label-parsed": "folder",
+							"uuid": "66138f32ef41d",
+							"name": "folder",
 							"visibility": "visible",
+							"label": "folder",
+							"help-message": "remote folder name",
+							"multiple-items": false,
 							"preferred-input": "OO.ui.DropdownInputWidget",
 							"input-config": [],
 							"options-allow-null": false,
+							"options-label-formula": "\u003Cfolders/shortpath\u003E",
 							"options-query": "[[name::\u003Cmailbox\u003E]]",
 							"query-schema": "ContactManager/Mailbox folders",
 							"query-printouts": [
@@ -77,12 +79,12 @@
 								"folders/shortpath"
 							],
 							"options-query-formula": "\u003Cfolders/fullpath\u003E",
-							"options-label-formula": "\u003Cfolders/shortpath\u003E",
-							"uuid": "66138f32ef41d"
+							"required": true
 						},
 						"type": "string",
 						"format": "text",
-						"title": "folder"
+						"title": "folder",
+						"description": "remote folder name"
 					},
 					"folder_name": {
 						"wiki": {
@@ -91,7 +93,7 @@
 							"multiple-items": false,
 							"required": true,
 							"label": "folder name",
-							"help-message": "will be used in the pagename formula, therefore it must not contain any of the  [https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters Problem characters]",
+							"help-message": "the article title of this folder, it must not contain any of the  [https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters Problem characters]",
 							"uuid": "66138f32ef420",
 							"visibility": "visible",
 							"preferred-input": "OO.ui.TextInputWidget",
@@ -100,12 +102,49 @@
 						"type": "string",
 						"format": "text",
 						"title": "folder name",
-						"description": "will be used in the pagename formula, therefore it must not contain any of the  \u003Ca class=\"external text\" href=\"https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters\"\u003EProblem characters\u003C/a\u003E"
+						"description": "the article title of this folder, it must not contain any of the  \u003Ca class=\"external text\" target=\"_blank\" href=\"https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters\"\u003EProblem characters\u003C/a\u003E"
+					},
+					"folder_type": {
+						"wiki": {
+							"name": "folder_type",
+							"type": "property",
+							"multiple-items": false,
+							"required": true,
+							"label": "folder type",
+							"help-message": "the folder type, it is used to preload the correct datatable",
+							"uuid": "67b0b23b36910",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.DropdownInputWidget",
+							"input-config": [],
+							"options-allow-null": false,
+							"options-wikilist": "ContactManager:Folder types",
+							"options-values-parsed": {
+								"Inbox": "Inbox",
+								"Sent": "Sent",
+								"Draft": "Draft",
+								"Trash": "Trash",
+								"Spam": "Spam",
+								"Other (Promotions/Newsletters/Social/Forums/Updates/etc.)": "Other (Promotions/Newsletters/Social/Forums/Updates/etc.)"
+							}
+						},
+						"type": "string",
+						"format": "text",
+						"title": "folder type",
+						"description": "the folder type, it is used to preload the correct datatable",
+						"enum": [
+							"Inbox",
+							"Sent",
+							"Draft",
+							"Trash",
+							"Spam",
+							"Other (Promotions/Newsletters/Social/Forums/Updates/etc.)"
+						]
 					}
 				},
 				"required": [
 					"folder",
-					"folder_name"
+					"folder_name",
+					"folder_type"
 				]
 			},
 			"type": "array",
@@ -478,8 +517,8 @@
 			"type": "string",
 			"format": "text",
 			"title": "header pagename formula",
-			"description": "the overall functioning relies on the prefix {{FULLPAGENAME}}/headers/\u0026lt;folder_name\u0026gt;/ and it shouldn't be edited, while in the suffix  all properties of the schema \u003Ca href=\"/index.php?title=VisualDataSchema:ContactManager/Message_header\" title=\"VisualDataSchema:ContactManager/Message header\"\u003EContactManager/Message header\u003C/a\u003E can be used. Eg. .../\u0026lt;folder_name\u0026gt;/\u0026lt;ContactManager/Message header/from\u0026gt;/\u0026lt;ContactManager/Message header/uid\u0026gt;",
-			"default": "{{FULLPAGENAME}}/headers/\u003Cfolder_name\u003E/\u003CContactManager/Message header/uid\u003E"
+			"description": "",
+			"default": ""
 		},
 		"message_pagename_formula": {
 			"wiki": {
@@ -501,8 +540,8 @@
 			"type": "string",
 			"format": "text",
 			"title": "message pagename-formula",
-			"description": "the overall functioning relies on the prefix {{FULLPAGENAME}}/messages/ and it shouldn't be edited, while in the suffix all properties of the schema \u003Ca href=\"/index.php?title=VisualDataSchema:ContactManager/Incoming_mail\" title=\"VisualDataSchema:ContactManager/Incoming mail\"\u003EContactManager/Incoming mail\u003C/a\u003E can be used. Eg. .../\u0026lt;folder_name\u0026gt;/\u0026lt;ContactManager/Incoming mail/fromName\u0026gt;/\u0026lt;ContactManager/Incoming mail/id\u0026gt;",
-			"default": "{{FULLPAGENAME}}/messages/\u003Cfolder_name\u003E/\u003CContactManager/Incoming mail/id\u003E"
+			"description": "",
+			"default": ""
 		},
 		"job_pagetitle": {
 			"wiki": {
@@ -1017,7 +1056,7 @@
 							"messageId",
 							"textPlain",
 							"textHtml",
-							"visible_text",
+							"visibleText",
 							"attachments/id",
 							"attachments/contentId",
 							"attachments/type",

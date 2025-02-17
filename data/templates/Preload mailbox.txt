@@ -1,4 +1,4 @@
-[[ContactManager:Mailboxes|&larr; go back]]
+[[ContactManager:Mailboxes|&larr; go back]] 
  
 ==Mailbox info== 
 {{#visualDataButton: Get mailbox info
@@ -34,13 +34,11 @@
 {{#visualdataquery: [[name::+]] [[{{FULLPAGENAME}}]]
 |schema=ContactManager/Mailbox folders
 |?folders/fullpath=
-|?folders/shortpath=folder
-|?headers
-|?messages
+|?folders/shortpath=
+|?folders
 |?name=
 |pagetitle=
-|template?messages=ContactManager/Folders table messages
-|template?headers=ContactManager/Folders table headers
+|template?folders=ContactManager/Folders table field
 }}
 
 
@@ -67,7 +65,8 @@
 |?participants field=participants
 |?participants/email=
 |?participants/name=
-|?pagetitle=
+|?mailbox=
+|pagetitle=
 |template?participants field=ContactManager/Conversations table participants field
 |template?participants=ContactManager/Conversations table participants
 |order=full_name asc

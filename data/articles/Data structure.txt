@@ -2,7 +2,6 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 
 
 * articles
-
 ** [[ContactManager:Contacts]]
 ** [[ContactManager:Conversation]]
 ** [[ContactManager:Data structure]]
@@ -26,9 +25,23 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 **[[Template:ContactManager/Mailbox edit]]
 **[[Template:ContactManager/Mailer edit]]
 **[[Template:ContactManager/Preload mailbox]]
-**[[Template:ContactManager/Read email]]
-**[[Template:ContactManager/Folders table messages]]
-**[[Template:ContactManager/Folders table headers]]
+**[[Template:ContactManager/Preload messages Draft]]
+**[[Template:ContactManager/Preload messages Inbox]]
+**[[Template:ContactManager/Preload messages Other]]
+**[[Template:ContactManager/Preload messages Sent]]
+**[[Template:ContactManager/Preload messages Spam]]
+**[[Template:ContactManager/Preload messages Trash]]
+**[[Template:ContactManager/Read email field]]
+**[[Template:ContactManager/Read email field header]]
+**[[Template:ContactManager/Folders table field]]
+
+
+* styles
+**[[ContactManager:Styles.css]]
+
+
+* emailTemplates
+**[[EmailTemplates:Default]]
 
 
 * modules

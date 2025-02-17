@@ -81,27 +81,6 @@
 			"title": "substitutions",
 			"description": "in the message text, use any property in the \u003Ci\u003EContactManager/Contact\u003C/i\u003E schema surrounded by \"%\" (for instance %first_name%) to perform substitutions for each recipient"
 		},
-		"template_id": {
-			"wiki": {
-				"name": "template_id",
-				"type": "property",
-				"multiple-items": false,
-				"label": "template id",
-				"help-message": "optionally set a Sendgrid template id https://www.twilio.com/docs/sendgrid/ui/sending-email/how-to-send-an-email-with-dynamic-templates",
-				"visibility": "condition",
-				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"required": false,
-				"showif-field": "html",
-				"showif-condition": "=",
-				"showif-value": "false",
-				"uuid": "67a73fda64409"
-			},
-			"type": "string",
-			"format": "text",
-			"title": "template id",
-			"description": "optionally set a Sendgrid template id \u003Ca rel=\"nofollow\" class=\"external free\" href=\"https://www.twilio.com/docs/sendgrid/ui/sending-email/how-to-send-an-email-with-dynamic-templates\"\u003Ehttps://www.twilio.com/docs/sendgrid/ui/sending-email/how-to-send-an-email-with-dynamic-templates\u003C/a\u003E"
-		},
 		"from": {
 			"wiki": {
 				"name": "from",
@@ -129,8 +108,7 @@
 			"type": "string",
 			"format": "text",
 			"title": "from",
-			"enum": [
-			]
+			"enum": []
 		},
 		"from_mailer": {
 			"wiki": {
@@ -287,15 +265,16 @@
 				"wiki": {
 					"name": "bcc_categories",
 					"type": "property",
-					"uuid": "679101fb3bccc",
-					"visibility": "visible",
+					"multiple-items": true,
 					"label": "bcc categories",
 					"help-message": "all the contacts belonging to the inserted categories will be mailed",
-					"multiple-items": true,
+					"default": [],
+					"uuid": "679101fb3bccc",
+					"visibility": "visible",
 					"preferred-input": "mw.widgets.CategoryMultiselectWidget",
 					"input-config": [],
 					"required": false,
-					"default": []
+					"layout": "table"
 				},
 				"format": "text",
 				"title": "bcc categories",
@@ -352,20 +331,43 @@
 			"format": "text",
 			"title": "subject"
 		},
-		"html": {
+		"is_html": {
 			"wiki": {
-				"name": "html",
+				"name": "is_html",
 				"type": "property",
 				"multiple-items": false,
 				"label": "html",
+				"uuid": "663f2c32cd292",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.ToggleSwitchWidget",
 				"input-config": [],
-				"required": false,
-				"uuid": "663f2c32cd292"
+				"required": false
 			},
 			"type": "boolean",
 			"title": "html"
+		},
+		"template": {
+			"wiki": {
+				"type": "property",
+				"uuid": "67b2e9cb120e7",
+				"name": "template",
+				"visibility": "condition",
+				"showif-field": "is_html",
+				"showif-condition": "=",
+				"showif-value": "false",
+				"label": "template",
+				"help-message": "Any page in the {{#querylink:Special:AllPages|EmailTemplate namespace|target=_blank|namespace=2262}}",
+				"multiple-items": false,
+				"preferred-input": "mw.widgets.TitleInputWidget",
+				"input-config": {
+					"namespace": 2262
+				},
+				"required": false
+			},
+			"type": "string",
+			"format": "text",
+			"title": "template",
+			"description": "Any page in the \u003Ca href=\"/index.php?title=Special:AllPages\u0026amp;namespace=2262\" title=\"Special:AllPages\" target=\"_blank\"\u003EEmailTemplate namespace\u003C/a\u003E"
 		},
 		"text_html": {
 			"wiki": {
@@ -376,7 +378,7 @@
 				"label": "text",
 				"uuid": "65f73d69661e3",
 				"visibility": "condition",
-				"showif-field": "html",
+				"showif-field": "is_html",
 				"showif-condition": "=",
 				"showif-value": "true",
 				"preferred-input": "TinyMCE",
@@ -397,7 +399,7 @@
 				},
 				"uuid": "663f2c32cd2a0",
 				"visibility": "condition",
-				"showif-field": "html",
+				"showif-field": "is_html",
 				"showif-condition": "=",
 				"showif-value": "false",
 				"preferred-input": "OO.ui.MultilineTextInputWidget"

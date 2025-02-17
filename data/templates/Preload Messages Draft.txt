@@ -1,10 +1,8 @@
-{{#if:{{#urlget:path}} | [[{{#urlget:path}}#Folders|&larr; go back]] | This article is meant to be accessed with a dynamic url }}
+[[ContactManager:Mailboxes/%mailbox%#Folders|&larr; go back]]
 
 
-=={{#urlget:folder}}== 
-<!-- [[mailboxFolder::{{#urldecode:{{#urlget:shortpath}}}}]] -->
-<!-- |?to -->
-{{#visualdataquery: [[{{#urldecode:{{#urlget:path}}}}/messages/{{#urldecode:{{#urlget:folder}}}}/~]]
+==%folder_name%==
+{{#visualdataquery: [[ContactManager:Mailboxes/%mailbox%/messages/%folder_name%/~]]
 |?pagetitle
 |?subject=subject
 |?headers/fromaddress=from
@@ -22,5 +20,4 @@
 |categories=false
 |mode=nested
 }}
-
 

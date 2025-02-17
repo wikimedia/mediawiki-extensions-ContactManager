@@ -15,9 +15,14 @@
 		]
 	},
 	"callback": "ContactManagerHooks::initExtension",
+	"ContentHandlers": {
+		"twig": "ContactManagerTwigContentHandler"
+	},
 	"AutoloadClasses": {
 		"ContactManager": "includes/ContactManager.php",
-		"ContactManagerHooks": "includes/ContactManagerHooks.php"
+		"ContactManagerHooks": "includes/ContactManagerHooks.php",
+		"ContactManagerTwigContentHandler": "includes/content/ContactManagerTwigContentHandler.php",
+		"ContactManagerTwigContent": "includes/content/ContactManagerTwigContent.php"
 	},
 	"APIModules": {
 		"contactmanager-createjob": "MediaWiki\\Extension\\ContactManager\\ApiCreateJob"
@@ -75,6 +80,19 @@
 			"id": 2261,
 			"constant": "NS_CONTACTMANAGER_TALK",
 			"name": "ContactManagerTalk"
+		},
+		{
+			"id": 2262,
+			"constant": "NS_CONTACTMANAGER_EMAIL_TEMPLATE",
+			"name": "EmailTemplate",
+			"defaultcontentmodel": "twig",
+			"content": true,
+			"subpages": false
+		},
+		{
+			"id": 2263,
+			"constant": "NS_CONTACTMANAGER_EMAIL_TEMPLATE_TALK",
+			"name": "EmailTemplateTalk"
 		}
 	],
 	"JobClasses": {

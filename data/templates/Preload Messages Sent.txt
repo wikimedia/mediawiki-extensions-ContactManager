@@ -1,0 +1,23 @@
+[[ContactManager:Mailboxes/%mailbox%#Folders|&larr; go back]]
+
+
+==%folder_name%==
+{{#visualdataquery: [[ContactManager:Mailboxes/%mailbox%/messages/%folder_name%/~]]
+|?pagetitle
+|?subject=subject
+|?to
+|?date
+|pagetitle=
+|schema=ContactManager/Incoming mail
+|template?pagetitle=ContactManager/Read email field
+|format=datatables
+|datatables-searchPanes=true
+|datatables-searchPanes.columns=2
+|datatables-synch=true
+|datatables-synch.interval=100
+|order=date desc
+|limit=60
+|categories=false
+|mode=nested
+}}
+

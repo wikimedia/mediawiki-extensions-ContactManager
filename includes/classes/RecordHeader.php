@@ -77,7 +77,9 @@ class RecordHeader {
 		$folder = $params['folder'];
 		$obj = $header;
 
-		$categories_ = $params['categories'];
+		$categories_ = ( array_key_exists( 'categories', $params )
+			&& is_array( $params['categories'] ) ? $params['categories'] : [] );
+
 		if ( !$this->applyFilters( $obj, $pagenameFormula_, $categories_ ) ) {
 			echo 'skip message ' . $header['uid'] . PHP_EOL;
 			return;

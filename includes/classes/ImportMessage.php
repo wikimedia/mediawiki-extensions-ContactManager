@@ -82,6 +82,8 @@ class ImportMessage {
 			$params['download_attachments'] = false;
 		}
 
+		$this->createFolderArticle( $user, $params );
+
 		$imapMailbox->setAttachmentsIgnore( !( (bool)$params['download_attachments'] ) );
 
 		$mail = $imapMailbox->getMail( $uid );
@@ -286,16 +288,67 @@ class ImportMessage {
 			\ContactManager::saveContact( $user, $context, $name, $email, $categories );
 		}
 
-		$this->saveConversation( $user, $context, $params, $allContacts );
+		$this->saveConversation( $user, $context, $params, $deliveredTo, $allContacts );
+	}
+
+	/**
+	 * @param User $user
+	 * @param array $params
+	 */
+	private function createFolderArticle( $user, $params ) {
+		$folderTitleText = 'ContactManager:Mailboxes/' . $params['mailbox'] . '/folders/' . $params['folder_name'];
+		$folderArticleTitle = Title::newFromText( $folderTitleText );
+
+		if ( $folderArticleTitle && $foldeArticleTitle->isKnown() ) {
+			return;
+		}
+
+		$folderType = null;
+		switch ( strtolower( $params['folder_type'] ) ) {
+			case 'inbox':
+			case 'sent':
+			case 'draft':
+			case 'trash':
+			case 'spam':
+				$folderType = $params['folder_type'];
+				break;
+			default:
+				$folderType = 'other';
+		}
+
+		$folderType = ucfirst( $folderType );
+		$folderArticleTemplateTitle = Title::newFromText( 'ContactManager/Preload Messages ' . $folderType );
+		if ( $folderArticleTemplateTitle->isKnown() ) {
+			$content = \VisualData::getWikipageContent( $folderArticleTemplateTitle );
+
+		} else {
+			$dirPath = __DIR__ . '/../../data';
+			$filePath = "$dirPath/templates/Preload Messages $folderType.txt";
+			$content = file_get_contents( $filePath );
+		}
+
+		if ( empty( $content ) ) {
+			$this->errors[] = 'cannot create folder page';
+			return;
+		}
+
+		$content = str_replace( [ '%mailbox%', '%folder_name%' ],
+			[ $params['mailbox'], $params['folder_name'] ], $content );
+
+		\VisualData::saveRevision( $user, $folderArticleTitle, $content );
 	}
 
 	/**
 	 * @param User $user
 	 * @param Context $context
 	 * @param array $params
+	 * @param string $deliveredTo
 	 * @param array $allContacts
 	 */
-	private function saveConversation( $user, $context, $params, $allContacts ) {
+	private function saveConversation( $user, $context, $params, $deliveredTo, $allContacts ) {
+		// *** should this be removed ?
+		// unset( $allContacts[$deliveredTo] );
+
 		$participants = [];
 		$participantsEmail = [];
 		foreach ( $allContacts as $email => $name ) {

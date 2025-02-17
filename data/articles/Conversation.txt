@@ -1,15 +1,68 @@
-{{#visualdataquery: [[fromAddress::{{#replace:{{#urldecode:{{#urlget:email}}}}|,|{{!}}{{!}}fromAddress:: }}||to::~{{#replace:{{#urldecode:{{#urlget:email}}}}|,|~{{!}}{{!}}to::~ }}||cc::~{{#replace:{{#urldecode:{{#urlget:email}}}}|,|~{{!}}{{!}}cc::~ }}||bcc::~{{#replace:{{#urldecode:{{#urlget:email}}}}|,|~{{!}}{{!}}bcc::~ }}]]
+{{#if:{{#urlget:mailbox}} | [[ContactManager:Mailboxes/{{#urlget:mailbox}}#Conversations|&larr; go back]] | This article is meant to be accessed with a dynamic url }}
+__NOTOC__
+<templatestyles src="ContactManager:Styles.css" />
+<big><!-- TODO use a LUA module -->
+{{#querylink:{{FULLPAGENAME}}|January|class=month-{{#ifeq:1|{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}||un}}selected|month=01|year={{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}|email={{#urldecode:{{#urlget:email}}}}|mailbox={{#urlget:mailbox}} }} | {{#querylink:{{FULLPAGENAME}} |February|class=month-{{#ifeq:2|{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}||un}}selected|month=02|year={{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}||email={{#urldecode:{{#urlget:email}}}}|mailbox={{#urlget:mailbox}} }} | {{#querylink:{{FULLPAGENAME}}|March|class=month-{{#ifeq:3|{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}||un}}selected|month=03|year={{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}|email={{#urldecode:{{#urlget:email}}}}|mailbox={{#urlget:mailbox}} }} | {{#querylink:{{FULLPAGENAME}}|April|class=month-{{#ifeq:4|{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}||un}}selected|month=04|year={{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}||email={{#urldecode:{{#urlget:email}}}}|mailbox={{#urlget:mailbox}} }} | {{#querylink:{{FULLPAGENAME}}|May|class=month-{{#ifeq:5|{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}||un}}selected|month=05|year={{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}||email={{#urldecode:{{#urlget:email}}}}|mailbox={{#urlget:mailbox}} }} | {{#querylink:{{FULLPAGENAME}}|June|class=month-{{#ifeq:6|{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}||un}}selected|month=06|year={{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}|email={{#urldecode:{{#urlget:email}}}}|mailbox={{#urlget:mailbox}} }} | {{#querylink:{{FULLPAGENAME}}|July|class=month-{{#ifeq:7|{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}||un}}selected|month=07|year={{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}||email={{#urldecode:{{#urlget:email}}}}|mailbox={{#urlget:mailbox}} }} | {{#querylink:{{FULLPAGENAME}}|August|class=month-{{#ifeq:8|{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}||un}}selected|month=08|year={{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}|email={{#urlget:email}} }} | {{#querylink:{{FULLPAGENAME}}|September|class=month-{{#ifeq:9|{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}||un}}selected|month=09|year={{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}||email={{#urldecode:{{#urlget:email}}}}|mailbox={{#urlget:mailbox}} }} | {{#querylink:{{FULLPAGENAME}}|October|class=month-{{#ifeq:10|{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}||un}}selected|month=10|year={{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}||email={{#urldecode:{{#urlget:email}}}}|mailbox={{#urlget:mailbox}} }} | {{#querylink:{{FULLPAGENAME}}|November|class=month-{{#ifeq:11|{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}||un}}selected|month=11|year={{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}||email={{#urldecode:{{#urlget:email}}}}|mailbox={{#urlget:mailbox}} }} | {{#querylink:{{FULLPAGENAME}}|December|class=month-{{#ifeq:12|{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}||un}}selected|month=12|year={{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}||email={{#urldecode:{{#urlget:email}}}}|mailbox={{#urlget:mailbox}} }}
+–
+{{#querylink:{{FULLPAGENAME}}|previous year|month={{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|year={{#expr:{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }} -1}}|email={{#urldecode:{{#urlget:email}}}}|mailbox={{#urlget:mailbox}} }} | {{#querylink:{{FULLPAGENAME}}|next year|month={{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|year={{#expr:{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }} +1}}|email={{#urldecode:{{#urlget:email}}}}|mailbox={{#urlget:mailbox}} }}
+
+</big>
+
+
+{{#visualdataform: ContactManager/Compose email
+|title = New email
+|action = create
+|edit-page = 
+|return-page = ContactManager:Mailboxes/{{#urlget:mailbox}}/Sent email
+|view = popup
+|popup-size = large
+|css-class =
+|pagename-formula = ContactManager:Mailboxes/{{#urlget:mailbox}}/Sent email
+|edit-freetext = true   
+|edit-categories = false
+|edit-content-model = false
+|edit-target-slot = false
+|target-slot = main
+|default-categories = 
+|default-content-model = wikitext
+|preload=
+|preload-data?to={{#urldecode:{{#urlget:email}}}}
+|layout-align = top
+|popup-help = false 
+|layout = tabs
+|submit-button-text =
+|validate-button-text =
+|overwrite-existing-article-on-create=true
+|preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
+}}
+
+
+=={{#switch: {{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}
+ | 01 = January
+ | 02 = February
+ | 03 = March
+ | 04 = April
+ | 05 = May
+ | 06 = June
+ | 07 = July
+ | 08 = August
+ | 09 = September
+ | 10 = October
+ | 11 = November
+ | 12 = December
+}} {{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}==
+
+{{#visualdataquery: [[fromAddress::{{#replace:{{#urldecode:{{#urlget:email}}}}|,|{{!}}{{!}}fromAddress:: }}||to::~{{#replace:{{#urldecode:{{#urlget:email}}}}|,|~{{!}}{{!}}to::~ }}||cc::~{{#replace:{{#urldecode:{{#urlget:email}}}}|,|~{{!}}{{!}}cc::~ }}||bcc::~{{#replace:{{#urldecode:{{#urlget:email}}}}|,|~{{!}}{{!}}bcc::~ }}]][[date::>{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}-{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}-01]][[date::<{{#expr:{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|+1|+0}} }}-{{padleft:{{#expr:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|-11|+1}} }} |2|0}}-01]]
 |schema=ContactManager/Incoming mail
 |?fromName
 |?fromAddress
 |?date
-|?date
 |?subject
 |?toString
 |?attachments
-|?visibleText
+|?visible_text
 |template=ContactManager/Conversation
 |format=template
-|order=date desc
+|order=date asc
 }}
 

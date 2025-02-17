@@ -19,10 +19,12 @@
  * @file
  * @ingroup extensions
  * @author thomas-topway-it <support@topway.it>
- * @copyright Copyright ©2023, https://wikisphere.org
+ * @copyright Copyright ©2023-2025, https://wikisphere.org
  */
 
 use MediaWiki\Revision\SlotRecord;
+
+define( 'CONTENT_MODEL_CONTACTMANAGER_TWIG', 'twig' );
 
 class ContactManagerHooks {
 	/**
@@ -74,11 +76,14 @@ class ContactManagerHooks {
 		$import = static function ( $path, $callback ) {
 			$files = scandir( $path );
 			foreach ( $files as $file ) {
-				$filePath = "$path/$file";
+				$filePath_ = "$path/$file";
 				if ( is_file( $filePath ) ) {
-					$titleText = substr( $file, 0, strpos( $file, '.' ) );
-					$content = file_get_contents( $filePath );
-					$callback( $titleText, $content );
+					$ext_ = pathinfo( $file, PATHINFO_EXTENSION );
+					if ( $ext_ === 'txt' ) {
+						$titleText_ = substr( $file, 0, strpos( $file, '.' ) );
+					}
+					$content = file_get_contents( $filePath_ );
+					$callback( $titleText_, $content );
 				}
 			}
 		};
@@ -100,6 +105,26 @@ class ContactManagerHooks {
 				[
 					'role' => SlotRecord::MAIN,
 					'model' => 'wikitext',
+					'text' => $content
+				]
+			] );
+		} );
+
+		$import( "$dirPath/styles", static function ( $titleText, $content ) use ( &$doImport ) {
+			$doImport( "Template:ContactManager/$titleText", [
+				[
+					'role' => SlotRecord::MAIN,
+					'model' => 'css',
+					'text' => $content
+				]
+			] );
+		} );
+
+		$import( "$dirPath/emailTemplates", static function ( $titleText, $content ) use ( &$doImport ) {
+			$doImport( "Template:ContactManager/$titleText", [
+				[
+					'role' => SlotRecord::MAIN,
+					'model' => 'twig',
 					'text' => $content
 				]
 			] );

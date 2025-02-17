@@ -40,6 +40,8 @@ use Symfony\Component\Mailer\Transport\AbstractApiTransport;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 use Title;
+use Twig\Environment;
+use Twig\Loader\ArrayLoader;
 use User;
 
 class Mailer {
@@ -434,7 +436,7 @@ class Mailer {
 				$schemaProperties = array_keys( $value[0]['data'] );
 				foreach ( $schemaProperties as $property ) {
 					if ( strpos( $this->obj['text'], "%$property%" ) !== false
-						|| strpos( $this->obj['html'], "%$property%" ) !== false
+						|| strpos( $this->obj['text_html'], "%$property%" ) !== false
 					) {
 						$filterProperties[$property] = '';
 					}
@@ -449,6 +451,8 @@ class Mailer {
 			}
 		}
 
+		// *** 'template_id' is not used anymore, use an alternative
+		// form for that
 		// @FIXME this is sendgrid api v3 specific, extend with other
 		// providers as needed
 		$substitutionKey = ( empty( $this->obj['template_id'] ) ? 'substitutions'
@@ -483,6 +487,40 @@ class Mailer {
 	}
 
 	/**
+	 * @return string|void
+	 */
+	public function renderTwigTemplate() {
+		$templateTitle = Title::newFromText( $this->obj['template'], NS_CONTACTMANAGER_EMAIL_TEMPLATE );
+		if ( !$templateTitle->isKnown() ) {
+			return;
+		}
+
+		$content = \VisualData::getWikipageContent( $templateTitle );
+
+		if ( !$content ) {
+			return;
+		}
+
+		$templateName = 'twigTemplate';
+		$loader = new ArrayLoader( [
+			$templateName => $content,
+		] );
+
+		$twig = new Environment( $loader );
+		$substitutions = [ 'body' => $this->obj['text'], 'subject' => $this->obj['subject'] ];
+
+		try {
+			$html = $twig->render( $templateName, $substitutions );
+
+		} catch ( \Exception $e ) {
+			$this->errors[] = $e->getMessage();
+			return false;
+		}
+
+		return $html;
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function sendEmail() {
@@ -499,7 +537,7 @@ class Mailer {
 			$email->html( $html );
 
 		} else {
-			if ( $this->obj['html'] ) {
+			if ( $this->obj['is_html'] ) {
 				$html = $this->obj['text_html'];
 				$html2Text = new \Html2Text\Html2Text( $html );
 				$text = $html2Text->getText();
@@ -507,6 +545,11 @@ class Mailer {
 				$email->html( $html );
 
 			} else {
+				if ( !empty( $this->obj['template'] ) ) {
+					// throws an error if it does not work
+					$email->html( $this->renderTwigTemplate() );
+				}
+
 				$email->text( $this->obj['text'] );
 			}
 		}

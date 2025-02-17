@@ -43,6 +43,7 @@
 		"html2text/html2text": "^4.3",
 		"psr/log": "1.1.4",
 		"dragonmantank/cron-expression": "^3.3",
-		"mmucklo/email-parse": "^2.2"
+		"mmucklo/email-parse": "^2.2",
+		"twig/twig": "3.11.3"
 	}
 }
