@@ -60,7 +60,7 @@ __NOTOC__
 |?subject
 |?toString
 |?attachments
-|?visible_text
+|?visibleText
 |template=ContactManager/Conversation
 |format=template
 |order=date asc

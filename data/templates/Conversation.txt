@@ -9,7 +9,7 @@
 
 '''Subject:''' {{{subject|}}}
 
-{{#shadowroot: {{#base64encode:{{{visible_text|}}} }}|host}}
+{{#shadowroot: {{#base64encode:{{{visibleText|}}} }}|host}}
 
 {{{toString|}}}
 
