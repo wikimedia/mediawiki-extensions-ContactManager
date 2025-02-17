@@ -71,6 +71,8 @@
 |template?participants=ContactManager/Conversations table participants
 |order=full_name asc
 |format=datatable
+|datatables-synch=true
+|datatables-synch.interval=100
 |mode=nested 
 }}
 

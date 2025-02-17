@@ -77,10 +77,12 @@ class ContactManagerHooks {
 			$files = scandir( $path );
 			foreach ( $files as $file ) {
 				$filePath_ = "$path/$file";
-				if ( is_file( $filePath ) ) {
+				if ( is_file( $filePath_ ) ) {
 					$ext_ = pathinfo( $file, PATHINFO_EXTENSION );
-					if ( $ext_ === 'txt' ) {
+					if ( in_array( $ext_, [ 'json', 'txt' ] ) ) {
 						$titleText_ = substr( $file, 0, strpos( $file, '.' ) );
+					} else {
+						$titleText_ = $file;
 					}
 					$content = file_get_contents( $filePath_ );
 					$callback( $titleText_, $content );
@@ -111,17 +113,17 @@ class ContactManagerHooks {
 		} );
 
 		$import( "$dirPath/styles", static function ( $titleText, $content ) use ( &$doImport ) {
-			$doImport( "Template:ContactManager/$titleText", [
+			$doImport( "ContactManager:$titleText", [
 				[
 					'role' => SlotRecord::MAIN,
-					'model' => 'css',
+					'model' => 'sanitized-css',
 					'text' => $content
 				]
 			] );
 		} );
 
 		$import( "$dirPath/emailTemplates", static function ( $titleText, $content ) use ( &$doImport ) {
-			$doImport( "Template:ContactManager/$titleText", [
+			$doImport( "EmailTemplate:$titleText", [
 				[
 					'role' => SlotRecord::MAIN,
 					'model' => 'twig',
