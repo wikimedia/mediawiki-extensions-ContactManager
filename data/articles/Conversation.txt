@@ -26,14 +26,19 @@ __NOTOC__
 |default-categories = 
 |default-content-model = wikitext
 |preload=
-|preload-data?to={{#urldecode:{{#urlget:email}}}}
+|preload-data?to={{#visualdataquery:[[hash::{{#urlget:hash}}]]
+  |schema=ContactManager/Conversation
+  |?participants/email
+  |limit=1
+  |format=raw
+  }}
+|preload-data?mailbox={{#urlget:mailbox}}
 |layout-align = top
 |popup-help = false 
 |layout = tabs
 |submit-button-text =
 |validate-button-text =
 |overwrite-existing-article-on-create=true
-|preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
 }}
 
 
@@ -52,7 +57,8 @@ __NOTOC__
  | 12 = December
 }} {{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}==
 
-{{#visualdataquery: [[fromAddress::{{#replace:{{#urldecode:{{#urlget:email}}}}|,|{{!}}{{!}}fromAddress:: }}||to::~{{#replace:{{#urldecode:{{#urlget:email}}}}|,|~{{!}}{{!}}to::~ }}||cc::~{{#replace:{{#urldecode:{{#urlget:email}}}}|,|~{{!}}{{!}}cc::~ }}||bcc::~{{#replace:{{#urldecode:{{#urlget:email}}}}|,|~{{!}}{{!}}bcc::~ }}]][[date::>{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}-{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}-01]][[date::<{{#expr:{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|+1|+0}} }}-{{padleft:{{#expr:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|-11|+1}} }} |2|0}}-01]]
+
+{{#visualdataquery: [[conversationHash::{{#urlget:hash}}]][[date::>{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}-{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}-01]][[date::<{{#expr:{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|+1|+0}} }}-{{padleft:{{#expr:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|-11|+1}} }} |2|0}}-01]]
 |schema=ContactManager/Incoming mail
 |?fromName
 |?fromAddress
@@ -64,5 +70,6 @@ __NOTOC__
 |template=ContactManager/Conversation
 |format=template
 |order=date asc
+|debug=true_
 }}
 

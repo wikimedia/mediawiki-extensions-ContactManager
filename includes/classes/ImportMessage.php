@@ -25,6 +25,7 @@
 namespace MediaWiki\Extension\ContactManager;
 
 use EmailReplyParser\Parser\EmailParser;
+use LanguageDetection\Language;
 use MediaWiki\Extension\VisualData\Importer as VisualDataImporter;
 // use MWException;
 use RequestContext;
@@ -164,6 +165,12 @@ class ImportMessage {
 		$obj['textPlain'] = $mail->textPlain;
 		$obj['textHtml'] = $mail->textHtml;
 
+		// language detect @see https://github.com/patrickschur/language-detection
+		$ld = new Language;
+		$ld->setMaxNgrams( 9000 );
+		$detectedLanguages = $ld->detect( $obj['textPlain'] )->close();
+		$detectedLanguage = ( count( $detectedLanguages ) ? array_key_first( $detectedLanguages ) : null );
+
 		// custom entries
 		$obj['visibleText'] = $parsedEmail->getVisibleText();
 		$obj['attachments'] = array_values( $attachments );
@@ -173,6 +180,10 @@ class ImportMessage {
 		// for the use with Conversations
 		$deliveredTo = $imapMailbox->getMailHeaderFieldValue( $mail->headersRaw, 'Delivered-To' );
 		$obj['deliveredTo'] = $deliveredTo;
+
+		$conversationRecipients = $allContacts;
+		$conversationHash = $this->getConversationHash( $params, $obj, $conversationRecipients );
+		$obj['conversationHash'] = $conversationHash;
 
 		// update the delivered-to list
 		$schema_ = $GLOBALS['wgContactManagerSchemasMailbox'];
@@ -285,10 +296,12 @@ class ImportMessage {
 		];
 
 		foreach ( $allContacts as $email => $name ) {
-			\ContactManager::saveContact( $user, $context, $name, $email, $categories );
+			\ContactManager::saveContact( $user, $context, $name, $email, $categories,
+				( $email === $obj['fromAddress'] ? $detectedLanguage : null ) );
 		}
 
-		$this->saveConversation( $user, $context, $params, $deliveredTo, $allContacts );
+		$this->saveConversation( $user, $context, $params, $conversationHash,
+			$deliveredTo, $conversationRecipients, $obj['date'] );
 	}
 
 	/**
@@ -299,7 +312,7 @@ class ImportMessage {
 		$folderTitleText = 'ContactManager:Mailboxes/' . $params['mailbox'] . '/folders/' . $params['folder_name'];
 		$folderArticleTitle = Title::newFromText( $folderTitleText );
 
-		if ( $folderArticleTitle && $foldeArticleTitle->isKnown() ) {
+		if ( $folderArticleTitle && $folderArticleTitle->isKnown() ) {
 			return;
 		}
 
@@ -332,6 +345,8 @@ class ImportMessage {
 			return;
 		}
 
+		echo 'creating folder ' . $params['folder_name'] . PHP_EOL;
+
 		$content = str_replace( [ '%mailbox%', '%folder_name%' ],
 			[ $params['mailbox'], $params['folder_name'] ], $content );
 
@@ -339,25 +354,53 @@ class ImportMessage {
 	}
 
 	/**
+	 * @param array $params
+	 * @param array $obj
+	 * @param array &$conversationRecipients
+	 * @return string
+	 */
+	private function getConversationHash( $params, $obj, &$conversationRecipients ) {
+		ksort( $conversationRecipients );
+
+		switch ( strtolower( $params['folder_type'] ) ) {
+			case 'sent':
+			case 'draft':
+				unset( $conversationRecipients[$obj['fromAddress']] );
+				break;
+			case 'spam':
+			case 'other':
+			case 'inbox':
+			case 'trash':
+			default:
+				unset( $conversationRecipients[$obj['deliveredTo']] );
+				break;
+		}
+
+		$participantsEmail = array_keys( $conversationRecipients );
+
+		// , is not supported in email address
+		return dechex( crc32( implode( ',', $participantsEmail ) ) );
+	}
+
+	/**
 	 * @param User $user
 	 * @param Context $context
 	 * @param array $params
+	 * @param string $hash
 	 * @param string $deliveredTo
-	 * @param array $allContacts
+	 * @param array $conversationRecipients
+	 * @param string $date
 	 */
-	private function saveConversation( $user, $context, $params, $deliveredTo, $allContacts ) {
-		// *** should this be removed ?
-		// unset( $allContacts[$deliveredTo] );
-
+	private function saveConversation( $user, $context, $params, $hash, $deliveredTo, $conversationRecipients, $date ) {
 		$participants = [];
-		$participantsEmail = [];
-		foreach ( $allContacts as $email => $name ) {
+		foreach ( $conversationRecipients as $email => $name ) {
 			$participants[] = [ 'name' => $name, 'email' => $email ];
-			$participantsEmail[] = $email;
 		}
 
-		// , is not supported in email address
-		$md5 = md5( implode( ',', $participantsEmail ) );
+		// sending to oneself
+		if ( !count( $participants ) ) {
+			return;
+		}
 
 		$schema = $GLOBALS['wgContactManagerSchemasConversation'];
 		$options = [
@@ -368,13 +411,8 @@ class ImportMessage {
 		$importer = new VisualDataImporter( $user, $context, $schema, $options );
 
 		$schema = $GLOBALS['wgContactManagerSchemasConversation'];
-		$query = '[[ContactManager:Mailboxes/' . $params['mailbox'] . '/conversations~]][[md5::' . $md5 . ']]';
+		$query = '[[ContactManager:Mailboxes/' . $params['mailbox'] . '/conversations~]][[hash::' . $hash . ']]';
 		$results = \VisualData::getQueryResults( $schema, $query );
-
-		// @TODO names may be updated
-		if ( !array_key_exists( 'errors', $results ) && count( $results ) ) {
-			return;
-		}
 
 		// use numeric increment
 		$pagenameFormula = 'ContactManager:Mailboxes/' . $params['mailbox']
@@ -383,8 +421,45 @@ class ImportMessage {
 		$data = [
 			'mailbox' => $params['mailbox'],
 			'participants' => $participants,
-			'md5' => $md5,
+			'hash' => $hash,
+			'date_last' => null,
+			'date_first' => null,
+			'count' => null,
 		];
+
+		// merge previous entries
+		if ( !array_key_exists( 'errors', $results ) && count( $results ) ) {
+			$pagenameFormula = $results[0]['title'];
+			if ( !empty( $results[0]['data'] ) ) {
+				$data = \VisualData::array_merge_recursive( $data, $results[0]['data'] );
+			}
+		}
+		$data = \VisualData::array_filter_recursive( $data, 'array_unique' );
+
+		$messageDateTime = strtotime( $date );
+
+		$date_last = ( !empty( $data['date_last'] ) ? strtotime( $data['date_last'] ) : 0 );
+		$date_first = ( !empty( $data['date_first'] ) ? strtotime( $data['date_first'] ) : PHP_INT_MAX );
+
+		if ( $messageDateTime > $date_last ) {
+			$data['date_last'] = date( 'Y-m-d', $messageDateTime );
+		}
+
+		if ( $messageDateTime < $date_first ) {
+			$data['date_first'] = date( 'Y-m-d', $messageDateTime );
+		}
+
+		// *** this is necessary only if we want to order the
+		// conversations table by number of messages
+		$schema = $GLOBALS['wgContactManagerSchemasIncomingMail'];
+		$query = '[[ContactManager:Mailboxes/' . $params['mailbox'] . '/messages~]][[conversationHash::' . $hash . ']]';
+		$printouts = [];
+		$params = [ 'format' => 'count' ];
+		$count = \VisualData::getQueryResults( $schema, $query, $printouts, $params );
+
+		if ( $count !== -1 ) {
+			$data['count'] = $count;
+		}
 
 		$showMsg = static function ( $msg ) {
 			echo $msg . PHP_EOL;

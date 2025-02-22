@@ -132,6 +132,9 @@ class RecordHeader {
 		$params = $this->params;
 
 		foreach ( $params['filters_by_headers'] as $v ) {
+			if ( !array_key_exists( 'header', $v ) || empty( $v['header'] ) ) {
+				continue;
+			}
 			$result_ = false;
 			$value_ = $obj[$v['header']];
 			switch ( $v['header'] ) {

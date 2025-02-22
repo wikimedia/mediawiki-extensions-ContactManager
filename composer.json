@@ -44,6 +44,7 @@
 		"psr/log": "1.1.4",
 		"dragonmantank/cron-expression": "^3.3",
 		"mmucklo/email-parse": "^2.2",
-		"twig/twig": "3.11.3"
+		"twig/twig": "3.11.3",
+		"patrickschur/language-detection": "^5.3"
 	}
 }

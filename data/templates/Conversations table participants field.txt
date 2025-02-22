@@ -1,4 +1,1 @@
-{{#querylink:ContactManager:Conversation|
-{{#arraymap:{{{participants}}} | , | @ | {{#explode:@|:|1}} | ,<nowiki> </nowiki>}}
-|mailbox={{{mailbox}}}|email={{#arraymap:{{{participants}}} | , | @ | {{#explode:@|:|0}} | ,}} 
-}}
+{{#querylink:ContactManager:Conversation|target=_blank|{{#arraymap:{{{participants}}} | , | @ | {{#if:{{#explode:@|:|1}}|{{#explode:@|:|1}}|{{#explode:@|:|0}} }} | ,<nowiki> </nowiki>}}|mailbox={{{mailbox}}}|hash={{{hash}}}|month={{#time:m| {{{date_last}}} }}|year={{#time:Y| {{{date_last}}} }} }}

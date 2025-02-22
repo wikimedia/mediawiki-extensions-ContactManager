@@ -571,11 +571,11 @@ class Mailer {
 		}
 
 		if ( count( $this->obj['cc'] ) ) {
-			$email->to( ...$getParsedRecipients( $this->obj['cc'] ) );
+			$email->cc( ...$getParsedRecipients( $this->obj['cc'] ) );
 		}
 
 		if ( count( $this->obj['bcc'] ) ) {
-			$email->to( ...$getParsedRecipients( $this->obj['bcc'] ) );
+			$email->bcc( ...$getParsedRecipients( $this->obj['bcc'] ) );
 		}
 
 		if ( empty( $this->obj['subject'] ) ) {

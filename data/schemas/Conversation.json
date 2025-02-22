@@ -7,14 +7,14 @@
 	"properties": {
 		"mailbox": {
 			"wiki": {
-				"type": "property",
 				"name": "mailbox",
-				"visibility": "visible",
-				"label": "mailbox",
+				"type": "property",
 				"multiple-items": false,
+				"required": true,
+				"label": "mailbox",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
-				"required": true,
 				"uuid": "678d8c642256d"
 			},
 			"type": "string",
@@ -77,17 +77,17 @@
 			"minItems": 1,
 			"uniqueItems": false
 		},
-		"md5": {
+		"hash": {
 			"wiki": {
-				"name": "md5",
+				"name": "hash",
 				"type": "property",
 				"multiple-items": false,
 				"required": true,
 				"visibility": "hidden",
 				"label": "md5",
+				"uuid": "6782878c0302f",
 				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"uuid": "6782878c0302f"
+				"input-config": []
 			},
 			"options": {
 				"hidden": true
@@ -95,11 +95,58 @@
 			"type": "string",
 			"format": "text",
 			"title": "md5"
+		},
+		"date_first": {
+			"wiki": {
+				"type": "property",
+				"name": "date_first",
+				"visibility": "visible",
+				"label": "date first",
+				"multiple-items": false,
+				"preferred-input": "mw.widgets.DateInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67b9c086ac897"
+			},
+			"type": "string",
+			"format": "date",
+			"title": "date first"
+		},
+		"date_last": {
+			"wiki": {
+				"type": "property",
+				"name": "date_last",
+				"visibility": "visible",
+				"label": "date_last",
+				"multiple-items": false,
+				"preferred-input": "mw.widgets.DateInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67b9c086ac89a"
+			},
+			"type": "string",
+			"format": "date",
+			"title": "date_last"
+		},
+		"count": {
+			"wiki": {
+				"type": "property",
+				"name": "count",
+				"visibility": "visible",
+				"label": "count",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67b9c086ac89c"
+			},
+			"type": "integer",
+			"title": "count"
 		}
 	},
 	"required": [
 		"mailbox",
-		"md5"
+		"hash"
 	],
 	"type": "object"
 }

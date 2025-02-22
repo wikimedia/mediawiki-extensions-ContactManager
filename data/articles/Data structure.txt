@@ -4,10 +4,13 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 * articles
 ** [[ContactManager:Contacts]]
 ** [[ContactManager:Conversation]]
+** [[ContactManager:Conversations]]
 ** [[ContactManager:Data structure]]
-** [[ContactManager:Filter metadata]]
 ** [[ContactManager:Filter header]]
+** [[ContactManager:Filter metadata]]
+** [[ContactManager:Folder types]]
 ** [[ContactManager:Headers]]
+** [[ContactManager:Language codes]]
 ** [[ContactManager:Mailboxes]]
 ** [[ContactManager:Mailers]]
 ** [[ContactManager:Messages]]
@@ -16,12 +19,16 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 
 
 * templates
+**[[Template:ContactManager/Conversation]]
+**[[Template:ContactManager/Conversations table latest field]]
+**[[Template:ContactManager/Conversations table messages field]]
 **[[Template:ContactManager/Conversations table participants]]
 **[[Template:ContactManager/Conversations table participants field]]
-**[[Template:ContactManager/Contact edit]]
 **[[Template:ContactManager/Email]]
+**[[Template:ContactManager/Folders table field]]
 **[[Template:ContactManager/Format reply]]
 **[[Template:ContactManager/Get mailbox]]
+**[[Template:ContactManager/Languages]]
 **[[Template:ContactManager/Mailbox edit]]
 **[[Template:ContactManager/Mailer edit]]
 **[[Template:ContactManager/Preload mailbox]]
@@ -33,7 +40,6 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 **[[Template:ContactManager/Preload messages Trash]]
 **[[Template:ContactManager/Read email field]]
 **[[Template:ContactManager/Read email field header]]
-**[[Template:ContactManager/Folders table field]]
 
 
 * styles

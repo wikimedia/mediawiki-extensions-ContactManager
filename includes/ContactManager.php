@@ -410,6 +410,7 @@ class ContactManager {
 						// 'job' => 'retrieve-message',
 						'folder' => $folder['folder'],
 						'folder_name' => $folder['folder_name'],
+						'folder_type' => $folder['folder_type'],
 						'uid' => $header['uid']
 					] ), $errors );
 
@@ -539,8 +540,9 @@ class ContactManager {
 	 * @param string $name
 	 * @param string $email
 	 * @param array $categories
+	 * @param string|null $detectedLanguage
 	 */
-	public static function saveContact( $user, $context, $name, $email, $categories ) {
+	public static function saveContact( $user, $context, $name, $email, $categories, $detectedLanguage = null ) {
 		if ( empty( $name ) ) {
 			$name = substr( $email, 0, strpos( $email, '@' ) );
 		}
@@ -586,25 +588,34 @@ class ContactManager {
 			],
 			'links' => [
 			],
-			'picture' => ''
+			'picture' => '',
+			'languages' => [
+				// can be null
+				$detectedLanguage
+			],
+			'seen_since' => null,
+			'seen_until' => null,
 		];
 
-		// merge additional email address if
-		// different from existing
-		if ( count( $results ) ) {
+		// merge previous entries
+		if ( !array_key_exists( 'errors', $results ) && count( $results ) ) {
 			if ( !empty( $results[0]['data'] ) ) {
-				$data_ = $results[0]['data'];
-				foreach ( $data as $k => $v ) {
-					if ( empty( $data_[$k] ) ) {
-						 continue;
-					}
-					if ( is_array( $data[$k] ) ) {
-						$data[$k] = array_unique( array_merge( (array)$data_[$k], (array)$data[$k] ) );
-					} elseif ( empty( $v ) ) {
-						 $data[$k] = $data_[$k];
-					}
-				}
+				$data = \VisualData::array_merge_recursive( $data, $results[0]['data'] );
 			}
+		}
+
+		$data = \VisualData::array_filter_recursive( $data, 'array_unique' );
+
+		$seenUntil = ( !empty( $data['seen_until'] ) ? strtotime( $data['seen_until'] ) : 0 );
+		$seenSince = ( !empty( $data['seen_since'] ) ? strtotime( $data['seen_since'] ) : PHP_INT_MAX );
+
+		$currentTime = time();
+		if ( $currentTime > $seenUntil ) {
+			$data['seen_until'] = date( 'Y-m-d' );
+		}
+
+		if ( $currentTime < $seenSince ) {
+			$data['seen_since'] = date( 'Y-m-d' );
 		}
 
 		$showMsg = static function ( $msg ) {

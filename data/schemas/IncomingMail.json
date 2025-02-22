@@ -160,9 +160,9 @@
 		},
 		"headers": {
 			"wiki": {
+				"name": "headers",
 				"type": "schema",
 				"uuid": "66144a4b5f764",
-				"name": "headers",
 				"title": "Headers",
 				"layout": "section",
 				"visibility": "visible"
@@ -170,12 +170,12 @@
 			"properties": {
 				"date": {
 					"wiki": {
-						"type": "property",
-						"uuid": "66144a4b5f765",
 						"name": "date",
-						"visibility": "visible",
-						"label": "Date",
+						"type": "property",
 						"multiple-items": false,
+						"label": "Date",
+						"uuid": "66144a4b5f765",
+						"visibility": "visible",
 						"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
 						"input-config": [],
 						"required": false
@@ -186,12 +186,12 @@
 				},
 				"Date": {
 					"wiki": {
-						"type": "property",
-						"uuid": "66144a4b5f766",
 						"name": "Date",
-						"visibility": "visible",
-						"label": "Date",
+						"type": "property",
 						"multiple-items": false,
+						"label": "Date",
+						"uuid": "66144a4b5f766",
+						"visibility": "visible",
 						"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
 						"input-config": [],
 						"required": false
@@ -1013,22 +1013,6 @@
 			"format": "text",
 			"title": "MessageId"
 		},
-		"visibleText": {
-			"wiki": {
-				"name": "visibleText",
-				"type": "property",
-				"multiple-items": false,
-				"label": "Visible text",
-				"uuid": "66144a4b5f7a0",
-				"visibility": "visible",
-				"preferred-input": "OO.ui.MultilineTextInputWidget",
-				"input-config": [],
-				"required": false
-			},
-			"type": "string",
-			"format": "textarea",
-			"title": "Visible text"
-		},
 		"attachments": {
 			"wiki": {
 				"name": "attachments",
@@ -1488,6 +1472,54 @@
 			"type": "string",
 			"format": "textarea",
 			"title": "textHtml"
+		},
+		"visibleText": {
+			"wiki": {
+				"name": "visibleText",
+				"type": "property",
+				"multiple-items": false,
+				"label": "Visible text",
+				"uuid": "66144a4b5f7a0",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.MultilineTextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "textarea",
+			"title": "Visible text"
+		},
+		"deliveredTo": {
+			"wiki": {
+				"type": "property",
+				"name": "deliveredTo",
+				"visibility": "visible",
+				"label": "deliveredTo",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67b9bc2c0da7d"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "deliveredTo"
+		},
+		"conversationHash": {
+			"wiki": {
+				"type": "property",
+				"name": "conversationHash",
+				"visibility": "visible",
+				"label": "conversationHash",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67b9bc2c0da84"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "conversationHash"
 		}
 	},
 	"type": "object",

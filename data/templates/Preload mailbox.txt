@@ -49,27 +49,30 @@
 |edit-page={{FULLPAGENAME}}/Jobs/GetMessages
 |preload-data?job=retrieve-messages
 |preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
-|target-slot=main
+|target-slot=main 
 }}
 
 
 
 == Conversations ==
-{{#visualdataquery: [[{{FULLPAGENAME}}/conversations/~]] [[participants/email::!{{#replace:{{#visualdataprint:{{FULLPAGENAME}}
-  |schema=ContactManager/Mailbox
-  |?delivered-to
-  |format=raw
-  }}|,|{{!}}{{!}}participants/email::! }}]]
-|schema=ContactManager/Conversation   
+{{#visualdataquery: [[{{FULLPAGENAME}}/conversations/~]]
+|schema=ContactManager/Conversation
 |limit=40
 |?participants field=participants
 |?participants/email=
 |?participants/name=
+|?messages
+|?latest
+|?hash=
+|?date_last=
+|?count=
 |?mailbox=
 |pagetitle=
 |template?participants field=ContactManager/Conversations table participants field
 |template?participants=ContactManager/Conversations table participants
-|order=full_name asc
+|template?messages=ContactManager/Conversations table messages field
+|template?latest=ContactManager/Conversations table latest field
+|order=date_last desc
 |format=datatable
 |datatables-synch=true
 |datatables-synch.interval=100
