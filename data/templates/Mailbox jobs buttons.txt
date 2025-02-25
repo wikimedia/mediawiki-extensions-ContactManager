@@ -1,0 +1,28 @@
+<table><tr><td>
+{{#visualDataButton: Get mailbox info
+|callback = ContactManager.initJob
+|schema = ContactManager/Define job
+|edit-page=ContactManager:Mailboxes/{{{mailbox}}}/Jobs/MailboxInfo
+|preload-data?job=mailbox-info
+|preload-data?mailbox={{{mailbox}}}
+|target-slot = main 
+}} 
+</td><td>
+{{#VisualDataButton: Get folders
+|callback = ContactManager.initJob
+|schema = ContactManager/Define job
+|edit-page=ContactManager:Mailboxes/{{{mailbox}}}/Jobs/GetFolders
+|preload-data?job=get-folders
+|preload-data?mailbox={{{mailbox}}}
+|target-slot=main
+}}
+</td><td>
+{{#VisualDataButton: Get messages
+|callback = ContactManager.initJob
+|schema = ContactManager/Retrieve messages
+|edit-page=ContactManager:Mailboxes/{{{mailbox}}}/Jobs/GetMessages
+|preload-data?job=retrieve-messages
+|preload-data?mailbox={{{mailbox}}}
+|target-slot=main
+}}
+</td></tr></table>

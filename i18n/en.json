@@ -5,8 +5,8 @@
 	"contactmanager-extension-desc": "Email client, contact manager and bulk email app based on VisualData",
 	"contactmanager-sidepanel-section": "Contact Manager",
 	"contactmanager-sidepanel-mailboxes": "Mailboxes",
-	"contactmanager-sidepanel-contacts": "Contacts",
 	"contactmanager-sidepanel-mailers": "Mailers",
+	"contactmanager-sidepanel-compose": "Compose",
 	"contactmanager-sidepanel-data-structure": "Data structure",
 
 	"right-contactmanager-can-manage-mailboxes": "contactmanager can manage mailboxes",

@@ -54,12 +54,11 @@
 				],
 				"options-query-formula": "\u003Cname\u003E - \u003Cprovider\u003E",
 				"required": false,
-				"options-values-parsed": {}
+				"options-values-parsed": []
 			},
 			"type": "string",
 			"format": "text",
-			"title": "mailer",
-			"enum": []
+			"title": "mailer"
 		},
 		"substitutions": {
 			"wiki": {
@@ -132,12 +131,11 @@
 				"showif-field": "transport",
 				"showif-condition": "=",
 				"showif-value": "mailer",
-				"options-values-parsed": {}
+				"options-values-parsed": []
 			},
 			"type": "string",
 			"format": "text",
-			"title": "from",
-			"enum": []
+			"title": "from"
 		},
 		"to": {
 			"wiki": {
@@ -145,20 +143,21 @@
 				"min-items": 0,
 				"unique-items": true,
 				"type": "schema",
-				"uuid": "6636ad628488e"
+				"uuid": "67bd59e21aa86"
 			},
 			"items": {
 				"type": "string",
 				"wiki": {
 					"name": "to",
 					"type": "property",
-					"multiple-items": true,
-					"label": "to",
-					"default": [],
-					"uuid": "6635dd2221ea3",
+					"uuid": "6636ad628488e",
 					"visibility": "visible",
+					"label": "to",
+					"multiple-items": true,
 					"preferred-input": "MenuTagSearchMultiselect",
-					"input-config": [],
+					"input-config": {
+						"allowArbitrary": true
+					},
 					"options-query": "[[full_name::\u003Cvalue\u003E~]]",
 					"query-schema": "ContactManager/Contact",
 					"query-printouts": [
@@ -167,7 +166,7 @@
 					],
 					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail_addresses\u003E\u003E",
 					"required": false,
-					"layout": "table"
+					"default": []
 				},
 				"format": "text",
 				"title": "to",
@@ -348,26 +347,38 @@
 		},
 		"template": {
 			"wiki": {
-				"type": "property",
-				"uuid": "67b2e9cb120e7",
 				"name": "template",
+				"type": "property",
+				"multiple-items": false,
+				"input-config": {
+					"namespace": 2262
+				},
+				"label": "template",
+				"help-message": "Any page in the {{#querylink:Special:AllPages|EmailTemplate namespace|target=_blank|namespace=2262}}",
+				"default": "Default",
+				"uuid": "67b2e9cb120e7",
 				"visibility": "condition",
 				"showif-field": "is_html",
 				"showif-condition": "=",
 				"showif-value": "false",
-				"label": "template",
-				"help-message": "Any page in the {{#querylink:Special:AllPages|EmailTemplate namespace|target=_blank|namespace=2262}}",
-				"multiple-items": false,
 				"preferred-input": "mw.widgets.TitleInputWidget",
-				"input-config": {
-					"namespace": 2262
-				},
 				"required": false
 			},
 			"type": "string",
 			"format": "text",
 			"title": "template",
-			"description": "Any page in the \u003Ca href=\"/index.php?title=Special:AllPages\u0026amp;namespace=2262\" title=\"Special:AllPages\" target=\"_blank\"\u003EEmailTemplate namespace\u003C/a\u003E"
+			"description": "Any page in the \u003Ca href=\"/index.php?title=Special:AllPages\u0026amp;namespace=2262\" class=\"external text\" title=\"Special:AllPages\" target=\"_blank\"\u003EEmailTemplate namespace\u003C/a\u003E",
+			"default": "Default"
+		},
+		"message_substitutions": {
+			"wiki": {
+				"name": "message_substitutions",
+				"type": "content-block",
+				"content": "Attention!! Substitutions are available only when using a mailer (currently sendgrid) since they take place after sending the email to avoid to send one email for each recipient",
+				"uuid": "67b46fb87684a"
+			},
+			"type": "object",
+			"description": "Attention!! Substitutions are available only when using a mailer (currently sendgrid) since they take place after sending the email to avoid to send one email for each recipient"
 		},
 		"text_html": {
 			"wiki": {

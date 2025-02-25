@@ -1,17 +1,23 @@
-{{#if:{{#urlget:mailbox}} | [[ContactManager:Mailboxes/{{#urlget:mailbox}}#Conversations|&larr; go back]] | This article is meant to be accessed with a dynamic url }}
-  
+<big>Folders: {{#visualdataquery: [[ContactManager:Mailboxes/{{#urlget:mailbox}}/Jobs/GetMessages]] [[mailbox::+]]
+|schema=ContactManager/Retrieve messages
+|?folders/folder_name
+|?folders/folder?
+|template?folders/folder_name=ContactManager/Headers folder name field
+|format=raw
+}}</big>
+<templatestyles src="ContactManager:Styles.css" />
 
-=={{#urlget:folder}}== 
-<!-- |?to -->
-{{#visualdataquery: [[{{#urldecode:{{#urlget:path}}}}/headers/{{#urldecode:{{#urlget:folder}}}}/~]]
+=={{#urlget:folder}}==
+{{#visualdataquery: [[ContactManager:Mailboxes/{{#urlget:mailbox}}/headers/{{#urlget:folder}}/~]]
 |schema=ContactManager/Message header
 |?pagetitle
 |?subject
 |?from
+|?to
 |?date
 |?uid=
 |pagetitle=
-|template?pagetitle=ContactManager/Read email field header
+|template?pagetitle=ContactManager/Headers read email field
 |format=datatables
 |datatables-searchPanes=true
 |datatables-searchPanes.columns=2

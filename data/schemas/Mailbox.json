@@ -7,19 +7,21 @@
 	"properties": {
 		"name": {
 			"wiki": {
-				"name": "name",
 				"type": "property",
-				"multiple-items": false,
-				"required": true,
-				"label": "name",
 				"uuid": "663695326d82e",
+				"name": "name",
 				"visibility": "visible",
+				"label": "mailbox name",
+				"help-message": "Choose an identifier for this mailbox. All related messages and contacts will be saved as subpages of it, therefore it should be as simple as possible and not be changed later.",
+				"multiple-items": false,
 				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": []
+				"input-config": [],
+				"required": true
 			},
 			"type": "string",
 			"format": "text",
-			"title": "name"
+			"title": "mailbox name",
+			"description": "Choose an identifier for this mailbox. All related messages and contacts will be saved as subpages of it, therefore it should be as simple as possible and not be changed later."
 		},
 		"from": {
 			"wiki": {
@@ -83,13 +85,14 @@
 				"wiki": {
 					"name": "delivered-to",
 					"type": "property",
-					"uuid": "678d86d7939af",
-					"visibility": "hidden",
 					"multiple-items": true,
+					"visibility": "hidden",
+					"default": [],
+					"uuid": "678d86d7939af",
 					"preferred-input": "OO.ui.TextInputWidget (email)",
 					"input-config": [],
 					"required": false,
-					"default": []
+					"layout": "table"
 				},
 				"options": {
 					"hidden": true

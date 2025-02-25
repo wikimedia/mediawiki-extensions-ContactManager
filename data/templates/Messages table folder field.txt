@@ -1,0 +1,1 @@
+[[ContactManager:Mailboxes/{{{mailbox}}}/folders/{{{folders/folder_name}}}|{{{folders/folder_name}}}]]

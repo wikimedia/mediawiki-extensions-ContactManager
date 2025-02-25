@@ -1,4 +1,4 @@
-[[ContactManager:Mailboxes/%mailbox%#Folders|&larr; go back]]
+[[ContactManager:Mailboxes/%mailbox%#Messages|&larr; go back]]
 
 
 ==%folder_name%==
@@ -9,7 +9,7 @@
 |?date
 |pagetitle=
 |schema=ContactManager/Incoming mail
-|template?pagetitle=ContactManager/Read email field
+|template?pagetitle=ContactManager/Messages read email field
 |format=datatables
 |datatables-searchPanes=true
 |datatables-searchPanes.columns=2

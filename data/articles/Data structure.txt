@@ -2,9 +2,8 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 
 
 * articles
-** [[ContactManager:Contacts]]
+** [[ContactManager:Compose]]
 ** [[ContactManager:Conversation]]
-** [[ContactManager:Conversations]]
 ** [[ContactManager:Data structure]]
 ** [[ContactManager:Filter header]]
 ** [[ContactManager:Filter metadata]]
@@ -16,21 +15,30 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 ** [[ContactManager:Messages]]
 ** [[ContactManager:Read email]]
 ** [[ContactManager:Search criteria]]
+** [[ContactManager:Success]]
 
 
 * templates
+**[[Template:ContactManager/Compose name field]]
+**[[Template:ContactManager/Contacts table name field]]
 **[[Template:ContactManager/Conversation]]
 **[[Template:ContactManager/Conversations table latest field]]
 **[[Template:ContactManager/Conversations table messages field]]
 **[[Template:ContactManager/Conversations table participants]]
 **[[Template:ContactManager/Conversations table participants field]]
 **[[Template:ContactManager/Email]]
-**[[Template:ContactManager/Folders table field]]
 **[[Template:ContactManager/Format reply]]
 **[[Template:ContactManager/Get mailbox]]
+**[[Template:ContactManager/Headers folder name field]]
+**[[Template:ContactManager/Headers read email field]]
+**[[Template:ContactManager/Headers table folder field]]
 **[[Template:ContactManager/Languages]]
 **[[Template:ContactManager/Mailbox edit]]
+**[[Template:ContactManager/Mailbox info mailbox field]]
+**[[Template:ContactManager/Mailbox jobs buttons]]
 **[[Template:ContactManager/Mailer edit]]
+**[[Template:ContactManager/Messages read email field]]
+**[[Template:ContactManager/Messages table folder field]]
 **[[Template:ContactManager/Preload mailbox]]
 **[[Template:ContactManager/Preload messages Draft]]
 **[[Template:ContactManager/Preload messages Inbox]]
@@ -38,8 +46,6 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 **[[Template:ContactManager/Preload messages Sent]]
 **[[Template:ContactManager/Preload messages Spam]]
 **[[Template:ContactManager/Preload messages Trash]]
-**[[Template:ContactManager/Read email field]]
-**[[Template:ContactManager/Read email field header]]
 
 
 * styles

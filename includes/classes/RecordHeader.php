@@ -72,10 +72,16 @@ class RecordHeader {
 		$context->setTitle( $title );
 		$output = $context->getOutput();
 
-		$pagenameFormula_ = $params['header_pagename_formula'];
 		$header = $params['obj'];
 		$folder = $params['folder'];
 		$obj = $header;
+
+		// may be overridden by $this->applyFilters
+		$pagenameFormula_ = \ContactManager::replaceParameter( 'ContactManagerHeaderPagenameFormula',
+			$params['mailbox'],
+			$folder['folder_name'],
+			'<ContactManager/Message header/uid>'
+		);
 
 		$categories_ = ( array_key_exists( 'categories', $params )
 			&& is_array( $params['categories'] ) ? $params['categories'] : [] );
@@ -85,10 +91,11 @@ class RecordHeader {
 			return;
 		}
 
+		// only if provided from applyFilters
 		$pagenameFormula_ = str_replace( '<folder_name>', $folder['folder_name'], $pagenameFormula_ );
 
 		$pagenameFormula_ = \ContactManager::replaceFormula( $obj, $pagenameFormula_,
-		$GLOBALS['wgContactManagerSchemasMessageHeader'] );
+			$GLOBALS['wgContactManagerSchemasMessageHeader'] );
 
 		$pagenameFormula_ = \ContactManager::parseWikitext( $output, $pagenameFormula_ );
 
@@ -103,7 +110,6 @@ class RecordHeader {
 		$obj['categories'] = $categories_;
 
 		$importer->importData( $pagenameFormula_, $obj, $showMsg );
-		$title_ = Title::newFromText( $pagenameFormula_ );
 
 		if ( !empty( $params['save_contacts'] ) ) {
 			$allContacts = [];
@@ -117,7 +123,7 @@ class RecordHeader {
 			}
 
 			foreach ( $allContacts as $email => $name ) {
-				\ContactManager::saveContact( $user, $context, $name, $email, $categories_ );
+				\ContactManager::saveContact( $user, $context, $params, $obj, $name, $email );
 			}
 		}
 	}

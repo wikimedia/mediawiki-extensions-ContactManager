@@ -1,10 +1,9 @@
-{{#querylink:ContactManager:{{#if: {{#urlget:pageid}} | messages | headers }}|&larr; go back
+<!--{{#querylink:ContactManager:{{#if: {{#urlget:pageid}} | messages | headers }}|&larr; go back
 |folder={{#urldecode:{{#urlget:folder}}}}
 |shortpath={{#urldecode:{{#urlget:shortpath}}}}
 |mailbox={{#urldecode:{{#urlget:mailbox}}}}
 |path={{#urldecode:{{#urlget:path}}}}
-}}
-
+}}-->
 {{#if: {{#urlget:pageid}} | 
   {{#visualdataprint: {{#urlget:pageid}}
     |schema=ContactManager/Incoming mail

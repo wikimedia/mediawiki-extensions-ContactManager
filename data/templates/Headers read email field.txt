@@ -1,0 +1,1 @@
+<span style="white-space:nowrap">{{#querylink:ContactManager:Read email|open|target=_blank|uid={{{uid}}}|mailbox={{#urldecode:{{#urlget:mailbox}}}}|shortpath={{#urldecode:{{#urlget:shortpath}}}}|folder={{#urldecode:{{#urlget:folder}}}}}}&nbsp;|&nbsp;[[{{{pagetitle}}}|source]]</span>

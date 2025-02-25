@@ -61,13 +61,14 @@
 				"properties": {
 					"folder": {
 						"wiki": {
-							"type": "property",
-							"uuid": "66138f32ef41d",
 							"name": "folder",
-							"visibility": "visible",
+							"type": "property",
+							"multiple-items": false,
+							"required": true,
 							"label": "folder",
 							"help-message": "remote folder name",
-							"multiple-items": false,
+							"uuid": "66138f32ef41d",
+							"visibility": "visible",
 							"preferred-input": "OO.ui.DropdownInputWidget",
 							"input-config": [],
 							"options-allow-null": false,
@@ -78,8 +79,7 @@
 								"folders/fullpath",
 								"folders/shortpath"
 							],
-							"options-query-formula": "\u003Cfolders/fullpath\u003E",
-							"required": true
+							"options-query-formula": "\u003Cfolders/fullpath\u003E"
 						},
 						"type": "string",
 						"format": "text",
@@ -102,7 +102,7 @@
 						"type": "string",
 						"format": "text",
 						"title": "folder name",
-						"description": "the article title of this folder, it must not contain any of the  \u003Ca class=\"external text\" target=\"_blank\" href=\"https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters\"\u003EProblem characters\u003C/a\u003E"
+						"description": "the article title of this folder, it must not contain any of the  \u003Ca class=\"external text\" href=\"https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters\"\u003EProblem characters\u003C/a\u003E"
 					},
 					"folder_type": {
 						"wiki": {
@@ -500,49 +500,6 @@
 			"type": "boolean",
 			"title": "download attachments"
 		},
-		"header_pagename_formula": {
-			"wiki": {
-				"name": "header_pagename_formula",
-				"type": "property",
-				"multiple-items": false,
-				"required": true,
-				"label": "header pagename formula",
-				"help-message": "the overall functioning relies on the prefix \u003Cnowiki\u003E{{FULLPAGENAME}}/headers/\u003Cfolder_name\u003E/\u003C/nowiki\u003E and it shouldn't be edited, while in the suffix  all properties of the schema [[VisualDataSchema:ContactManager/Message header|ContactManager/Message header]] can be used. Eg. \u003Cnowiki\u003E.../\u003Cfolder_name\u003E/\u003CContactManager/Message header/from\u003E/\u003CContactManager/Message header/uid\u003E\u003C/nowiki\u003E",
-				"default": "{{FULLPAGENAME}}/headers/\u003Cfolder_name\u003E/\u003CContactManager/Message header/uid\u003E",
-				"uuid": "67557ccc79b74",
-				"visibility": "visible",
-				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": []
-			},
-			"type": "string",
-			"format": "text",
-			"title": "header pagename formula",
-			"description": "",
-			"default": ""
-		},
-		"message_pagename_formula": {
-			"wiki": {
-				"name": "message_pagename_formula",
-				"type": "property",
-				"multiple-items": false,
-				"required": true,
-				"label": "message pagename-formula",
-				"help-message": "the overall functioning relies on the prefix \u003Cnowiki\u003E{{FULLPAGENAME}}/messages/\u003C/nowiki\u003E and it shouldn't be edited, while in the suffix all properties of the schema [[VisualDataSchema:ContactManager/Incoming mail|ContactManager/Incoming mail]] can be used. Eg. \u003Cnowiki\u003E.../\u003Cfolder_name\u003E/\u003CContactManager/Incoming mail/fromName\u003E/\u003CContactManager/Incoming mail/id\u003E\u003C/nowiki\u003E",
-				"default": "{{FULLPAGENAME}}/messages/\u003Cfolder_name\u003E/\u003CContactManager/Incoming mail/id\u003E",
-				"uuid": "6625fa058fb0f",
-				"visibility": "condition",
-				"showif-field": "fetch_message",
-				"showif-condition": "=",
-				"showif-value": "true",
-				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": []
-			},
-			"type": "string",
-			"format": "text",
-			"title": "message pagename-formula",
-			"description": "",
-			"default": ""
-		},
 		"job_pagetitle": {
 			"wiki": {
 				"name": "job_pagetitle",
@@ -595,16 +552,16 @@
 				"min-items": 0,
 				"unique-items": true,
 				"type": "schema",
-				"uuid": "6754ccec480c1"
+				"uuid": "67baf7b6dad98"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
-					"uuid": "675484c749490",
 					"layout": "section",
-					"visibility": "visible"
+					"visibility": "visible",
+					"uuid": "67baf7b6dad9b"
 				},
 				"properties": {
 					"header": {
@@ -838,22 +795,20 @@
 							"type": "property",
 							"multiple-items": false,
 							"label": "Pagename formula",
-							"help-message": "leave empty to use the default destination title",
-							"label-parsed": "Pagename formula",
-							"help-message-parsed": "leave empty to use the default destination title",
+							"help-message": "leave empty to use the default destination title -- the default is \u003Cnowiki\u003E{{FULLPAGENAME}}/headers/\u003Cfolder_name\u003E/\u003CContactManager/Message header/uid\u003E\u003C/nowiki\u003E",
 							"uuid": "6608f1b1136e2",
 							"visibility": "condition",
-							"preferred-input": "OO.ui.TextInputWidget",
-							"input-config": [],
-							"required": false,
 							"showif-field": "action",
 							"showif-condition": "!=",
-							"showif-value": "skip"
+							"showif-value": "skip",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false
 						},
 						"type": "string",
 						"format": "text",
 						"title": "Pagename formula",
-						"description": "leave empty to use the default destination title"
+						"description": "leave empty to use the default destination title -- the default is {{FULLPAGENAME}}/headers/\u0026lt;folder_name\u0026gt;/\u0026lt;ContactManager/Message header/uid\u0026gt;"
 					},
 					"categories": {
 						"wiki": {
@@ -909,14 +864,14 @@
 				"min-items": 0,
 				"unique-items": true,
 				"type": "schema",
-				"uuid": "67555e9533631"
+				"uuid": "67baf7eedc0de"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
-					"uuid": "6754ccec480a4",
+					"uuid": "67baf7b6dadb3",
 					"layout": "section",
 					"visibility": "condition",
 					"showif-field": "fetch_message",
@@ -1251,22 +1206,20 @@
 							"type": "property",
 							"multiple-items": false,
 							"label": "Pagename formula",
-							"help-message": "leave empty to use the default destination title",
-							"label-parsed": "Pagename formula",
-							"help-message-parsed": "leave empty to use the default destination title",
+							"help-message": "leave empty to use the default destination title -- the default is \u003Cnowiki\u003E{{FULLPAGENAME}}/messages/\u003Cfolder_name\u003E/\u003CContactManager/Incoming mail/id\u003E\u003C/nowiki\u003E",
 							"uuid": "6608f1b1136e2",
 							"visibility": "condition",
-							"preferred-input": "OO.ui.TextInputWidget",
-							"input-config": [],
-							"required": false,
 							"showif-field": "action",
 							"showif-condition": "!=",
-							"showif-value": "skip"
+							"showif-value": "skip",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false
 						},
 						"type": "string",
 						"format": "text",
 						"title": "Pagename formula",
-						"description": "leave empty to use the default destination title"
+						"description": "leave empty to use the default destination title -- the default is {{FULLPAGENAME}}/messages/\u0026lt;folder_name\u0026gt;/\u0026lt;ContactManager/Incoming mail/id\u0026gt;"
 					},
 					"categories": {
 						"wiki": {
@@ -1319,9 +1272,7 @@
 	"required": [
 		"job",
 		"mailbox",
-		"fetch",
-		"header_pagename_formula",
-		"message_pagename_formula"
+		"fetch"
 	],
 	"type": "object"
 }

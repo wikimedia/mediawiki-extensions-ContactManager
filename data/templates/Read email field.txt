@@ -1,1 +1,0 @@
-{{#querylink:ContactManager:Read email|open|target=_blank|pageid={{{articleid}}}|mailbox={{#urldecode:{{#urlget:mailbox}}}}|shortpath={{#urldecode:{{#urlget:shortpath}}}}|folder={{#urldecode:{{#urlget:folder}}}}|path={{#urldecode:{{#urlget:path}}}}}}

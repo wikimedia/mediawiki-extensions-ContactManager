@@ -1,113 +1,68 @@
-[[ContactManager:Mailboxes|&larr; go back]] 
- 
-==Mailbox info== 
-{{#visualDataButton: Get mailbox info
-|callback = ContactManager.initJob
-|schema = ContactManager/Define job
-|edit-page={{FULLPAGENAME}}/Jobs/MailboxInfo
-|preload-data?job=mailbox-info
-|preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
-|target-slot = main 
-}}
+[[ContactManager:Mailboxes|&larr; go back]]  
 
- 
+
+== Jobs ==
+Follow the instructions [https://www.mediawiki.org/wiki/Extension:ContactManager here] to setup [https://en.wikipedia.org/wiki/Cron crontab] or execute the following jobs manually. Configure the job options where needed by clicking the edit symbol within each button. After the mailbox creation, "Get folders" must be executed before "Get messages", since the latter controls the retrieval of messages for each folder.
+
+{{ContactManager/Mailbox jobs buttons|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}} }}
+
+
+  
+==Mailbox info==  
 
 {{#visualdataquery: [[name::+]] [[{{FULLPAGENAME}}]]
 |schema=ContactManager/Mailbox info
+|template?mailbox=ContactManager/Mailbox info mailbox field
 |pagetitle=
 |format=table
 }}  
 
 
-==Folders==
- 
-{{#VisualDataButton: Get folders
-|callback = ContactManager.initJob
-|schema = ContactManager/Define job
-|edit-page={{FULLPAGENAME}}/Jobs/GetFolders
-|preload-data?job=get-folders
-|preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
-|target-slot=main
-}}
+== Headers == 
 
- 
-{{#visualdataquery: [[name::+]] [[{{FULLPAGENAME}}]]
-|schema=ContactManager/Mailbox folders
-|?folders/fullpath=
-|?folders/shortpath=
-|?folders
-|?name=
+{{#visualdataquery: [[{{FULLPAGENAME}}/Jobs/GetMessages]] [[mailbox::+]]
+|schema=ContactManager/Retrieve messages
+|?folders/folder_name=
+|?folders/folder=
+|?folder
+|?mailbox=
+|template?folder=ContactManager/Headers table folder field
 |pagetitle=
-|template?folders=ContactManager/Folders table field
+|format=table
 }}
 
 
+== Messages == 
 
-{{#VisualDataButton: Get messages
-|callback = ContactManager.initJob
-|schema = ContactManager/Retrieve messages
-|edit-page={{FULLPAGENAME}}/Jobs/GetMessages
-|preload-data?job=retrieve-messages
-|preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
-|target-slot=main 
-}}
+Messages will be available only if the option "fetch messages" in the schema associated to the "Get messages" button is toggled, or if they are retrieved from the email page.
 
-
-
-== Conversations ==
-{{#visualdataquery: [[{{FULLPAGENAME}}/conversations/~]]
-|schema=ContactManager/Conversation
-|limit=40
-|?participants field=participants
-|?participants/email=
-|?participants/name=
-|?messages
-|?latest
-|?hash=
-|?date_last=
-|?count=
+{{#visualdataquery: [[{{FULLPAGENAME}}/Jobs/GetMessages]] [[mailbox::+]]
+|schema=ContactManager/Retrieve messages
+|?folder
+|?folders/folder_name=
+|?folders/folder=
 |?mailbox=
 |pagetitle=
-|template?participants field=ContactManager/Conversations table participants field
-|template?participants=ContactManager/Conversations table participants
-|template?messages=ContactManager/Conversations table messages field
-|template?latest=ContactManager/Conversations table latest field
-|order=date_last desc
-|format=datatable
-|datatables-synch=true
-|datatables-synch.interval=100
-|mode=nested 
+|template?folder=ContactManager/Messages table folder field
+|format=table
 }}
 
 
+== Conversations == 
 
-==Compose message==
+{{ContactManager/Conversations|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}} }} }}
 
 
-{{#visualdataform: ContactManager/Compose email
-|title = New email
-|action = create
-|edit-page = 
-|return-page = {{FULLPAGENAME}}/Sent email
-|view = inline
-|popup-size = large
-|css-class =
-|pagename-formula = {{FULLPAGENAME}}/Sent email
-|edit-freetext = true   
-|edit-categories = false
-|edit-content-model = false
-|edit-target-slot = false
-|target-slot = main
-|default-categories = 
-|default-content-model = wikitext
-|preload=
-|preload-data=
-|layout-align = top
-|popup-help = false 
-|layout = tabs
-|submit-button-text =
-|validate-button-text =
-|overwrite-existing-article-on-create=true
-|preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
-}}
+== Contacts ==
+
+{{ContactManager/Contacts|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}} }} }}
+
+
+[[{{FULLPAGENAME}}/compose message|compose message]]
+
+== Compose message ==
+
+{{#buttonlink:ContactManager:Compose|Compose|target=_blank|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}}}
+
+
 

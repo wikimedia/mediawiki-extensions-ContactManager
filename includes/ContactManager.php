@@ -344,9 +344,13 @@ class ContactManager {
 						$results_[0]['data']['uid'] : 0 );
 
 					if ( !empty( $params['fetch_message'] ) ) {
+						$targetTitle_ = self::replaceParameter( 'ContactManagerMessagePagenameFormula',
+							$params['mailbox'],
+							$folder['folder_name'],
+							'~'
+						);
 						$schema_ = $GLOBALS['wgContactManagerSchemasIncomingMail'];
-						// phpcs:ignore Generic.Files.LineLength.TooLong
-						$query_ = '[[id::+]][[ContactManager:Mailboxes/' . $params['mailbox'] . '/messages/' . $folder['folder_name'] . '/~]]';
+						$query_ = "[[id::+]][[$targetTitle_]]";
 						$printouts_ = [ 'id' ];
 						$options_ = [ 'limit' => 1, 'order' => 'id DESC' ];
 						$results_ = \VisualData::getQueryResults( $schema_, $query_, $printouts_, $options_ );
@@ -479,13 +483,33 @@ class ContactManager {
 	}
 
 	/**
+	 * @param string $parameter
+	 * @param mixed ...$argv
+	 * @return string
+	 */
+	public static function replaceParameter( $parameter, ...$argv ) {
+		if ( empty( $GLOBALS["wg$parameter"] ) ) {
+			return '';
+		}
+		$n = 1;
+		$ret = $GLOBALS["wg$parameter"];
+		foreach ( $argv as $value ) {
+			$ret = str_replace( '$' . $n, $value, $ret );
+			$n++;
+		}
+
+		return $ret;
+	}
+
+	/**
 	 * @param array $properties
 	 * @param string $formula
 	 * @param string $prefix
 	 * @return string
 	 */
 	public static function replaceFormula( $properties, $formula, $prefix ) {
-		preg_match_all( '/<\s*([^<>]+)\s*>/', $formula, $matches, PREG_PATTERN_ORDER );
+		// @see https://phabricator.wikimedia.org/T385935
+		preg_match_all( '/<\s*+([^<>]++)\s*+>/', $formula, $matches, PREG_PATTERN_ORDER );
 		foreach ( $properties as $property => $value ) {
 			if ( is_array( $value ) ) {
 				continue;
@@ -537,14 +561,20 @@ class ContactManager {
 	/**
 	 * @param User $user
 	 * @param Context $context
+	 * @param array $params
+	 * @param array $obj
 	 * @param string $name
 	 * @param string $email
-	 * @param array $categories
 	 * @param string|null $detectedLanguage
 	 */
-	public static function saveContact( $user, $context, $name, $email, $categories, $detectedLanguage = null ) {
+	public static function saveContact( $user, $context, $params, $obj, $name, $email, $detectedLanguage = null ) {
+		$fromUsername = false;
+
 		if ( empty( $name ) ) {
+			$fromUsername = true;
 			$name = substr( $email, 0, strpos( $email, '@' ) );
+			$name = str_replace( '.', ' ', $name );
+			$name = ucwords( $name );
 		}
 
 		$schema = $GLOBALS['wgContactManagerSchemasContact'];
@@ -566,10 +596,13 @@ class ContactManager {
 		}
 
 		$schema = $GLOBALS['wgContactManagerSchemasContact'];
-		$query = '[[full_name::' . $fullName . ']]';
+		$query = '[[email_addresses::' . $email . ']]';
 		$results = \VisualData::getQueryResults( $schema, $query );
 
-		$pagenameFormula = str_replace( '$1', $fullName, $GLOBALS['wgContactManagerContactsArticle'] );
+		$pagenameFormula = self::replaceParameter( 'ContactManagerContactPagenameFormula',
+			$params['mailbox'],
+			'#count'
+		);
 
 		// must reflect VisualDataSchema:ContactManager/Contact
 		$data = [
@@ -599,7 +632,8 @@ class ContactManager {
 
 		// merge previous entries
 		if ( !array_key_exists( 'errors', $results ) && count( $results ) ) {
-			if ( !empty( $results[0]['data'] ) ) {
+			$pagenameFormula = $results[0]['title'];
+			if ( !empty( $results[0]['data'] ) && !$fromUsername ) {
 				$data = \VisualData::array_merge_recursive( $data, $results[0]['data'] );
 			}
 		}
@@ -622,8 +656,7 @@ class ContactManager {
 			echo $msg . PHP_EOL;
 		};
 
-		$data['categories'] = $categories;
-
+		// $data['categories'] = $obj['categories'];
 		$importer->importData( $pagenameFormula, $data, $showMsg );
 	}
 

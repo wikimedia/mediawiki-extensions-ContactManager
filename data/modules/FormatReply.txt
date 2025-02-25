@@ -17,7 +17,7 @@ function p.fn(frame)
         local quoted = table.concat(list, "\n> ")
         ret = "\n\non " .. date .. " " .. replyTo .. " wrote:\n" .. quoted
     else
-        local attr = mw.text.tag("div", {["class"] = "contactManager-attr"}, "on " .. date .. mw.text.encode(replyTo) .. " wrote:")
+        local attr = mw.text.tag("div", {["class"] = "contactManager-attr"}, "on " .. date .. " " .. mw.text.encode(replyTo) .. " wrote:")
 
         local quote =
             mw.text.tag(

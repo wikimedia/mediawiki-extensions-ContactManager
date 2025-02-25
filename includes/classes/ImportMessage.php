@@ -19,7 +19,7 @@
  * @file
  * @ingroup extensions
  * @author thomas-topway-it <support@topway.it>
- * @copyright Copyright ©2023-2024, https://wikisphere.org
+ * @copyright Copyright ©2023-2025, https://wikisphere.org
  */
 
 namespace MediaWiki\Extension\ContactManager;
@@ -176,8 +176,7 @@ class ImportMessage {
 		$obj['attachments'] = array_values( $attachments );
 		$obj['hasAttachments'] = count( $obj['attachments'] ) ? true : false;
 
-		// get Delivered-To
-		// for the use with Conversations
+		// get Delivered-To (only for inbox)
 		$deliveredTo = $imapMailbox->getMailHeaderFieldValue( $mail->headersRaw, 'Delivered-To' );
 		$obj['deliveredTo'] = $deliveredTo;
 
@@ -186,22 +185,24 @@ class ImportMessage {
 		$obj['conversationHash'] = $conversationHash;
 
 		// update the delivered-to list
-		$schema_ = $GLOBALS['wgContactManagerSchemasMailbox'];
-		$query_ = '[[name::' . $params['mailbox'] . ']]';
-		$results_ = \VisualData::getQueryResults( $schema_, $query_ );
-		$mailboxData = $results_[0]['data'];
-		if ( !array_key_exists( 'delivered-to', $mailboxData )
-			|| !is_array( $mailboxData['delivered-to'] )
-		) {
-			$mailboxData['delivered-to'] = [];
-		}
-		if ( !in_array( $deliveredTo, $mailboxData['delivered-to'] ) ) {
-			$mailboxData['delivered-to'][] = $deliveredTo;
-			$jsonData_ = [
-				$GLOBALS['wgContactManagerSchemasMailbox'] => $mailboxData
-			];
-			$title_ = Title::newFromText( $results_[0]['title'] );
-			\VisualData::updateCreateSchemas( $user, $title_, $jsonData_ );
+		if ( !empty( $deliveredTo ) ) {
+			$schema_ = $GLOBALS['wgContactManagerSchemasMailbox'];
+			$query_ = '[[name::' . $params['mailbox'] . ']]';
+			$results_ = \VisualData::getQueryResults( $schema_, $query_ );
+			$mailboxData = $results_[0]['data'];
+			if ( !array_key_exists( 'delivered-to', $mailboxData )
+				|| !is_array( $mailboxData['delivered-to'] )
+			) {
+				$mailboxData['delivered-to'] = [];
+			}
+			if ( !in_array( $deliveredTo, $mailboxData['delivered-to'] ) ) {
+				$mailboxData['delivered-to'][] = $deliveredTo;
+				$jsonData_ = [
+					$GLOBALS['wgContactManagerSchemasMailbox'] => $mailboxData
+				];
+				$title_ = Title::newFromText( $results_[0]['title'] );
+				\VisualData::updateCreateSchemas( $user, $title_, $jsonData_ );
+			}
 		}
 
 		$showMsg = static function ( $msg ) {
@@ -211,20 +212,11 @@ class ImportMessage {
 		$context = RequestContext::getMain();
 		$schema = \VisualData::getSchema( $context, $GLOBALS['wgContactManagerSchemasRetrieveMessages'] );
 
-		// *** attention, this is empty if called from
-		// 'get message' and the toggle 'fetch message'
-		// is false in the ContactManager/Retrieve messages form
-		if ( !array_key_exists( 'message_pagename_formula', $params ) ) {
-			// @FIXME unfortunately we cannot use the following
-			// since {{FULLPAGENAME}} resolve to ContactManager:Read_email
-			// instead than ContactManager:Mailboxes/<mailbox>
-			// $params['message_pagename_formula'] =
-			// $schema['properties']['message_pagename_formula']['wiki']['default'];
-			$params['message_pagename_formula'] = 'ContactManager:Mailboxes/' . $params['mailbox']
-				. '/messages/' . $params['folder_name'] . '/<ContactManager/Incoming mail/id>';
-		}
-
-		$pagenameFormula = $params['message_pagename_formula'];
+		$pagenameFormula = \ContactManager::replaceParameter( 'ContactManagerMessagePagenameFormula',
+			$params['mailbox'],
+			$params['folder_name'],
+			'<ContactManager/Incoming mail/id>'
+		);
 
 		$categories = [];
 		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories ) ) {
@@ -268,7 +260,6 @@ class ImportMessage {
 		$obj['categories'] = $categories;
 
 		$importer->importData( $pagenameFormula, $obj, $showMsg );
-		// $importer->importData( $pagenameFormula, $obj, $showMsg );
 		$title = Title::newFromText( $pagenameFormula );
 
 		if ( !$title ) {
@@ -290,13 +281,8 @@ class ImportMessage {
 			$this->handleUpload( $value );
 		}
 
-		// @TODO add input on schema
-		$categories = [
-			'Contacts from ' . $params['mailbox']
-		];
-
 		foreach ( $allContacts as $email => $name ) {
-			\ContactManager::saveContact( $user, $context, $name, $email, $categories,
+			\ContactManager::saveContact( $user, $context, $params, $obj, $name, $email,
 				( $email === $obj['fromAddress'] ? $detectedLanguage : null ) );
 		}
 
@@ -313,6 +299,7 @@ class ImportMessage {
 		$folderArticleTitle = Title::newFromText( $folderTitleText );
 
 		if ( $folderArticleTitle && $folderArticleTitle->isKnown() ) {
+			\VisualData::purgeArticle( $folderArticleTitle );
 			return;
 		}
 
@@ -351,6 +338,9 @@ class ImportMessage {
 			[ $params['mailbox'], $params['folder_name'] ], $content );
 
 		\VisualData::saveRevision( $user, $folderArticleTitle, $content );
+
+		$mailboxArticleTitle = Title::newFromText( 'ContactManager:Mailboxes/' . $params['mailbox'] );
+		\VisualData::purgeArticle( $mailboxArticleTitle );
 	}
 
 	/**
@@ -411,12 +401,18 @@ class ImportMessage {
 		$importer = new VisualDataImporter( $user, $context, $schema, $options );
 
 		$schema = $GLOBALS['wgContactManagerSchemasConversation'];
-		$query = '[[ContactManager:Mailboxes/' . $params['mailbox'] . '/conversations~]][[hash::' . $hash . ']]';
+		$targetTitle_ = \ContactManager::replaceParameter( 'ContactManagerConversationPagenameFormula',
+			$params['mailbox'],
+			'~'
+		);
+		$query = "[[$targetTitle_]][[hash::$hash]]";
 		$results = \VisualData::getQueryResults( $schema, $query );
 
 		// use numeric increment
-		$pagenameFormula = 'ContactManager:Mailboxes/' . $params['mailbox']
-				. '/conversations/#count';
+		$pagenameFormula = \ContactManager::replaceParameter( 'ContactManagerConversationPagenameFormula',
+			$params['mailbox'],
+			'#count'
+		);
 
 		$data = [
 			'mailbox' => $params['mailbox'],
@@ -452,7 +448,12 @@ class ImportMessage {
 		// *** this is necessary only if we want to order the
 		// conversations table by number of messages
 		$schema = $GLOBALS['wgContactManagerSchemasIncomingMail'];
-		$query = '[[ContactManager:Mailboxes/' . $params['mailbox'] . '/messages~]][[conversationHash::' . $hash . ']]';
+
+		$targetTitle_ = \ContactManager::replaceParameter( 'ContactManagerAllMessagesPagenameFormula',
+			$params['mailbox'],
+			'~'
+		);
+		$query = "[[$targetTitle_]][[conversationHash::$hash]]";
 		$printouts = [];
 		$params = [ 'format' => 'count' ];
 		$count = \VisualData::getQueryResults( $schema, $query, $printouts, $params );
@@ -588,8 +589,8 @@ class ImportMessage {
 					case 'skip':
 						return false;
 					default:
-						if ( !empty( $v['message_pagename_formula'] ) ) {
-							$pagenameFormula = $v['message_pagename_formula'];
+						if ( !empty( $v['pagename_formula'] ) ) {
+							$pagenameFormula = $v['pagename_formula'];
 						}
 
 						if ( !empty( $v['categories'] ) ) {

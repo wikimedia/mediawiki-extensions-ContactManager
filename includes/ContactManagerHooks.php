@@ -225,7 +225,7 @@ class ContactManagerHooks {
 			return;
 		}
 
-		$links = [ 'mailers', 'mailboxes', 'contacts', 'data-structure' ];
+		$links = [ 'mailers', 'mailboxes', 'compose', 'data-structure' ];
 		foreach ( $links as $value ) {
 			$title_ = Title::newFromText( str_replace( '-', ' ', "ContactManager:$value" ) );
 			$bar[ wfMessage( 'contactmanager-sidepanel-section' )->text() ][] = [

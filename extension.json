@@ -1,7 +1,7 @@
 {
 	"name": "ContactManager",
 	"author": "thomas-topway-it",
-	"version": "1.2.4",
+	"version": "1.2.5",
 	"url": "https://www.mediawiki.org/wiki/Extension:ContactManager",
 	"descriptionmsg": "contactcmanager-extension-desc",
 	"license-name": "GPL-2.0-or-later",
@@ -128,7 +128,11 @@
 		"ContactManagerSchemasContact": "ContactManager/Contact",
 		"ContactManagerMailboxInfoArticle": "ContactManager:Mailboxes/$1",
 		"ContactManagerMailboxFoldersArticle": "ContactManager:Mailboxes/$1",
-		"ContactManagerContactsArticle": "ContactManager:Contacts/$1",
+		"ContactManagerMessagePagenameFormula": "ContactManager:Mailboxes/$1/messages/$2/$3",
+		"ContactManagerAllMessagesPagenameFormula": "ContactManager:Mailboxes/$1/messages/$2",
+		"ContactManagerHeaderPagenameFormula": "ContactManager:Mailboxes/$1/headers/$2/$3",
+		"ContactManagerContactPagenameFormula": "ContactManager:Mailboxes/$1/contacts/$2",
+		"ContactManagerConversationPagenameFormula": "ContactManager:Mailboxes/$1/conversations/$2",
 		"ContactManagerAttachmentsFolder": "",
 		"ContactManangerDisableSidebarLink": false
 	},

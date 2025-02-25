@@ -34,38 +34,3 @@
 }}
 
 
-
-<!--
-== Compose message ==
-
-
-
-{{#visualdataform: ContactManager/Compose bulk email
-|title = New email
-|action = create
-|edit-page = 
-|return-page = {{FULLPAGENAME}}
-|view = inline
-|popup-size = large
-|css-class =
-|pagename-formula = {{FULLPAGENAME}}/SentEmail
-|edit-freetext = true   
-|edit-categories = false
-|edit-content-model = false
-|edit-target-slot = false
-|target-slot = main
-|default-categories = 
-|default-content-model = wikitext
-|preload=
-|preload-data=
-|layout-align = top
-|popup-help = false 
-|layout = tabs
-|submit-button-text =
-|validate-button-text =
-|overwrite-existing-article-on-create=true
-|preload-data?mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}
-}}
-
--->
-
