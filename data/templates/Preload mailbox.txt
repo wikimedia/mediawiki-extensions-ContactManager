@@ -58,7 +58,6 @@ Messages will be available only if the option "fetch messages" in the schema ass
 {{ContactManager/Contacts|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}} }} }}
 
 
-[[{{FULLPAGENAME}}/compose message|compose message]]
 
 == Compose message ==
 

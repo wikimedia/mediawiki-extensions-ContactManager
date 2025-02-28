@@ -20,8 +20,10 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 
 * templates
 **[[Template:ContactManager/Compose name field]]
+**[[Template:ContactManager/Contacts]]
 **[[Template:ContactManager/Contacts table name field]]
 **[[Template:ContactManager/Conversation]]
+**[[Template:ContactManager/Conversations]]
 **[[Template:ContactManager/Conversations table latest field]]
 **[[Template:ContactManager/Conversations table messages field]]
 **[[Template:ContactManager/Conversations table participants]]
@@ -53,7 +55,7 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 
 
 * emailTemplates
-**[[EmailTemplates:Default]]
+**[[EmailTemplate:Default]]
 
 
 * modules
@@ -62,7 +64,7 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 
 
 *schemas
-**[[VisualDataSchema:ContactManager/ComposeEmail]]
+**[[VisualDataSchema:ContactManager/Compose email]]
 **[[VisualDataSchema:ContactManager/Contact]]
 **[[VisualDataSchema:ContactManager/Conversation]]
 **[[VisualDataSchema:ContactManager/Define job]]

@@ -1,0 +1,19 @@
+{{#visualdataquery:[[ContactManager:Mailboxes/{{{mailbox}}}/~]]
+|schema=ContactManager/Contact
+|limit=40
+|?full_name
+|?email_addresses
+|?categories
+|pagetitle=
+|order=full_name asc
+|template?full_name=ContactManager/Contacts table name field
+|format=datatables
+|datatables-buttons=colvis,copy, csv, excel, download, print
+|datatables-synch=true
+|datatables-synch.interval=100
+|datatables-synch.property=Modification date
+|datatables-searchPanes=true
+|datatables-searchPanes.columns=0,2
+|datatables-searchPanes.threshold=1
+|categories=true
+}}

@@ -317,13 +317,13 @@ class ImportMessage {
 		}
 
 		$folderType = ucfirst( $folderType );
-		$folderArticleTemplateTitle = Title::newFromText( 'ContactManager/Preload Messages ' . $folderType );
+		$folderArticleTemplateTitle = Title::newFromText( 'ContactManager/Preload messages ' . $folderType );
 		if ( $folderArticleTemplateTitle->isKnown() ) {
 			$content = \VisualData::getWikipageContent( $folderArticleTemplateTitle );
 
 		} else {
 			$dirPath = __DIR__ . '/../../data';
-			$filePath = "$dirPath/templates/Preload Messages $folderType.txt";
+			$filePath = "$dirPath/templates/Preload messages $folderType.txt";
 			$content = file_get_contents( $filePath );
 		}
 
