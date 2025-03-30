@@ -1,1 +1,1 @@
-{{#querylink:ContactManager:Compose|{{{name}}}|mailbox={{{name}}}|class={{#ifeq:{{#urlget:mailbox}}|{{{name}}}||un}}selected }}
+{{#querylink:ContactManager:Compose|{{{name}}}|mailbox={{{name}}}|class=item-{{#ifeq:{{#urlget:mailbox}}|{{{name}}}||un}}selected }}

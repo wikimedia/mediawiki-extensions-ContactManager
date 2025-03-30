@@ -4,4 +4,4 @@
    |format=raw
    |limit=1
   }}
-|class={{#ifeq:{{#urlget:folder}}|{{{folder_name}}}||un}}selected }}
+|class=item-{{#ifeq:{{#urlget:folder}}|{{{folder_name}}}||un}}selected }}

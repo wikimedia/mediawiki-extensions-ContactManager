@@ -1,11 +1,11 @@
-{{#visualdataform: ContactManager/Mailer
-|title = Add Mailer
+{{#visualdataform: ContactManager/Organization
+|title = Add Organization
 |action = create
-|return-page = ContactManager:Mailers
+|return-page = ContactManager:Organizations
 |view = popup
 |popup-size = medium
 |css-class =
-|pagename-formula=ContactManager:Mailers/<name>
+|pagename-formula=ContactManager:Organizations/#count
 |edit-freetext = false	
 |edit-categories = false
 |edit-content-model = false
@@ -26,11 +26,13 @@
 
 
 {{#visualdataquery:[[name::+]]
-|schema=ContactManager/Mailer
+|schema=ContactManager/Organization
 |limit=10
 |?name
+|?categories
 |?action
-|template?action=ContactManager/Mailer edit
+|template?action=ContactManager/Organization edit
+|categories=true
 |order=name asc 
 }}
 

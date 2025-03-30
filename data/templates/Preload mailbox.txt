@@ -48,20 +48,15 @@ Messages will be available only if the option "fetch messages" in the schema ass
 }}
 
 
-== Conversations == 
 
-{{ContactManager/Conversations|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}} }} }}
-
-
-== Contacts ==
-
-{{ContactManager/Contacts|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}} }} }}
+<tabs class="ContactManagerTabs">
+<tab name="Conversations" block>{{ContactManager/Conversations|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}} }} }}</tab>
+<tab name="Contacts" block>{{ContactManager/Contacts|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}} }} }}</tab>
+</tabs>
 
 
 
 == Compose message ==
 
 {{#buttonlink:ContactManager:Compose|Compose|target=_blank|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}}}
-
-
 

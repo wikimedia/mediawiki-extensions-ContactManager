@@ -1,0 +1,1 @@
+{{#querylink:{{{pagetitle}}}|{{{full_name}}}|target=_blank}}

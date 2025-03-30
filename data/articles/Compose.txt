@@ -11,7 +11,7 @@
   |title = New email
   |action = create
   |edit-page = 
-  |return-page = ContactManager:Success
+  |return-page = ContactManager:Success?mailbox={{#urlget:mailbox}}
   |view = inline
   |popup-size = large
   |css-class =
@@ -34,3 +34,5 @@
   |preload-data?mailbox={{#urlget:mailbox}}
 }}
 |select a mailbox }}
+
+

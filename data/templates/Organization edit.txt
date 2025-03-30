@@ -1,8 +1,8 @@
-{{#visualdataform: ContactManager/Mailer
+{{#visualdataform: ContactManager/Organization
 |title = Edit
 |action = edit
-|edit-page = ContactManager:Mailers/{{{name}}}
-|return-page = ContactManager:Mailers
+|edit-page = {{{pagetitle}}}
+|return-page = ContactManager:Organizations
 |view = popup
 |popup-size = medium
 |css-class =

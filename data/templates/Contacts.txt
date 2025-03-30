@@ -2,7 +2,7 @@
 |schema=ContactManager/Contact
 |limit=40
 |?full_name
-|?email_addresses
+|?email
 |?categories
 |pagetitle=
 |order=full_name asc

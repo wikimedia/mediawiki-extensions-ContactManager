@@ -1,1 +1,3 @@
-Email has been sent
+Email has been sent.
+
+{{#if:{{#urlget:mailbox}}| Return to [[ContactManager:Mailboxes/{{#urlget:mailbox}}|Mailboxes/{{#urlget:mailbox}}]]| }}

@@ -24,7 +24,8 @@
 |overwrite-existing-article-on-create=true
 }}
 
- 
+{{#buttonlink:{{FULLPAGENAME}}|Purge article cache|action=purge}}
+
 
 {{#visualdataquery:[[name::+]]
 |schema=ContactManager/Mailbox 

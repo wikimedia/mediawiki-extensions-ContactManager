@@ -1,0 +1,12 @@
+* corporation
+* governmental
+* non-governmental
+* political
+* international
+* religious
+* armed forces
+* charity
+* not-for-profit corporation
+* partnership
+* cooperative
+* educational institution

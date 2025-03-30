@@ -184,7 +184,7 @@ class ContactManagerHooks {
 	 * @return void
 	 */
 	public static function onBeforeInitialize(
-		Title &$title,
+		&$title,
 		$unused,
 		OutputPage $output,
 		User $user,
@@ -225,7 +225,7 @@ class ContactManagerHooks {
 			return;
 		}
 
-		$links = [ 'mailers', 'mailboxes', 'compose', 'data-structure' ];
+		$links = [ 'compose', 'mailboxes', 'mailers', 'organizations', 'data-structure' ];
 		foreach ( $links as $value ) {
 			$title_ = Title::newFromText( str_replace( '-', ' ', "ContactManager:$value" ) );
 			$bar[ wfMessage( 'contactmanager-sidepanel-section' )->text() ][] = [

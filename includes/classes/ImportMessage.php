@@ -272,17 +272,18 @@ class ImportMessage {
 		$pathTarget = $attachmentsFolder . '/' . $title->getArticleID();
 
 		if ( $obj['hasAttachments'] ) {
-			mkdir( $pathTarget, 0777, true );
 			echo '$pathTarget ' . $pathTarget . PHP_EOL;
-		}
 
-		foreach ( $obj['attachments'] as $value ) {
-			rename( $attachmentsFolder . '/' . $value['name'], $pathTarget . '/' . $value['name'] );
-			$this->handleUpload( $value );
+			if ( mkdir( $pathTarget, 0777, true ) ) {
+				foreach ( $obj['attachments'] as $value ) {
+					rename( $attachmentsFolder . '/' . $value['name'], $pathTarget . '/' . $value['name'] );
+					$this->handleUpload( $value );
+				}
+			}
 		}
 
 		foreach ( $allContacts as $email => $name ) {
-			\ContactManager::saveContact( $user, $context, $params, $obj, $name, $email,
+			\ContactManager::saveContact( $user, $context, $params, $obj, $name, $email, $conversationHash,
 				( $email === $obj['fromAddress'] ? $detectedLanguage : null ) );
 		}
 

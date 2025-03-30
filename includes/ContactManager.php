@@ -262,6 +262,67 @@ class ContactManager {
 			echo $msg . PHP_EOL;
 		};
 
+		switch ( strtolower( $params['fetch'] ) ) {
+			case 'search':
+				$UIDs = $imapMailbox->searchMailbox( implode( ' ', $criteria ) );
+				$UIDs = array_values( $UIDs );
+				$len_ = count( $UIDs );
+				if ( $len_ === $UIDs[$len_ - 1] - $UIDs[0] ) {
+					$UIDs = $UIDs[0] . ':' . $UIDs[$len_ - 1];
+				} else {
+					$UIDs = implode( ',', $UIDs );
+				}
+				$UIDsHeaderSequence = $UIDsMessageSequence = $UIDs;
+				break;
+			case 'uids greater than or equal':
+				if ( $params['UID_from'] < 1 ) {
+					$params['UID_from'] = 1;
+				}
+				$UIDsHeaderSequence = $UIDsMessageSequence = $params['UID_from'] . ':' . $status_['messages'];
+				break;
+			case 'uids less than or equal':
+				$UIDsHeaderSequence = $UIDsMessageSequence = '1:' . $params['UID_to'];
+				break;
+			case 'uids range':
+				if ( $params['UID_from'] < 1 ) {
+					$params['UID_from'] = 1;
+				}
+				$UIDsHeaderSequence = $UIDsMessageSequence = $params['UID_from'] . ':' . $params['UID_to'];
+				break;
+			case 'uids incremental':
+			default:
+				// get latest knows UID for this folder
+				$schema_ = $GLOBALS['wgContactManagerSchemasMessageHeader'];
+				// phpcs:ignore Generic.Files.LineLength.TooLong
+				$query_ = '[[uid::+]][[ContactManager:Mailboxes/' . $params['mailbox'] . '/headers/' . $folder['folder_name'] . '/~]]';
+				$printouts_ = [ 'uid' ];
+				$options_ = [ 'limit' => 1, 'order' => 'uid DESC' ];
+				$results_ = \VisualData::getQueryResults( $schema_, $query_, $printouts_, $options_ );
+
+				$lastKnowHeaderUid = ( !empty( $results_[0] ) && !empty( $results_[0]['data']['uid'] ) ?
+					$results_[0]['data']['uid'] : 0 );
+
+				if ( !empty( $params['fetch_message'] ) ) {
+					$targetTitle_ = self::replaceParameter( 'ContactManagerMessagePagenameFormula',
+						$params['mailbox'],
+						$folder['folder_name'],
+						'~'
+					);
+					$schema_ = $GLOBALS['wgContactManagerSchemasIncomingMail'];
+					$query_ = "[[id::+]][[$targetTitle_]]";
+					$printouts_ = [ 'id' ];
+					$options_ = [ 'limit' => 1, 'order' => 'id DESC' ];
+					$results_ = \VisualData::getQueryResults( $schema_, $query_, $printouts_, $options_ );
+
+					$lastKnowMessageUid = ( !empty( $results_[0] ) && !empty( $results_[0]['data']['id'] ) ?
+						$results_[0]['data']['id'] : 0 );
+
+					$UIDsMessageSequence = ( $lastKnowMessageUid + 1 ) . ':' . $status_['messages'];
+				}
+				$UIDsHeaderSequence = ( $lastKnowHeaderUid + 1 ) . ':' . $status_['messages'];
+		}
+
+		// retrieve first all headers and record status
 		foreach ( $folders as $folder ) {
 			$name_pos = strpos( $folder['folder'], '}' );
 			$shortpath = substr( $folder['folder'], $name_pos + 1 );
@@ -303,66 +364,6 @@ class ContactManager {
 			// if ( !empty( $params['fetch_folder_status'] ) ) {
 			}
 
-			switch ( strtolower( $params['fetch'] ) ) {
-				case 'search':
-					$UIDs = $imapMailbox->searchMailbox( implode( ' ', $criteria ) );
-					$UIDs = array_values( $UIDs );
-					$len_ = count( $UIDs );
-					if ( $len_ === $UIDs[$len_ - 1] - $UIDs[0] ) {
-						$UIDs = $UIDs[0] . ':' . $UIDs[$len_ - 1];
-					} else {
-						$UIDs = implode( ',', $UIDs );
-					}
-					$UIDsHeaderSequence = $UIDsMessageSequence = $UIDs;
-					break;
-				case 'uids greater than or equal':
-					if ( $params['UID_from'] < 1 ) {
-						$params['UID_from'] = 1;
-					}
-					$UIDsHeaderSequence = $UIDsMessageSequence = $params['UID_from'] . ':' . $status_['messages'];
-					break;
-				case 'uids less than or equal':
-					$UIDsHeaderSequence = $UIDsMessageSequence = '1:' . $params['UID_to'];
-					break;
-				case 'uids range':
-					if ( $params['UID_from'] < 1 ) {
-						$params['UID_from'] = 1;
-					}
-					$UIDsHeaderSequence = $UIDsMessageSequence = $params['UID_from'] . ':' . $params['UID_to'];
-					break;
-				default:
-				case 'uids incremental':
-					// get latest knows UID for this folder
-					$schema_ = $GLOBALS['wgContactManagerSchemasMessageHeader'];
-					// phpcs:ignore Generic.Files.LineLength.TooLong
-					$query_ = '[[uid::+]][[ContactManager:Mailboxes/' . $params['mailbox'] . '/headers/' . $folder['folder_name'] . '/~]]';
-					$printouts_ = [ 'uid' ];
-					$options_ = [ 'limit' => 1, 'order' => 'uid DESC' ];
-					$results_ = \VisualData::getQueryResults( $schema_, $query_, $printouts_, $options_ );
-
-					$lastKnowHeaderUid = ( !empty( $results_[0] ) && !empty( $results_[0]['data']['uid'] ) ?
-						$results_[0]['data']['uid'] : 0 );
-
-					if ( !empty( $params['fetch_message'] ) ) {
-						$targetTitle_ = self::replaceParameter( 'ContactManagerMessagePagenameFormula',
-							$params['mailbox'],
-							$folder['folder_name'],
-							'~'
-						);
-						$schema_ = $GLOBALS['wgContactManagerSchemasIncomingMail'];
-						$query_ = "[[id::+]][[$targetTitle_]]";
-						$printouts_ = [ 'id' ];
-						$options_ = [ 'limit' => 1, 'order' => 'id DESC' ];
-						$results_ = \VisualData::getQueryResults( $schema_, $query_, $printouts_, $options_ );
-
-						$lastKnowMessageUid = ( !empty( $results_[0] ) && !empty( $results_[0]['data']['id'] ) ?
-							$results_[0]['data']['id'] : 0 );
-
-						$UIDsMessageSequence = ( $lastKnowMessageUid + 1 ) . ':' . $status_['messages'];
-					}
-					$UIDsHeaderSequence = ( $lastKnowHeaderUid + 1 ) . ':' . $status_['messages'];
-			}
-
 			$overviewHeader = $imapMailbox->fetch_overview( $UIDsHeaderSequence );
 			foreach ( $overviewHeader as $header ) {
 				$header = (array)$header;
@@ -400,6 +401,20 @@ class ContactManager {
 				// won't be reliable
 				// $jobs[] = $job_;
 			}
+		}
+
+		if ( !empty( $params['fetch_folder_status'] ) || $params['fetch'] === 'UIDs incremental' ) {
+			$jsonData_ = [
+				$GLOBALS['wgContactManagerSchemasMailboxFolders'] => $foldersData
+			];
+			\VisualData::updateCreateSchemas( $user, $title, $jsonData_ );
+		}
+
+		// then retrieve all messages
+		foreach ( $folders as $folder ) {
+			$name_pos = strpos( $folder['folder'], '}' );
+			$shortpath = substr( $folder['folder'], $name_pos + 1 );
+			$imapMailbox->switchMailbox( $shortpath );
 
 			if ( !empty( $params['fetch_message'] ) ) {
 				$overviewMessage = ( $UIDsMessageSequence === $UIDsHeaderSequence
@@ -437,13 +452,6 @@ class ContactManager {
 					// $jobs[] = $job_;
 				}
 			}
-		}
-
-		if ( !empty( $params['fetch_folder_status'] ) || $params['fetch'] === 'UIDs incremental' ) {
-			$jsonData_ = [
-				$GLOBALS['wgContactManagerSchemasMailboxFolders'] => $foldersData
-			];
-			\VisualData::updateCreateSchemas( $user, $title, $jsonData_ );
 		}
 
 		self::pushJobs( $jobs );
@@ -565,9 +573,12 @@ class ContactManager {
 	 * @param array $obj
 	 * @param string $name
 	 * @param string $email
+	 * @param string|null $conversationHash
 	 * @param string|null $detectedLanguage
 	 */
-	public static function saveContact( $user, $context, $params, $obj, $name, $email, $detectedLanguage = null ) {
+	public static function saveContact( $user, $context, $params, $obj, $name, $email,
+		$conversationHash = null, $detectedLanguage = null
+	) {
 		$fromUsername = false;
 
 		if ( empty( $name ) ) {
@@ -596,7 +607,7 @@ class ContactManager {
 		}
 
 		$schema = $GLOBALS['wgContactManagerSchemasContact'];
-		$query = '[[email_addresses::' . $email . ']]';
+		$query = '[[email::' . $email . ']]';
 		$results = \VisualData::getQueryResults( $schema, $query );
 
 		$pagenameFormula = self::replaceParameter( 'ContactManagerContactPagenameFormula',
@@ -614,20 +625,24 @@ class ContactManager {
 			'initials' => $parsedName->getInitials(),
 			'suffix' => $parsedName->getSuffix(),
 			'full_name' => $fullName,
-			'email_addresses' => [
+			'email' => [
 				$email
 			],
-			'phone_numbers' => [
+			'phone' => [
 			],
 			'links' => [
 			],
 			'picture' => '',
-			'languages' => [
+			'language' => [
 				// can be null
 				$detectedLanguage
 			],
 			'seen_since' => null,
 			'seen_until' => null,
+			'conversations' => [
+				// can be null
+				$conversationHash
+			]
 		];
 
 		// merge previous entries
@@ -643,13 +658,13 @@ class ContactManager {
 		$seenUntil = ( !empty( $data['seen_until'] ) ? strtotime( $data['seen_until'] ) : 0 );
 		$seenSince = ( !empty( $data['seen_since'] ) ? strtotime( $data['seen_since'] ) : PHP_INT_MAX );
 
-		$currentTime = time();
-		if ( $currentTime > $seenUntil ) {
-			$data['seen_until'] = date( 'Y-m-d' );
+		$messageDateTime = strtotime( $obj['date'] );
+		if ( $messageDateTime > $seenUntil ) {
+			$data['seen_until'] = date( 'Y-m-d', $messageDateTime );
 		}
 
-		if ( $currentTime < $seenSince ) {
-			$data['seen_since'] = date( 'Y-m-d' );
+		if ( $messageDateTime < $seenSince ) {
+			$data['seen_since'] = date( 'Y-m-d', $messageDateTime );
 		}
 
 		$showMsg = static function ( $msg ) {
@@ -666,7 +681,7 @@ class ContactManager {
 	public static function getAttachmentsFolder() {
 		return ( !empty( $GLOBALS['wgContactManagerAttachmentsFolder'] )
 			? $GLOBALS['wgContactManagerAttachmentsFolder']
-			: MW_INSTALL_PATH . '/ContactManager' );
+			: MW_INSTALL_PATH . '/ContactManagerFiles' );
 	}
 
 	/**
@@ -700,4 +715,34 @@ class ContactManager {
 
 		return null;
 	}
+
+	/**
+	 * @param string $category
+	 * @param int|false $limit
+	 * @return array
+	 */
+	public static function articlesInCategories( $category, $limit = false ) {
+		// @ATTENTION !! use instead
+		// $cat = MediaWiki\Category\Category::newFromName( $value );
+		// $iterator_ = $cat->getMembers( $limit );
+		if ( empty( $limit ) ) {
+			$options['limit'] = 50;
+		}
+		$dbr = wfGetDB( DB_REPLICA );
+		$res = $dbr->select( 'categorylinks',
+			[ 'pageid' => 'cl_from' ],
+			[ 'cl_to' => str_replace( ' ', '_', $category ) ],
+			__METHOD__,
+			$options
+		);
+		$ret = [];
+		foreach ( $res as $row ) {
+			$title_ = Title::newFromID( $row->pageid );
+			if ( $title_ ) {
+				$ret[] = $title_;
+			}
+		}
+		return $ret;
+	}
+
 }

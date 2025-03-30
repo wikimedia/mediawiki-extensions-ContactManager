@@ -1,4 +1,4 @@
-{{#if:{{#urlget:mailbox}} | [[ContactManager:Mailboxes/{{#urlget:mailbox}}#Conversations|&larr; go back]] | This article is meant to be accessed with a dynamic url }}
+{{#if:{{#urlget:mailbox}} | | This article is meant to be accessed with a dynamic url }}
 __NOTOC__
 <templatestyles src="ContactManager:Styles.css" />
 <big><!-- TODO use a LUA module -->
@@ -12,7 +12,7 @@ __NOTOC__
 |title = New email
 |action = create
 |edit-page = 
-|return-page = ContactManager:Mailboxes/{{#urlget:mailbox}}/Sent email
+|return-page = ContactManager:Success?mailbox={{#urlget:mailbox}}
 |view = popup
 |popup-size = large
 |css-class =
@@ -40,6 +40,22 @@ __NOTOC__
 |overwrite-existing-article-on-create=true
 }}
 
+
+===Participants===
+{{#visualdataquery:[[conversations::{{#urlget:hash}}]]
+|schema=ContactManager/Contact
+|?full_name=name
+|?email=email addresses
+|?seen_since=seen since
+|?seen_until=seen until
+|pagetitle=
+|template?full_name=ContactManager/Conversation field full name
+|format=datatables
+|datatables-cards=true
+|datatables-paging=false
+|datatables-info=false
+|datatables-searching=false
+}}
 
 =={{#switch: {{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}
  | 01 = January

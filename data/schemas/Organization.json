@@ -1,0 +1,454 @@
+{
+	"wiki": {
+		"type": "schema",
+		"uuid": "67c41811c3c15",
+		"name": "ContactManager/Organization"
+	},
+	"properties": {
+		"name": {
+			"wiki": {
+				"name": "name",
+				"type": "property",
+				"multiple-items": false,
+				"required": true,
+				"label": "name",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"uuid": "67c41811c3c1a"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "name"
+		},
+		"type": {
+			"wiki": {
+				"name": "type",
+				"type": "property",
+				"multiple-items": false,
+				"label": "organization type",
+				"uuid": "67c41811c3c44",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.DropdownInputWidget",
+				"input-config": [],
+				"options-allow-null": true,
+				"options-wikilist": "ContactManager:Organization types",
+				"required": false,
+				"options-values-parsed": {
+					"": "",
+					"corporation": "corporation",
+					"governmental": "governmental",
+					"non-governmental": "non-governmental",
+					"political": "political",
+					"international": "international",
+					"religious": "religious",
+					"armed forces": "armed forces",
+					"Ltd (limited company)": "Ltd (limited company)",
+					"charity": "charity",
+					"not-for-profit corporation": "not-for-profit corporation",
+					"partnership": "partnership",
+					"cooperative": "cooperative",
+					"educational institution": "educational institution"
+				}
+			},
+			"type": "string",
+			"format": "text",
+			"title": "organization type",
+			"enum": [
+				"",
+				"corporation",
+				"governmental",
+				"non-governmental",
+				"political",
+				"international",
+				"religious",
+				"armed forces",
+				"Ltd (limited company)",
+				"charity",
+				"not-for-profit corporation",
+				"partnership",
+				"cooperative",
+				"educational institution"
+			]
+		},
+		"legal_name": {
+			"wiki": {
+				"name": "legal_name",
+				"type": "property",
+				"multiple-items": false,
+				"label": "legal name",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67c41811c3c1e"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "legal name"
+		},
+		"registration_number": {
+			"wiki": {
+				"name": "registration_number",
+				"type": "property",
+				"multiple-items": false,
+				"label": "registration number",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67c41811c3c21"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "registration number"
+		},
+		"contact_person": {
+			"wiki": {
+				"name": "contact_person",
+				"type": "property",
+				"multiple-items": false,
+				"label": "contact person",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67c41811c3c2d"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "contact person"
+		},
+		"country": {
+			"wiki": {
+				"name": "country",
+				"type": "property",
+				"multiple-items": false,
+				"label": "country",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67c41811c3c24"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "country"
+		},
+		"city": {
+			"wiki": {
+				"name": "city",
+				"type": "property",
+				"multiple-items": false,
+				"label": "city",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67c41811c3c26"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "city"
+		},
+		"address": {
+			"wiki": {
+				"name": "address",
+				"type": "property",
+				"multiple-items": false,
+				"label": "address",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67c41811c3c29"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "address"
+		},
+		"postal_code": {
+			"wiki": {
+				"name": "postal_code",
+				"type": "property",
+				"multiple-items": false,
+				"label": "postal code",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67c41811c3c2b"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "postal code"
+		},
+		"email": {
+			"wiki": {
+				"name": "email",
+				"title": "email addresses",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "67c42294cd11a"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "email",
+					"type": "schema",
+					"uuid": "67c41baf6daa4",
+					"layout": "section",
+					"visibility": "visible"
+				},
+				"properties": {
+					"address": {
+						"wiki": {
+							"type": "property",
+							"uuid": "67c41b53e7405",
+							"name": "address",
+							"visibility": "visible",
+							"label": "address",
+							"multiple-items": false,
+							"preferred-input": "OO.ui.TextInputWidget (email)",
+							"input-config": [],
+							"required": true
+						},
+						"type": "string",
+						"format": "email",
+						"title": "address"
+					},
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false,
+							"uuid": "67c41b53e7407"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					}
+				},
+				"required": [
+					"address"
+				]
+			},
+			"type": "array",
+			"title": "email addresses",
+			"uniqueItems": false
+		},
+		"phone": {
+			"wiki": {
+				"name": "phone",
+				"title": "phone numbers",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "67c42294cd121"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "phone",
+					"type": "schema",
+					"uuid": "67c41baf6daaa",
+					"layout": "section",
+					"visibility": "visible"
+				},
+				"properties": {
+					"number": {
+						"wiki": {
+							"type": "property",
+							"uuid": "67c41b53e740c",
+							"name": "number",
+							"visibility": "visible",
+							"label": "number",
+							"multiple-items": false,
+							"preferred-input": "intl-tel-input",
+							"input-config": [],
+							"required": true
+						},
+						"type": "string",
+						"format": "tel",
+						"title": "number"
+					},
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false,
+							"uuid": "67c41b53e740e"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					}
+				},
+				"required": [
+					"number"
+				]
+			},
+			"type": "array",
+			"title": "phone numbers",
+			"uniqueItems": false
+		},
+		"foundation_year": {
+			"wiki": {
+				"name": "foundation_year",
+				"type": "property",
+				"multiple-items": false,
+				"label": "foundation year",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "67c418a264637"
+			},
+			"type": "integer",
+			"title": "foundation year"
+		},
+		"links": {
+			"wiki": {
+				"name": "links",
+				"title": "links",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "67c41be114dd7"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "links",
+					"type": "property",
+					"multiple-items": true,
+					"default": [],
+					"uuid": "67c41811c3c38",
+					"visibility": "visible",
+					"preferred-input": "OO.ui.TextInputWidget (url)",
+					"input-config": [],
+					"required": false,
+					"layout": "table"
+				},
+				"format": "url",
+				"default": []
+			},
+			"type": "array",
+			"title": "links",
+			"uniqueItems": false
+		},
+		"logo": {
+			"wiki": {
+				"name": "logo",
+				"type": "property",
+				"multiple-items": false,
+				"label": "logo",
+				"uuid": "67c41811c3c3c",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "text",
+			"title": "logo"
+		},
+		"geolocation": {
+			"wiki": {
+				"name": "geolocation",
+				"title": "geolocation",
+				"type": "geolocation",
+				"uuid": "67c41ebcf315c",
+				"label": "geolocation",
+				"coordinates": true,
+				"map": false,
+				"reverse-geocoding": false,
+				"required": false,
+				"latitude-input-label": "latitude",
+				"longitude-input-label": "longitude"
+			},
+			"$id": "https://example.com/geographical-location.schema.json",
+			"$schema": "https://json-schema.org/draft/2020-12/schema",
+			"title": "geolocation",
+			"description": "",
+			"required": [],
+			"type": "object",
+			"properties": {
+				"latitude": {
+					"title": "latitude",
+					"description": "",
+					"type": "number",
+					"minimum": -90,
+					"maximum": 90,
+					"wiki": {
+						"uuid": "67c41ebcf315c"
+					}
+				},
+				"longitude": {
+					"title": "longitude",
+					"description": "",
+					"type": "number",
+					"minimum": -180,
+					"maximum": 180,
+					"wiki": {
+						"uuid": "67c41ebcf315c"
+					}
+				},
+				"zoom": {
+					"type": "number",
+					"minimum": 0,
+					"maximum": 24,
+					"wiki": {
+						"visibility": "hidden",
+						"uuid": "67c41ebcf315c"
+					}
+				}
+			}
+		},
+		"description": {
+			"wiki": {
+				"name": "description",
+				"type": "property",
+				"multiple-items": false,
+				"label": "description",
+				"uuid": "67c41811c3c42",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.MultilineTextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "textarea",
+			"title": "description"
+		},
+		"notes": {
+			"wiki": {
+				"name": "notes",
+				"type": "property",
+				"multiple-items": false,
+				"label": "notes",
+				"uuid": "67c418a26463c",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.MultilineTextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "textarea",
+			"title": "notes"
+		}
+	},
+	"required": [
+		"name"
+	],
+	"type": "object"
+}
+

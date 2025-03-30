@@ -143,30 +143,31 @@
 				"min-items": 0,
 				"unique-items": true,
 				"type": "schema",
-				"uuid": "67bd59e21aa86"
+				"uuid": "67c4064b319ed"
 			},
 			"items": {
 				"type": "string",
 				"wiki": {
 					"name": "to",
 					"type": "property",
-					"uuid": "6636ad628488e",
-					"visibility": "visible",
-					"label": "to",
 					"multiple-items": true,
-					"preferred-input": "MenuTagSearchMultiselect",
 					"input-config": {
 						"allowArbitrary": true
 					},
-					"options-query": "[[full_name::\u003Cvalue\u003E~]]",
+					"label": "to",
+					"default": [],
+					"uuid": "67c405cf1fb40",
+					"visibility": "visible",
+					"preferred-input": "MenuTagSearchMultiselect",
+					"options-query": "[[full_name::\u003Cvalue\u003E~]][[ContactManager:Mailboxes/\u003Cmailbox\u003E/contacts/~]]",
 					"query-schema": "ContactManager/Contact",
 					"query-printouts": [
 						"full_name",
-						"email_addresses"
+						"email"
 					],
-					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail_addresses\u003E\u003E",
+					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail\u003E\u003E",
 					"required": false,
-					"default": []
+					"layout": "table"
 				},
 				"format": "text",
 				"title": "to",
@@ -182,29 +183,28 @@
 				"min-items": 0,
 				"unique-items": true,
 				"type": "schema",
-				"uuid": "6636ad628488f"
+				"uuid": "67c4067545fec"
 			},
 			"items": {
 				"type": "string",
 				"wiki": {
 					"name": "cc",
 					"type": "property",
-					"multiple-items": true,
-					"label": "cc",
-					"default": [],
-					"uuid": "6635dd2221ea4",
+					"uuid": "6636ad628488f",
 					"visibility": "visible",
+					"label": "cc",
+					"multiple-items": true,
 					"preferred-input": "MenuTagSearchMultiselect",
 					"input-config": [],
-					"options-query": "[[full_name::\u003Cvalue\u003E~]]",
+					"options-query": "[[full_name::\u003Cvalue\u003E~]][[ContactManager:Mailboxes/\u003Cmailbox\u003E/contacts/~]]",
 					"query-schema": "ContactManager/Contact",
 					"query-printouts": [
 						"full_name",
-						"email_addresses"
+						"email"
 					],
-					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail_addresses\u003E\u003E",
+					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail\u003E\u003E",
 					"required": false,
-					"layout": "table"
+					"default": []
 				},
 				"format": "text",
 				"title": "cc",
@@ -220,29 +220,28 @@
 				"min-items": 0,
 				"unique-items": true,
 				"type": "schema",
-				"uuid": "6636ad628488g"
+				"uuid": "67c4067545ff4"
 			},
 			"items": {
 				"type": "string",
 				"wiki": {
 					"name": "to",
 					"type": "property",
-					"multiple-items": true,
-					"label": "bcc",
-					"default": [],
-					"uuid": "6635dd2221ea5",
+					"uuid": "6636ad628488g",
 					"visibility": "visible",
+					"label": "bcc",
+					"multiple-items": true,
 					"preferred-input": "MenuTagSearchMultiselect",
 					"input-config": [],
-					"options-query": "[[full_name::\u003Cvalue\u003E~]]",
+					"options-query": "[[full_name::\u003Cvalue\u003E~]][[ContactManager:Mailboxes/\u003Cmailbox\u003E/contacts/~]]",
 					"query-schema": "ContactManager/Contact",
 					"query-printouts": [
 						"full_name",
-						"email_addresses"
+						"email"
 					],
-					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail_addresses\u003E\u003E",
+					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail\u003E\u003E",
 					"required": false,
-					"layout": "table"
+					"default": []
 				},
 				"format": "text",
 				"title": "bcc",
@@ -367,7 +366,7 @@
 			"type": "string",
 			"format": "text",
 			"title": "template",
-			"description": "Any page in the \u003Ca href=\"/index.php?title=Special:AllPages\u0026amp;namespace=2262\" class=\"external text\" title=\"Special:AllPages\" target=\"_blank\"\u003EEmailTemplate namespace\u003C/a\u003E",
+			"description": "",
 			"default": "Default"
 		},
 		"message_substitutions": {

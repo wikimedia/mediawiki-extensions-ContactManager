@@ -28,10 +28,13 @@ if ( is_readable( __DIR__ . '/../../vendor/autoload.php' ) ) {
 	include_once __DIR__ . '/../../vendor/autoload.php';
 }
 
+use MediaWiki\Category\Category;
 use MediaWiki\Extension\ContactManager\Transport\SendgridApiTransport;
+use MediaWiki\Extension\VisualData\DatabaseManager;
 use MediaWiki\MediaWikiServices;
 use Parser;
 use ParserOptions;
+use RequestContext;
 use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\Mailer as SymfonyMailer;
@@ -51,6 +54,9 @@ class Mailer {
 
 	/** @var AbstractApiTransport */
 	private $transportClass = null;
+
+	/** @var array */
+	private $personalizations = [];
 
 	/** @var string */
 	private $editor;
@@ -327,9 +333,10 @@ class Mailer {
 
 	/**
 	 * @param array $recipients
+	 * @param array $allPrintouts
 	 * @return array
 	 */
-	public function getContactDataFromRecipients( $recipients ) {
+	public function getContactDataFromRecipients( $recipients, $allPrintouts ) {
 		if ( !count( $recipients ) ) {
 			return [];
 		}
@@ -342,148 +349,240 @@ class Mailer {
 			return [];
 		}
 
-		$names = [];
 		$emailAddresses = [];
 		foreach ( $parsedRecipients as $value ) {
-			$names[] = trim( $value[0] );
 			$emailAddresses[] = trim( $value[1] );
 		}
-		$schema = $GLOBALS['wgContactManagerSchemasContact'];
-		$query = '[[' . implode( '||', array_map( static function ( $value ) {
-			return "full_name::$value";
-		}, $names ) ) . ']]';
 
-		$ret = \VisualData::getQueryResults( $schema, $query );
+		$schemaName = $GLOBALS['wgContactManagerSchemasContact'];
+		$query = '[[' . implode( '||', array_map( static function ( $value ) {
+			return "email::$value";
+		}, $emailAddresses ) ) . ']]';
+
+		$params = [ 'nested' => false ];
+		$ret = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts, $params );
 
 		// @TODO log errors
 		if ( array_key_exists( 'errors', $ret ) ) {
 			return [];
 		}
 
-		return $this->filterResultObjectEmailAddresses( $ret, $emailAddresses );
+		return $ret;
 	}
 
 	/**
-	 * @param array $result
-	 * @param array $addresses
+	 * @param array $schema
+	 * @param string $text
 	 * @return array
 	 */
-	public function filterResultObjectEmailAddresses( $result, $addresses ) {
-		// remove unselected email addresses
-		foreach ( $result as $key => $value ) {
-			if ( !array_key_exists( 'email_addresses', $value['data'] ) ) {
-				$value['data']['email_addresses'] = [];
+	private function getRelevantPrintouts( $schema, $text ) {
+		$emailPrintouts = [];
+		$requiredPrintouts = [];
+		$callback = static function ( $subSchema, $path, $printout, $property )
+			use ( &$emailPrintouts, &$requiredPrintouts, $text
+		) {
+			// $printout will match both items' subschema or
+			// single values
+			if ( array_key_exists( 'format', $subSchema ) && $subSchema['format'] === 'email' ) {
+				$emailPrintouts[] = $printout;
 			}
-			$result[$key]['data']['email_addresses'] = array_values(
-				array_intersect( $value['data']['email_addresses'], $addresses )
-			);
+
+			if ( strpos( $text, "%$printout%" ) !== false ) {
+				$requiredPrintouts[] = $printout;
+			}
+		};
+		$printout = '';
+		$path = '';
+		DatabaseManager::traverseSchema( $schema, $path, $printout, $callback );
+
+		return [ array_unique( $emailPrintouts ), $requiredPrintouts ];
+	}
+
+	/**
+	 * @param array $data
+	 * @param array $recipientsParams
+	 * @return array
+	 */
+	private function getDataMap( $data, $recipientsParams ) {
+		$dataMap = [];
+		$emailAddresses = [];
+		$path = '';
+		$printout = '';
+		$callback = static function () {
+		};
+		$callbackValue = static function ( $schema, &$data, $path, $printout, $key )
+			use ( $recipientsParams, &$dataMap, &$emailAddresses
+		) {
+			if ( in_array( $printout, $recipientsParams['requiredPrintouts'] ) ) {
+				$dataMap[$printout] = $data;
+			}
+			if ( in_array( $printout, $recipientsParams['emailPrintouts'] ) ) {
+				$emailAddresses[] = $data;
+			}
+		};
+		DatabaseManager::traverseData( $recipientsParams['schema'], $data, $path, $printout, $callback, $callbackValue );
+
+		return [ $dataMap, $emailAddresses ];
+	}
+
+	/**
+	 * @param string $key
+	 * @param string $name
+	 * @param array $requiredPrintouts
+	 * @param array $emailAddresses
+	 * @param array $dataMap
+	 */
+	private function appendToPayload( $key, $name, $requiredPrintouts, $emailAddresses, $dataMap ) {
+		if ( count( $requiredPrintouts ) === 0 ) {
+			$this->obj[$key][] = new Address( $emailAddresses[0], $name );
+			return;
 		}
-		return $result;
+
+		$this->personalizations[] = [
+			// must be an array
+			$key => [
+				[
+					'email' => $emailAddresses[0],
+					'name' => $name,
+				]
+			],
+			'substitutions' => array_combine( array_map( static function ( $value ) {
+				return "%$value%";
+			}, array_keys( $dataMap ) ), array_values( $dataMap ) )
+		];
 	}
 
 	private function prepareData() {
+		$context = RequestContext::getMain();
+
 		$contactsData = [
 			'to' => [],
 			'cc' => [],
 			'bcc' => [],
-			'bcc_categories' => [],
 		];
 
-		if ( !empty( $this->obj['substitutions'] ) ) {
-			$contactsData['to'] = $this->getContactDataFromRecipients( $this->obj['to'] );
-			$contactsData['cc'] = $this->getContactDataFromRecipients( $this->obj['cc'] );
-			$contactsData['bcc'] = $this->getContactDataFromRecipients( $this->obj['bcc'] );
+		// get required printouts for Contacts schema
+		$schemaName = $GLOBALS['wgContactManagerSchemasContact'];
+		$schema = \VisualData::getSchema( $context, $schemaName );
+		[ $emailPrintouts, $requiredPrintouts ] = $this->getRelevantPrintouts( $schema, $this->obj['text'] );
+		$allPrintouts = array_merge( $requiredPrintouts, $emailPrintouts );
+
+		if ( count( $allPrintouts ) > 0 ) {
+			if ( !in_array( 'full_name', $allPrintouts ) ) {
+				$allPrintouts[] = 'full_name';
+			}
+
+			$contactsData['to'] = $this->getContactDataFromRecipients( $this->obj['to'], $allPrintouts );
+			$contactsData['cc'] = $this->getContactDataFromRecipients( $this->obj['cc'], $allPrintouts );
+			$contactsData['bcc'] = $this->getContactDataFromRecipients( $this->obj['bcc'], $allPrintouts );
+
+			// $recipientsParams = [
+			// 	'emailPrintouts' => $emailPrintouts,
+			// 	'requiredPrintouts' => $requiredPrintouts,
+			// 	'schema' => $schema
+			// ];
+
+			foreach ( $contactsData as $key => $value ) {
+				foreach ( $value as $k => $v ) {
+					$dataMap = array_intersect_key( $v['data'], array_flip( $requiredPrintouts ) );
+					$emailAddresses = [];
+					foreach ( $emailPrintouts as $printout ) {
+						$emailAddresses[] = $v['data'][$printout];
+					}
+					$name = $v['data']['full_name'];
+
+					// *** not required, since we use $params = [ 'nested' => false ];
+					// inside getContactDataFromRecipients
+					// [ $dataMap, $emailAddresses ] = $this->getDataMap( $v['data'], $recipientsParams );
+
+					$this->appendToPayload( $key, $name, $requiredPrintouts, $emailAddresses, $dataMap );
+				}
+			}
 		}
 
+		$categoriesParams = [];
 		if ( !empty( $this->obj['bcc_categories'] ) ) {
-			$schema = $GLOBALS['wgContactManagerSchemasContact'];
-			$query = '[[' . implode( '||', array_map( static function ( $value ) {
-				return "Category:$value";
-			}, $this->obj['bcc_categories'] ) ) . ']]';
+			foreach ( $this->obj['bcc_categories'] as $value ) {
+				// $title_ = Title::newFromText( $value, NS_CATEGORY );
 
-			$contactsData['bcc_categories'] = \VisualData::getQueryResults( $schema, $query );
+				// get the schemas associated to the articles within
+				// the given category and the relevant printouts
+				$cat = Category::newFromName( $value );
+				$iterator_ = $cat->getMembers( 10 );
+				while ( $iterator_->valid() ) {
+					$title_ = $iterator_->current();
+					$data_ = \VisualData::getJsonData( $title_ );
+					if ( !empty( $data_['schemas'] ) ) {
+						$schemas_ = array_keys( $data_['schemas'] );
+						foreach ( $schemas_ as $schemaName_ ) {
+							$schema_ = \VisualData::getSchema( $context, $schemaName_ );
+							[ $emailPrintouts, $requiredPrintouts ] = $this->getRelevantPrintouts( $schema_, $this->obj['text'] );
 
+							if ( $emailPrintouts ) {
+								$categoriesParams[$value][$schemaName_] = [ $emailPrintouts, $requiredPrintouts, $schema_ ];
+							}
+						}
+					}
+					$iterator_->next();
+				}
+			}
+
+			// get articles data of the requested categories
+			// using the relevant schema and the required printouts
+			$categoriesData = [];
+			foreach ( $categoriesParams as $cat => $value ) {
+				foreach ( $value as $schemaName => $values ) {
+					$query = '[[' . implode( '||', array_map( static function ( $value ) {
+						return "Category:$value";
+					}, $this->obj['bcc_categories'] ) ) . ']]';
+
+					[ $emailPrintouts, $requiredPrintouts ] = $values;
+					$params = [ 'format' => 'json-raw' ];
+					$allPrintouts = array_merge( $emailPrintouts, $requiredPrintouts );
+					$categoriesData[$cat][$schemaName] = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts, $params );
+				}
+			}
+
+			$exclude_bcc_categories = [];
 			if ( array_key_exists( 'exclude_bcc_categories', $this->obj )
 				&& is_array( $this->obj['exclude_bcc_categories'] )
 			) {
-				foreach ( $contactsData['bcc_categories'] as $key => $value ) {
-					$contactsData['bcc_categories'][$key]['data']['email_addresses'] = array_diff(
-						$value['data']['email_addresses'],
-						$this->obj['exclude_bcc_categories']
-					);
-				}
+				$exclude_bcc_categories = $this->obj['exclude_bcc_categories'];
 			}
-		}
 
-		// append to bcc, use standard personalizations object
-		if ( empty( $this->obj['substitutions'] ) ) {
-			foreach ( $contactsData as $key => $value ) {
-				foreach ( $value as $k => $v ) {
-					$data_ = $v['data'];
-					if ( empty( $data_['email_addresses'][0] ) ) {
-						continue;
-					}
-					$this->obj['bcc'][] = new Address( $data_['email_addresses'][0], $data_['full_name'] );
-				}
-			}
-			return;
-		}
+			// create the payload associating the required printouts
+			// to nested data
+			foreach ( $categoriesData as $cat => $value ) {
+				foreach ( $value as $schemaName => $values ) {
+					[ $emailPrintouts, $requiredPrintouts, $schema_ ] = $categoriesParams[$cat][$schemaName];
 
-		// identify the properties needed for substitutions
-		$filterProperties = [ 'full_name' => '', 'email_addresses' => '' ];
-		foreach ( $contactsData as $value ) {
-			if ( count( $value ) ) {
-				$schemaProperties = array_keys( $value[0]['data'] );
-				foreach ( $schemaProperties as $property ) {
-					if ( strpos( $this->obj['text'], "%$property%" ) !== false
-						|| strpos( $this->obj['text_html'], "%$property%" ) !== false
-					) {
-						$filterProperties[$property] = '';
+					$recipientsParams = [
+						'emailPrintouts' => $emailPrintouts,
+						'requiredPrintouts' => $requiredPrintouts,
+						'schema' => $schema_
+					];
+
+					foreach ( $values as $k => $v ) {
+						[ $dataMap, $emailAddresses ] = $this->getDataMap( $v['data'], $recipientsParams );
+						if ( count( array_intersect( $exclude_bcc_categories, $emailAddresses ) ) ) {
+							continue;
+						}
+
+						$namePrintouts = [ 'full_name', 'name', 'contact_person' ];
+						$name = '';
+						foreach ( $namePrintouts as $printout_ ) {
+							if ( array_key_exists( $printout_, $dataMap ) ) {
+								$name = $dataMap[$printout_];
+								break;
+							}
+						}
+						$this->appendToPayload( 'bcc', $name, $requiredPrintouts, $emailAddresses, $dataMap );
 					}
 				}
-				break;
 			}
 		}
 
-		foreach ( $contactsData as $key => $value ) {
-			foreach ( $value as $k => $v ) {
-				$contactsData[$key][$k]['data'] = array_intersect_key( $v['data'], $filterProperties );
-			}
-		}
-
-		// *** 'template_id' is not used anymore, use an alternative
-		// form for that
-		// @FIXME this is sendgrid api v3 specific, extend with other
-		// providers as needed
-		$substitutionKey = ( empty( $this->obj['template_id'] ) ? 'substitutions'
-			: 'dynamic_template_data' );
-
-		$personalizations = [];
-		foreach ( $contactsData as $key => $value ) {
-			foreach ( $value as $k => $v ) {
-				$data_ = $v['data'];
-				if ( empty( $data_['email_addresses'][0] ) ) {
-					continue;
-				}
-				$email_ = $data_['email_addresses'][0];
-				unset( $data_['email_addresses'] );
-				$personalizations[] = [
-					// must be an array
-					( $key !== 'bcc_categories' ? $key : 'bcc' ) => [
-						[
-							'email' => $email_,
-							'name' => $data_['full_name'],
-						]
-					],
-					$substitutionKey => ( $substitutionKey === 'dynamic_template_data' ?
-						$data_ : array_combine( array_map( static function ( $value ) {
-							return "%$value%";
-						}, array_keys( $data_ ) ), array_values( $data_ ) ) )
-				];
-			}
-		}
-
-		$this->transportClass->setPersonalizations( $personalizations );
+		$this->transportClass->setPersonalizations( $this->personalizations );
 	}
 
 	/**
