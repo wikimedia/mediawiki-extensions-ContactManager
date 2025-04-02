@@ -25,8 +25,8 @@
 namespace MediaWiki\Extension\ContactManager;
 
 use ApiBase;
+use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use RequestContext;
-use Title;
 
 class ApiCreateJob extends ApiBase {
 
@@ -57,7 +57,7 @@ class ApiCreateJob extends ApiBase {
 		$params = $this->extractRequestParams();
 		$context = $this->getContext();
 		$data = json_decode( $params['data'], true );
-		$title = Title::newFromID( $params['pageid'] );
+		$title = TitleClass::newFromID( $params['pageid'] );
 		$context = RequestContext::getMain();
 		$context->setTitle( $title );
 		$data['pageid'] = $params['pageid'];

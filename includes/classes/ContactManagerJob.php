@@ -24,15 +24,15 @@
 namespace MediaWiki\Extension\ContactManager;
 
 use Job;
+use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Session\SessionManager;
 use RequestContext;
-use Title;
 use Wikimedia\ScopedCallback;
 
 class ContactManagerJob extends Job {
 
 	/**
-	 * @param Title $title
+	 * @param Title|Mediawiki\Title\Title $title
 	 * @param array|bool $params
 	 */
 	public function __construct( $title, $params = [] ) {
@@ -70,7 +70,7 @@ class ContactManagerJob extends Job {
 			return false;
 		}
 
-		$title = Title::newFromText( $this->params['pageid'] );
+		$title = TitleClass::newFromText( $this->params['pageid'] );
 		$context->setTitle( $title );
 
 		$mailboxName = $this->params['mailbox'];

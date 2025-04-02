@@ -24,6 +24,7 @@
 
 use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\RFCValidation;
+use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Extension\ContactManager\ImportMessage;
 use MediaWiki\Extension\ContactManager\Mailbox;
 use MediaWiki\Extension\ContactManager\Mailer;
@@ -153,7 +154,7 @@ class ContactManager {
 			]
 		];
 
-		$title = Title::newFromText( $targetTitle );
+		$title = TitleClass::newFromText( $targetTitle );
 		\VisualData::updateCreateSchemas( $user, $title, $jsonData, 'jsondata' );
 	}
 
@@ -186,7 +187,7 @@ class ContactManager {
 			]
 		];
 
-		$title = Title::newFromText( $targetTitle );
+		$title = TitleClass::newFromText( $targetTitle );
 		\VisualData::updateCreateSchemas( $user, $title, $jsonData, 'jsondata' );
 	}
 
@@ -249,7 +250,7 @@ class ContactManager {
 			$foldersData = $results_[0]['data'];
 		}
 
-		$title = Title::newFromID( $params['pageid'] );
+		$title = TitleClass::newFromID( $params['pageid'] );
 		$context = RequestContext::getMain();
 		$context->setTitle( $title );
 		$output = $context->getOutput();
@@ -737,7 +738,7 @@ class ContactManager {
 		);
 		$ret = [];
 		foreach ( $res as $row ) {
-			$title_ = Title::newFromID( $row->pageid );
+			$title_ = TitleClass::newFromID( $row->pageid );
 			if ( $title_ ) {
 				$ret[] = $title_;
 			}

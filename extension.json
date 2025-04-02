@@ -43,6 +43,7 @@
 	"SpecialPages": {
 	},
 	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\ContactManager\\Aliases\\": "includes/aliases/",
 		"MediaWiki\\Extension\\ContactManager\\": "includes/classes/",
 		"MediaWiki\\Extension\\ContactManager\\Transport\\": "includes/classes/transports/"
 	},

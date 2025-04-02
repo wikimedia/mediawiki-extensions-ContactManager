@@ -25,10 +25,10 @@
 namespace MediaWiki\Extension\ContactManager;
 
 use Email\Parse as EmailParse;
+use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Extension\VisualData\Importer as VisualDataImporter;
 // use MWException;
 use RequestContext;
-use Title;
 
 if ( is_readable( __DIR__ . '/../../vendor/autoload.php' ) ) {
 	include_once __DIR__ . '/../../vendor/autoload.php';
@@ -67,7 +67,7 @@ class RecordHeader {
 			echo $msg . PHP_EOL;
 		};
 
-		$title = Title::newFromID( $params['pageid'] );
+		$title = TitleClass::newFromID( $params['pageid'] );
 		$context = RequestContext::getMain();
 		$context->setTitle( $title );
 		$output = $context->getOutput();

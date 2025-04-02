@@ -174,12 +174,12 @@
 				"wiki": {
 					"name": "email",
 					"type": "property",
-					"visibility": "visible",
 					"multiple-items": true,
+					"default": [],
+					"visibility": "visible",
 					"preferred-input": "OO.ui.TextInputWidget (email)",
 					"input-config": [],
 					"required": false,
-					"default": [],
 					"uuid": "67c4126ecf9ce"
 				},
 				"format": "email",
@@ -202,13 +202,13 @@
 				"wiki": {
 					"name": "phone",
 					"type": "property",
+					"multiple-items": true,
+					"default": [],
 					"uuid": "6635df063ed93",
 					"visibility": "visible",
-					"multiple-items": true,
 					"preferred-input": "intl-tel-input",
 					"input-config": [],
-					"required": false,
-					"default": []
+					"required": false
 				},
 				"format": "tel",
 				"default": []
@@ -294,14 +294,14 @@
 				"wiki": {
 					"name": "language",
 					"type": "property",
+					"multiple-items": true,
+					"label": "language",
+					"default": [],
 					"uuid": "67b4409bc5f5b",
 					"visibility": "visible",
-					"label": "language",
-					"multiple-items": true,
 					"preferred-input": "OO.ui.TextInputWidget",
 					"input-config": [],
-					"required": false,
-					"default": []
+					"required": false
 				},
 				"format": "text",
 				"title": "language",
@@ -341,6 +341,35 @@
 			"type": "string",
 			"format": "date",
 			"title": "seen until"
+		},
+		"conversations": {
+			"wiki": {
+				"name": "conversations",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "67ed9be47aa8d"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "conversations",
+					"type": "property",
+					"visibility": "hidden",
+					"multiple-items": true,
+					"preferred-input": "OO.ui.TextInputWidget",
+					"input-config": [],
+					"required": false,
+					"default": [],
+					"uuid": "67ed9be47aa8e"
+				},
+				"options": {
+					"hidden": true
+				},
+				"format": "text",
+				"default": []
+			},
+			"type": "array",
+			"uniqueItems": false
 		}
 	},
 	"type": "object",

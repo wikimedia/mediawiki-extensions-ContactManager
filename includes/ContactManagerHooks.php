@@ -22,6 +22,7 @@
  * @copyright Copyright ©2023-2025, https://wikisphere.org
  */
 
+use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Revision\SlotRecord;
 
 define( 'CONTENT_MODEL_CONTACTMANAGER_TWIG', 'twig' );
@@ -63,7 +64,7 @@ class ContactManagerHooks {
 			echo '(ContactManager) importing ' . $pagename;
 
 			try {
-				$title_ = Title::newFromText( $pagename );
+				$title_ = TitleClass::newFromText( $pagename );
 				$context->setTitle( $title_ );
 				$importer->doImportSelf( $pagename, $contents );
 				echo ' (success)' . PHP_EOL;
@@ -175,7 +176,7 @@ class ContactManagerHooks {
 	}
 
 	/**
-	 * @param Title &$title
+	 * @param Title|Mediawiki\Title\Title &$title
 	 * @param null $unused
 	 * @param OutputPage $output
 	 * @param User $user
@@ -227,7 +228,7 @@ class ContactManagerHooks {
 
 		$links = [ 'compose', 'mailboxes', 'mailers', 'organizations', 'data-structure' ];
 		foreach ( $links as $value ) {
-			$title_ = Title::newFromText( str_replace( '-', ' ', "ContactManager:$value" ) );
+			$title_ = TitleClass::newFromText( str_replace( '-', ' ', "ContactManager:$value" ) );
 			$bar[ wfMessage( 'contactmanager-sidepanel-section' )->text() ][] = [
 				'text'   => wfMessage( "contactmanager-sidepanel-$value" )->text(),
 				'href'   => $title_->getLocalURL()

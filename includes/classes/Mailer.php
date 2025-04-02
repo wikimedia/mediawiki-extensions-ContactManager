@@ -19,7 +19,7 @@
  * @file
  * @ingroup extensions
  * @author thomas-topway-it <support@topway.it>
- * @copyright Copyright ©2024, https://wikisphere.org
+ * @copyright Copyright ©2024-2025, https://wikisphere.org
  */
 
 namespace MediaWiki\Extension\ContactManager;
@@ -29,6 +29,7 @@ if ( is_readable( __DIR__ . '/../../vendor/autoload.php' ) ) {
 }
 
 use MediaWiki\Category\Category;
+use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Extension\ContactManager\Transport\SendgridApiTransport;
 use MediaWiki\Extension\VisualData\DatabaseManager;
 use MediaWiki\MediaWikiServices;
@@ -42,7 +43,6 @@ use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Transport\AbstractApiTransport;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
-use Title;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
 use User;
@@ -307,7 +307,7 @@ class Mailer {
 		$parser->setOutputType( Parser::OT_HTML );
 
 		// or use source page
-		$t = Title::makeTitle( NS_SPECIAL, 'Badtitle/Parser' );
+		$t = TitleClass::makeTitle( NS_SPECIAL, 'Badtitle/Parser' );
 		$parserOutput = $parser->parse( $text, $t, $parserOptions );
 
 		$options = [
@@ -503,7 +503,7 @@ class Mailer {
 		$categoriesParams = [];
 		if ( !empty( $this->obj['bcc_categories'] ) ) {
 			foreach ( $this->obj['bcc_categories'] as $value ) {
-				// $title_ = Title::newFromText( $value, NS_CATEGORY );
+				// $title_ = TitleClass::newFromText( $value, NS_CATEGORY );
 
 				// get the schemas associated to the articles within
 				// the given category and the relevant printouts
@@ -589,7 +589,7 @@ class Mailer {
 	 * @return string|void
 	 */
 	public function renderTwigTemplate() {
-		$templateTitle = Title::newFromText( $this->obj['template'], NS_CONTACTMANAGER_EMAIL_TEMPLATE );
+		$templateTitle = TitleClass::newFromText( $this->obj['template'], NS_CONTACTMANAGER_EMAIL_TEMPLATE );
 		if ( !$templateTitle->isKnown() ) {
 			return;
 		}

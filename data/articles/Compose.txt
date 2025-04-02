@@ -33,6 +33,6 @@
   |overwrite-existing-article-on-create=true
   |preload-data?mailbox={{#urlget:mailbox}}
 }}
-|select a mailbox }}
+| '''select a mailbox''' }}
 
 

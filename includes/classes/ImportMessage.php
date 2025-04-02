@@ -26,10 +26,10 @@ namespace MediaWiki\Extension\ContactManager;
 
 use EmailReplyParser\Parser\EmailParser;
 use LanguageDetection\Language;
+use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Extension\VisualData\Importer as VisualDataImporter;
 // use MWException;
 use RequestContext;
-use Title;
 
 if ( is_readable( __DIR__ . '/../../vendor/autoload.php' ) ) {
 	include_once __DIR__ . '/../../vendor/autoload.php';
@@ -200,7 +200,7 @@ class ImportMessage {
 				$jsonData_ = [
 					$GLOBALS['wgContactManagerSchemasMailbox'] => $mailboxData
 				];
-				$title_ = Title::newFromText( $results_[0]['title'] );
+				$title_ = TitleClass::newFromText( $results_[0]['title'] );
 				\VisualData::updateCreateSchemas( $user, $title_, $jsonData_ );
 			}
 		}
@@ -235,7 +235,7 @@ class ImportMessage {
 		// echo 'pagenameFormula: ' . $pagenameFormula . "\n";
 
 		// mailbox article
-		$title_ = Title::newFromID( $params['pageid'] );
+		$title_ = TitleClass::newFromID( $params['pageid'] );
 		$context = RequestContext::getMain();
 		$context->setTitle( $title_ );
 		$output = $context->getOutput();
@@ -260,7 +260,7 @@ class ImportMessage {
 		$obj['categories'] = $categories;
 
 		$importer->importData( $pagenameFormula, $obj, $showMsg );
-		$title = Title::newFromText( $pagenameFormula );
+		$title = TitleClass::newFromText( $pagenameFormula );
 
 		if ( !$title ) {
 			$this->errors[] = 'invalid title';
@@ -297,7 +297,7 @@ class ImportMessage {
 	 */
 	private function createFolderArticle( $user, $params ) {
 		$folderTitleText = 'ContactManager:Mailboxes/' . $params['mailbox'] . '/folders/' . $params['folder_name'];
-		$folderArticleTitle = Title::newFromText( $folderTitleText );
+		$folderArticleTitle = TitleClass::newFromText( $folderTitleText );
 
 		if ( $folderArticleTitle && $folderArticleTitle->isKnown() ) {
 			\VisualData::purgeArticle( $folderArticleTitle );
@@ -318,7 +318,7 @@ class ImportMessage {
 		}
 
 		$folderType = ucfirst( $folderType );
-		$folderArticleTemplateTitle = Title::newFromText( 'ContactManager/Preload messages ' . $folderType );
+		$folderArticleTemplateTitle = TitleClass::newFromText( 'ContactManager/Preload messages ' . $folderType );
 		if ( $folderArticleTemplateTitle->isKnown() ) {
 			$content = \VisualData::getWikipageContent( $folderArticleTemplateTitle );
 
@@ -340,7 +340,7 @@ class ImportMessage {
 
 		\VisualData::saveRevision( $user, $folderArticleTitle, $content );
 
-		$mailboxArticleTitle = Title::newFromText( 'ContactManager:Mailboxes/' . $params['mailbox'] );
+		$mailboxArticleTitle = TitleClass::newFromText( 'ContactManager:Mailboxes/' . $params['mailbox'] );
 		\VisualData::purgeArticle( $mailboxArticleTitle );
 	}
 

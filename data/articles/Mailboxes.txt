@@ -2,7 +2,7 @@
 {{#visualdataform: ContactManager/Mailbox
 |title = Add Mailbox
 |action = create
-|return-page = ContactManager/Mailbox
+|return-page =
 |view = popup
 |popup-size = medium
 |css-class =

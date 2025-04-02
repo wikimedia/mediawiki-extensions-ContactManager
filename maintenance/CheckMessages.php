@@ -22,6 +22,7 @@
  * @copyright Copyright ©2024, https://wikisphere.org
  */
 
+use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Extension\ContactManager\ContactManagerJob;
 use MediaWiki\MediaWikiServices;
 
@@ -125,7 +126,7 @@ class CheckMessages extends Maintenance {
 				// must be a valid title, otherwise if an "inner"
 				// job is created, will trigger the error
 				// $params must be an array in $IP/includes/jobqueue/Job.php on line 101
-				$title_ = \Title::newFromText( $value['title'] );
+				$title_ = TitleClass::newFromText( $value['title'] );
 				$data_['pageid'] = $title_->getArticleID();
 
 				$job = new ContactManagerJob( $title_, $data_ );
