@@ -214,17 +214,19 @@ class ImportMessage {
 
 		$pagenameFormula = \ContactManager::replaceParameter( 'ContactManagerMessagePagenameFormula',
 			$params['mailbox'],
-			$params['folder_name'],
+			$folder['folder_name'],
 			'<ContactManager/Incoming mail/id>'
 		);
 
-		$categories = [];
+		$categories_ = ( array_key_exists( 'categories', $params )
+			&& is_array( $params['categories'] ) ? $params['categories'] : [] );
+
 		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories ) ) {
 			echo 'skip message ' . $uid . PHP_EOL;
 			return;
 		}
 
-		$pagenameFormula = str_replace( '<folder_name>', $params['folder_name'], $pagenameFormula );
+		$pagenameFormula = str_replace( '<folder_name>', $folder['folder_name'], $pagenameFormula );
 
 		$pagenameFormula = \ContactManager::replaceFormula( $obj, $pagenameFormula,
 			$GLOBALS['wgContactManagerSchemasIncomingMail'] );
@@ -282,9 +284,11 @@ class ImportMessage {
 			}
 		}
 
-		foreach ( $allContacts as $email => $name ) {
-			\ContactManager::saveContact( $user, $context, $params, $obj, $name, $email, $conversationHash,
-				( $email === $obj['fromAddress'] ? $detectedLanguage : null ) );
+		if ( !empty( $params['save_contacts'] ) ) {
+			foreach ( $allContacts as $email => $name ) {
+				\ContactManager::saveContact( $user, $context, $params, $obj, $name, $email, $conversationHash,
+					( $email === $obj['fromAddress'] ? $detectedLanguage : null ) );
+			}
 		}
 
 		$this->saveConversation( $user, $context, $params, $conversationHash,
@@ -296,7 +300,7 @@ class ImportMessage {
 	 * @param array $params
 	 */
 	private function createFolderArticle( $user, $params ) {
-		$folderTitleText = 'ContactManager:Mailboxes/' . $params['mailbox'] . '/folders/' . $params['folder_name'];
+		$folderTitleText = 'ContactManager:Mailboxes/' . $params['mailbox'] . '/folders/' . $params['folder']['folder_name'];
 		$folderArticleTitle = TitleClass::newFromText( $folderTitleText );
 
 		if ( $folderArticleTitle && $folderArticleTitle->isKnown() ) {
@@ -305,13 +309,13 @@ class ImportMessage {
 		}
 
 		$folderType = null;
-		switch ( strtolower( $params['folder_type'] ) ) {
+		switch ( strtolower( $params['folder']['folder_type'] ) ) {
 			case 'inbox':
 			case 'sent':
 			case 'draft':
 			case 'trash':
 			case 'spam':
-				$folderType = $params['folder_type'];
+				$folderType = $params['folder']['folder_type'];
 				break;
 			default:
 				$folderType = 'other';
@@ -333,10 +337,10 @@ class ImportMessage {
 			return;
 		}
 
-		echo 'creating folder ' . $params['folder_name'] . PHP_EOL;
+		echo 'creating folder ' . $params['folder']['folder_name'] . PHP_EOL;
 
 		$content = str_replace( [ '%mailbox%', '%folder_name%' ],
-			[ $params['mailbox'], $params['folder_name'] ], $content );
+			[ $params['mailbox'], $params['folder']['folder_name'] ], $content );
 
 		\VisualData::saveRevision( $user, $folderArticleTitle, $content );
 
@@ -353,7 +357,7 @@ class ImportMessage {
 	private function getConversationHash( $params, $obj, &$conversationRecipients ) {
 		ksort( $conversationRecipients );
 
-		switch ( strtolower( $params['folder_type'] ) ) {
+		switch ( strtolower( $params['folder']['folder_type'] ) ) {
 			case 'sent':
 			case 'draft':
 				unset( $conversationRecipients[$obj['fromAddress']] );
@@ -595,7 +599,7 @@ class ImportMessage {
 						}
 
 						if ( !empty( $v['categories'] ) ) {
-								$categories = array_merge( $categories, $v['categories'] );
+							$categories = array_merge( $categories, $v['categories'] );
 						}
 				}
 			}

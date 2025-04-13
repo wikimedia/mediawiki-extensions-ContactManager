@@ -83,9 +83,7 @@ class RecordHeader {
 			'<ContactManager/Message header/uid>'
 		);
 
-		$categories_ = ( array_key_exists( 'categories', $params )
-			&& is_array( $params['categories'] ) ? $params['categories'] : [] );
-
+		$categories_ = [];
 		if ( !$this->applyFilters( $obj, $pagenameFormula_, $categories_ ) ) {
 			echo 'skip message ' . $header['uid'] . PHP_EOL;
 			return;

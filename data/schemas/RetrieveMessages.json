@@ -102,7 +102,7 @@
 						"type": "string",
 						"format": "text",
 						"title": "folder name",
-						"description": "the article title of this folder, it must not contain any of the  \u003Ca class=\"external text\" href=\"https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters\"\u003EProblem characters\u003C/a\u003E"
+						"description": "the article title of this folder, it must not contain any of the  \u003Ca class=\"external text\" target=\"_blank\" href=\"https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters\"\u003EProblem characters\u003C/a\u003E"
 					},
 					"folder_type": {
 						"wiki": {
@@ -139,49 +139,297 @@
 							"Spam",
 							"Other (Promotions/Newsletters/Social/Forums/Updates/etc.)"
 						]
+					},
+					"fetch": {
+						"wiki": {
+							"name": "fetch",
+							"type": "property",
+							"multiple-items": false,
+							"label": "fetch",
+							"required": true,
+							"uuid": "675494eea5d80",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.DropdownInputWidget",
+							"input-config": [],
+							"options-allow-null": false,
+							"options-values-parsed": {
+								"UIDs incremental": "UIDs incremental",
+								"Search": "Search",
+								"UIDs greater than or equal": "UIDs greater than or equal",
+								"UIDs less than or equal": "UIDs less than or equal",
+								"UIDs range": "UIDs range"
+							}
+						},
+						"type": "string",
+						"format": "text",
+						"title": "fetch",
+						"enum": [
+							"UIDs incremental",
+							"Search",
+							"UIDs greater than or equal",
+							"UIDs less than or equal",
+							"UIDs range"
+						]
+					},
+					"UID_from": {
+						"wiki": {
+							"name": "UID_from",
+							"type": "property",
+							"multiple-items": false,
+							"label": "UID from",
+							"uuid": "675494eea5d86",
+							"visibility": "condition",
+							"showif-field": "fetch",
+							"showif-condition": "regex",
+							"showif-value": "(UIDs range)|(UIDs greater than or equal)",
+							"preferred-input": "OO.ui.NumberInputWidget",
+							"input-config": [],
+							"required": false
+						},
+						"type": "integer",
+						"title": "UID from"
+					},
+					"UID_to": {
+						"wiki": {
+							"name": "UID_to",
+							"type": "property",
+							"multiple-items": false,
+							"label": "UID to",
+							"uuid": "675494eea5d88",
+							"visibility": "condition",
+							"showif-field": "fetch",
+							"showif-condition": "regex",
+							"showif-value": "(UIDs range)|(UIDs less than or equal)",
+							"preferred-input": "OO.ui.NumberInputWidget",
+							"input-config": [],
+							"required": false
+						},
+						"type": "integer",
+						"title": "UID to"
+					},
+					"fetch_message": {
+						"wiki": {
+							"name": "fetch_message",
+							"type": "property",
+							"multiple-items": false,
+							"label": "fetch message",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.ToggleSwitchWidget",
+							"input-config": [],
+							"required": false,
+							"uuid": "675495e626d6d"
+						},
+						"type": "boolean",
+						"title": "fetch message"
+					},
+					"search_criteria": {
+						"wiki": {
+							"name": "search_criteria",
+							"title": "search criteria",
+							"min-items": 1,
+							"unique-items": false,
+							"type": "schema",
+							"uuid": "67600f380337e"
+						},
+						"items": {
+							"type": "object",
+							"wiki": {
+								"name": "",
+								"type": "schema",
+								"uuid": "675550803cb19",
+								"layout": "section",
+								"visibility": "condition",
+								"showif-field": "fetch",
+								"showif-condition": "=",
+								"showif-value": "Search"
+							},
+							"properties": {
+								"criteria": {
+									"wiki": {
+										"name": "criteria",
+										"type": "property",
+										"multiple-items": false,
+										"label": "criteria",
+										"label-parsed": "criteria",
+										"visibility": "visible",
+										"preferred-input": "OO.ui.DropdownInputWidget",
+										"input-config": [],
+										"required": false,
+										"options-allow-null": false,
+										"options-wikilist": "ContactManager:Search criteria",
+										"uuid": "660bd584cf31e",
+										"options-values-parsed": {
+											"ALL": "ALL",
+											"ANSWERED": "ANSWERED",
+											"BCC": "BCC",
+											"BEFORE": "BEFORE",
+											"BODY": "BODY",
+											"CC": "CC",
+											"DELETED": "DELETED",
+											"FLAGGED": "FLAGGED",
+											"FROM": "FROM",
+											"KEYWORD": "KEYWORD",
+											"NEW": "NEW",
+											"OLD": "OLD",
+											"ON": "ON",
+											"RECENT": "RECENT",
+											"SEEN": "SEEN",
+											"SINCE": "SINCE",
+											"SUBJECT": "SUBJECT",
+											"TEXT": "TEXT",
+											"TO": "TO",
+											"UNANSWERED": "UNANSWERED",
+											"UNDELETED": "UNDELETED",
+											"UNFLAGGED": "UNFLAGGED",
+											"UNKEYWORD": "UNKEYWORD",
+											"UNSEEN": "UNSEEN"
+										}
+									},
+									"type": "string",
+									"format": "text",
+									"title": "criteria",
+									"enum": [
+										"ALL",
+										"ANSWERED",
+										"BCC",
+										"BEFORE",
+										"BODY",
+										"CC",
+										"DELETED",
+										"FLAGGED",
+										"FROM",
+										"KEYWORD",
+										"NEW",
+										"OLD",
+										"ON",
+										"RECENT",
+										"SEEN",
+										"SINCE",
+										"SUBJECT",
+										"TEXT",
+										"TO",
+										"UNANSWERED",
+										"UNDELETED",
+										"UNFLAGGED",
+										"UNKEYWORD",
+										"UNSEEN"
+									]
+								},
+								"string_value": {
+									"wiki": {
+										"name": "string_value",
+										"type": "property",
+										"multiple-items": false,
+										"uuid": "660bd7807b7de",
+										"visibility": "condition",
+										"showif-field": "criteria",
+										"showif-condition": "regex",
+										"showif-value": "(BCC)|(BODY)|(CC)|(FROM)|(KEYWORD)|(SUBJECT)|(TEXT)|(TO)|(UNKEYWORD)",
+										"preferred-input": "OO.ui.TextInputWidget",
+										"input-config": [],
+										"required": false
+									},
+									"type": "string",
+									"format": "text"
+								},
+								"date_value": {
+									"wiki": {
+										"name": "date_value",
+										"type": "property",
+										"multiple-items": false,
+										"label": "date",
+										"uuid": "660bd7807b7e2",
+										"visibility": "condition",
+										"showif-field": "criteria",
+										"showif-condition": "regex",
+										"showif-value": "(BEFORE)|(ON)|(SINCE)|(SENTBEFORE)|(SENTON)|(SENTSINCE)",
+										"preferred-input": "mw.widgets.DateInputWidget",
+										"input-config": [],
+										"required": false
+									},
+									"type": "string",
+									"format": "date",
+									"title": "date"
+								},
+								"bytes": {
+									"wiki": {
+										"name": "bytes",
+										"type": "property",
+										"multiple-items": false,
+										"label": "bytes",
+										"uuid": "6754061e5e342",
+										"visibility": "condition",
+										"showif-field": "criteria",
+										"showif-condition": "regex",
+										"showif-value": "(SMALLER)|(LARGER)",
+										"preferred-input": "OO.ui.NumberInputWidget",
+										"input-config": [],
+										"required": false
+									},
+									"type": "integer",
+									"title": "bytes"
+								},
+								"UID_from": {
+									"wiki": {
+										"name": "UID_from",
+										"type": "property",
+										"multiple-items": false,
+										"label": "UID from",
+										"help-message": "integer or wildcard (*)",
+										"visibility": "condition",
+										"preferred-input": "OO.ui.TextInputWidget",
+										"input-config": [],
+										"required": false,
+										"showif-field": "criteria",
+										"showif-condition": "=",
+										"showif-value": "UID",
+										"uuid": "6754061e5e346"
+									},
+									"type": "string",
+									"format": "text",
+									"title": "UID from",
+									"description": "integer or wildcard (*)"
+								},
+								"UID_to": {
+									"wiki": {
+										"name": "UID_to",
+										"type": "property",
+										"multiple-items": false,
+										"label": "UID to",
+										"help-message": "integer or wildcard (*)",
+										"visibility": "condition",
+										"preferred-input": "OO.ui.TextInputWidget",
+										"input-config": [],
+										"required": false,
+										"showif-field": "criteria",
+										"showif-condition": "=",
+										"showif-value": "UID",
+										"uuid": "6754061e5e347"
+									},
+									"type": "string",
+									"format": "text",
+									"title": "UID to",
+									"description": "integer or wildcard (*)"
+								}
+							}
+						},
+						"type": "array",
+						"title": "search criteria",
+						"minItems": 1,
+						"uniqueItems": false
 					}
 				},
 				"required": [
 					"folder",
 					"folder_name",
-					"folder_type"
+					"folder_type",
+					"fetch"
 				]
 			},
 			"type": "array",
 			"title": "folders",
 			"minItems": 1,
 			"uniqueItems": false
-		},
-		"fetch": {
-			"wiki": {
-				"name": "fetch",
-				"type": "property",
-				"multiple-items": false,
-				"required": true,
-				"label": "fetch",
-				"uuid": "675494eea5d80",
-				"visibility": "visible",
-				"preferred-input": "OO.ui.DropdownInputWidget",
-				"input-config": [],
-				"options-allow-null": false,
-				"options-values-parsed": {
-					"UIDs incremental": "UIDs incremental",
-					"Search": "Search",
-					"UIDs greater than or equal": "UIDs greater than or equal",
-					"UIDs less than or equal": "UIDs less than or equal",
-					"UIDs range": "UIDs range"
-				}
-			},
-			"type": "string",
-			"format": "text",
-			"title": "fetch",
-			"enum": [
-				"UIDs incremental",
-				"Search",
-				"UIDs greater than or equal",
-				"UIDs less than or equal",
-				"UIDs range"
-			]
 		},
 		"check_email_interval": {
 			"wiki": {
@@ -205,238 +453,6 @@
 			"description": "(minutes)",
 			"default": "5"
 		},
-		"UID_from": {
-			"wiki": {
-				"name": "UID_from",
-				"type": "property",
-				"multiple-items": false,
-				"label": "UID from",
-				"uuid": "675494eea5d86",
-				"visibility": "condition",
-				"showif-field": "fetch",
-				"showif-condition": "regex",
-				"showif-value": "(UIDs range)|(UIDs greater than or equal)",
-				"preferred-input": "OO.ui.NumberInputWidget",
-				"input-config": [],
-				"required": false
-			},
-			"type": "integer",
-			"title": "UID from"
-		},
-		"UID_to": {
-			"wiki": {
-				"name": "UID_to",
-				"type": "property",
-				"multiple-items": false,
-				"label": "UID to",
-				"uuid": "675494eea5d88",
-				"visibility": "condition",
-				"showif-field": "fetch",
-				"showif-condition": "regex",
-				"showif-value": "(UIDs range)|(UIDs less than or equal)",
-				"preferred-input": "OO.ui.NumberInputWidget",
-				"input-config": [],
-				"required": false
-			},
-			"type": "integer",
-			"title": "UID to"
-		},
-		"search_criteria": {
-			"wiki": {
-				"name": "search_criteria",
-				"title": "search criteria",
-				"min-items": 1,
-				"unique-items": false,
-				"type": "schema",
-				"uuid": "67600f380337e"
-			},
-			"items": {
-				"type": "object",
-				"wiki": {
-					"name": "",
-					"type": "schema",
-					"uuid": "675550803cb19",
-					"layout": "section",
-					"visibility": "condition",
-					"showif-field": "fetch",
-					"showif-condition": "=",
-					"showif-value": "Search"
-				},
-				"properties": {
-					"criteria": {
-						"wiki": {
-							"name": "criteria",
-							"type": "property",
-							"multiple-items": false,
-							"label": "criteria",
-							"label-parsed": "criteria",
-							"visibility": "visible",
-							"preferred-input": "OO.ui.DropdownInputWidget",
-							"input-config": [],
-							"required": false,
-							"options-allow-null": false,
-							"options-wikilist": "ContactManager:Search criteria",
-							"uuid": "660bd584cf31e",
-							"options-values-parsed": {
-								"ALL": "ALL",
-								"ANSWERED": "ANSWERED",
-								"BCC": "BCC",
-								"BEFORE": "BEFORE",
-								"BODY": "BODY",
-								"CC": "CC",
-								"DELETED": "DELETED",
-								"FLAGGED": "FLAGGED",
-								"FROM": "FROM",
-								"KEYWORD": "KEYWORD",
-								"NEW": "NEW",
-								"OLD": "OLD",
-								"ON": "ON",
-								"RECENT": "RECENT",
-								"SEEN": "SEEN",
-								"SINCE": "SINCE",
-								"SUBJECT": "SUBJECT",
-								"TEXT": "TEXT",
-								"TO": "TO",
-								"UNANSWERED": "UNANSWERED",
-								"UNDELETED": "UNDELETED",
-								"UNFLAGGED": "UNFLAGGED",
-								"UNKEYWORD": "UNKEYWORD",
-								"UNSEEN": "UNSEEN"
-							}
-						},
-						"type": "string",
-						"format": "text",
-						"title": "criteria",
-						"enum": [
-							"ALL",
-							"ANSWERED",
-							"BCC",
-							"BEFORE",
-							"BODY",
-							"CC",
-							"DELETED",
-							"FLAGGED",
-							"FROM",
-							"KEYWORD",
-							"NEW",
-							"OLD",
-							"ON",
-							"RECENT",
-							"SEEN",
-							"SINCE",
-							"SUBJECT",
-							"TEXT",
-							"TO",
-							"UNANSWERED",
-							"UNDELETED",
-							"UNFLAGGED",
-							"UNKEYWORD",
-							"UNSEEN"
-						]
-					},
-					"string_value": {
-						"wiki": {
-							"name": "string_value",
-							"type": "property",
-							"multiple-items": false,
-							"uuid": "660bd7807b7de",
-							"visibility": "condition",
-							"showif-field": "criteria",
-							"showif-condition": "regex",
-							"showif-value": "(BCC)|(BODY)|(CC)|(FROM)|(KEYWORD)|(SUBJECT)|(TEXT)|(TO)|(UNKEYWORD)",
-							"preferred-input": "OO.ui.TextInputWidget",
-							"input-config": [],
-							"required": false
-						},
-						"type": "string",
-						"format": "text"
-					},
-					"date_value": {
-						"wiki": {
-							"name": "date_value",
-							"type": "property",
-							"multiple-items": false,
-							"label": "date",
-							"uuid": "660bd7807b7e2",
-							"visibility": "condition",
-							"showif-field": "criteria",
-							"showif-condition": "regex",
-							"showif-value": "(BEFORE)|(ON)|(SINCE)|(SENTBEFORE)|(SENTON)|(SENTSINCE)",
-							"preferred-input": "mw.widgets.DateInputWidget",
-							"input-config": [],
-							"required": false
-						},
-						"type": "string",
-						"format": "date",
-						"title": "date"
-					},
-					"bytes": {
-						"wiki": {
-							"name": "bytes",
-							"type": "property",
-							"multiple-items": false,
-							"label": "bytes",
-							"uuid": "6754061e5e342",
-							"visibility": "condition",
-							"showif-field": "criteria",
-							"showif-condition": "regex",
-							"showif-value": "(SMALLER)|(LARGER)",
-							"preferred-input": "OO.ui.NumberInputWidget",
-							"input-config": [],
-							"required": false
-						},
-						"type": "integer",
-						"title": "bytes"
-					},
-					"UID_from": {
-						"wiki": {
-							"name": "UID_from",
-							"type": "property",
-							"multiple-items": false,
-							"label": "UID from",
-							"help-message": "integer or wildcard (*)",
-							"visibility": "condition",
-							"preferred-input": "OO.ui.TextInputWidget",
-							"input-config": [],
-							"required": false,
-							"showif-field": "criteria",
-							"showif-condition": "=",
-							"showif-value": "UID",
-							"uuid": "6754061e5e346"
-						},
-						"type": "string",
-						"format": "text",
-						"title": "UID from",
-						"description": "integer or wildcard (*)"
-					},
-					"UID_to": {
-						"wiki": {
-							"name": "UID_to",
-							"type": "property",
-							"multiple-items": false,
-							"label": "UID to",
-							"help-message": "integer or wildcard (*)",
-							"visibility": "condition",
-							"preferred-input": "OO.ui.TextInputWidget",
-							"input-config": [],
-							"required": false,
-							"showif-field": "criteria",
-							"showif-condition": "=",
-							"showif-value": "UID",
-							"uuid": "6754061e5e347"
-						},
-						"type": "string",
-						"format": "text",
-						"title": "UID to",
-						"description": "integer or wildcard (*)"
-					}
-				}
-			},
-			"type": "array",
-			"title": "search criteria",
-			"minItems": 1,
-			"uniqueItems": false
-		},
 		"fetch_folder_status": {
 			"wiki": {
 				"name": "fetch_folder_status",
@@ -451,21 +467,6 @@
 			},
 			"type": "boolean",
 			"title": "fetch folder status"
-		},
-		"fetch_message": {
-			"wiki": {
-				"name": "fetch_message",
-				"type": "property",
-				"multiple-items": false,
-				"label": "fetch message",
-				"visibility": "visible",
-				"preferred-input": "OO.ui.ToggleSwitchWidget",
-				"input-config": [],
-				"required": false,
-				"uuid": "675495e626d6d"
-			},
-			"type": "boolean",
-			"title": "fetch message"
 		},
 		"save_contacts": {
 			"wiki": {
@@ -523,24 +524,27 @@
 				"name": "categories",
 				"unique-items": false,
 				"type": "schema",
-				"uuid": "6754cc0f72154"
+				"uuid": "67efbc61db61c"
 			},
 			"items": {
 				"type": "string",
 				"wiki": {
-					"name": "",
+					"name": "categories",
 					"type": "property",
-					"multiple-items": true,
-					"label": "categories",
+					"uuid": "6754cc0f72154",
 					"visibility": "visible",
+					"label": "categories",
+					"help-message": "assign one or more categories to download messages (can be overridden by \"filters by messages\")",
+					"multiple-items": true,
 					"preferred-input": "mw.widgets.CategoryMultiselectWidget",
 					"input-config": [],
 					"required": false,
-					"uuid": "6754cc0f72156",
-					"layout": "table"
+					"default": []
 				},
 				"format": "text",
-				"title": "categories"
+				"title": "categories",
+				"description": "assign one or more categories to download messages (can be overridden by \"filters by messages\")",
+				"default": []
 			},
 			"type": "array",
 			"uniqueItems": false
@@ -1271,9 +1275,7 @@
 	},
 	"required": [
 		"job",
-		"mailbox",
-		"fetch"
+		"mailbox"
 	],
 	"type": "object"
 }
-

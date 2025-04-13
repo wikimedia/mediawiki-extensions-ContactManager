@@ -23,7 +23,6 @@
  */
 
 use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
-use MediaWiki\Revision\SlotRecord;
 
 define( 'CONTENT_MODEL_CONTACTMANAGER_TWIG', 'twig' );
 
@@ -51,117 +50,6 @@ class ContactManagerHooks {
 	 * @param DatabaseUpdater|null $updater
 	 */
 	public static function onLoadExtensionSchemaUpdates( ?DatabaseUpdater $updater = null ) {
-		if ( !class_exists( 'VisualData' ) ) {
-			return;
-		}
-		echo 'ContactManager -onLoadExtensionSchemaUpdates' . PHP_EOL;
-
-		$importer = \VisualData::getImporter();
-		$error_messages = [];
-		$context = RequestContext::getMain();
-
-		$doImport = static function ( $pagename, $contents ) use ( $context, $importer, &$error_messages ) {
-			echo '(ContactManager) importing ' . $pagename;
-
-			try {
-				$title_ = TitleClass::newFromText( $pagename );
-				$context->setTitle( $title_ );
-				$importer->doImportSelf( $pagename, $contents );
-				echo ' (success)' . PHP_EOL;
-			} catch ( Exception $e ) {
-				echo ' ( ***error)' . PHP_EOL;
-				$error_messages[$pagename] = $e->getMessage();
-			}
-		};
-
-		$import = static function ( $path, $callback ) {
-			$files = scandir( $path );
-			foreach ( $files as $file ) {
-				$filePath_ = "$path/$file";
-				if ( is_file( $filePath_ ) ) {
-					$ext_ = pathinfo( $file, PATHINFO_EXTENSION );
-					if ( in_array( $ext_, [ 'json', 'txt' ] ) ) {
-						$titleText_ = substr( $file, 0, strpos( $file, '.' ) );
-					} else {
-						$titleText_ = $file;
-					}
-					$content = file_get_contents( $filePath_ );
-					$callback( $titleText_, $content );
-				}
-			}
-		};
-
-		$dirPath = __DIR__ . '/../data';
-
-		$import( "$dirPath/articles", static function ( $titleText, $content ) use ( &$doImport ) {
-			$doImport( "ContactManager:$titleText", [
-				[
-					'role' => SlotRecord::MAIN,
-					'model' => 'wikitext',
-					'text' => $content
-				]
-			] );
-		} );
-
-		$import( "$dirPath/templates", static function ( $titleText, $content ) use ( &$doImport ) {
-			$doImport( "Template:ContactManager/$titleText", [
-				[
-					'role' => SlotRecord::MAIN,
-					'model' => 'wikitext',
-					'text' => $content
-				]
-			] );
-		} );
-
-		$import( "$dirPath/styles", static function ( $titleText, $content ) use ( &$doImport ) {
-			$doImport( "ContactManager:$titleText", [
-				[
-					'role' => SlotRecord::MAIN,
-					'model' => 'sanitized-css',
-					'text' => $content
-				]
-			] );
-		} );
-
-		$import( "$dirPath/emailTemplates", static function ( $titleText, $content ) use ( &$doImport ) {
-			$doImport( "EmailTemplate:$titleText", [
-				[
-					'role' => SlotRecord::MAIN,
-					'model' => 'twig',
-					'text' => $content
-				]
-			] );
-		} );
-
-		$import( "$dirPath/modules", static function ( $titleText, $content ) use ( &$doImport ) {
-			$doImport( "Module:ContactManager/$titleText", [
-				[
-					'role' => SlotRecord::MAIN,
-					'model' => 'Scribunto',
-					'text' => $content
-				]
-			] );
-		} );
-
-		$import( "$dirPath/schemas", static function ( $titleText, $content ) use ( &$doImport ) {
-			if ( array_key_exists( 'wgContactManagerSchemas' . $titleText, $GLOBALS ) ) {
-				$titleText = $GLOBALS['wgContactManagerSchemas' . $titleText];
-			} else {
-				$titleText = "ContactManager/$titleText";
-			}
-
-			$doImport( "VisualDataSchema:$titleText", [
-				[
-					'role' => SlotRecord::MAIN,
-					'model' => 'json',
-					'text' => $content
-				]
-			] );
-		} );
-
-		if ( count( $error_messages ) ) {
-			echo '(ContactManager) ***error importing ' . count( $error_messages ) . ' articles' . PHP_EOL;
-		}
 	}
 
 	/**
