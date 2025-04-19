@@ -207,21 +207,6 @@ class ContactManager {
 		$imapMailbox = $mailbox->getImapMailbox();
 		$imapMailbox->setAttachmentsIgnore( true );
 
-		// get folders data, required to check
-		// for uidvalidity
-		if ( !empty( $params['fetch_folder_status'] ) || $params['fetch'] === 'UIDs incremental' ) {
-			$schema_ = $GLOBALS['wgContactManagerSchemasMailboxFolders'];
-			$query_ = '[[name::' . $params['mailbox'] . ']]';
-			$results_ = \VisualData::getQueryResults( $schema_, $query_ );
-
-			if ( empty( $results_ ) ) {
-				$errors[] = 'mailbox folders haven\'t yet been retrieved';
-				return false;
-			}
-
-			$foldersData = $results_[0]['data'];
-		}
-
 		$title = TitleClass::newFromID( $params['pageid'] );
 		$context = RequestContext::getMain();
 		$context->setTitle( $title );
@@ -234,6 +219,32 @@ class ContactManager {
 		$showMsg = static function ( $msg ) {
 			echo $msg . PHP_EOL;
 		};
+
+		$fetchUIDsIncremental = static function () use ( $folders ) {
+			foreach ( $folders as $folder ) {
+				if ( strtolower( $folder['fetch'] ) === 'uids incremental' ) {
+					return true;
+				}
+			}
+			return false;
+		};
+
+		$foldersData = [];
+
+		// get folders data, required to check
+		// for uidvalidity
+		if ( !empty( $params['fetch_folder_status'] ) || $fetchUIDsIncremental() ) {
+			$schema_ = $GLOBALS['wgContactManagerSchemasMailboxFolders'];
+			$query_ = '[[name::' . $params['mailbox'] . ']]';
+			$results_ = \VisualData::getQueryResults( $schema_, $query_ );
+
+			if ( empty( $results_ ) ) {
+				$errors[] = 'mailbox folders haven\'t yet been retrieved';
+				return false;
+			}
+
+			$foldersData = $results_[0]['data'];
+		}
 
 		$switchMailbox = static function ( $folder ) use( $imapMailbox ) {
 			$name_pos = strpos( $folder['folder'], '}' );
@@ -453,7 +464,7 @@ class ContactManager {
 					$header = (array)$header;
 
 					$importMessage = new ImportMessage( $user, array_merge( $params, [
-						'folder' => $folder['folder'],
+						'folder' => $folder,
 						'uid' => $header['uid']
 					] ), $errors );
 

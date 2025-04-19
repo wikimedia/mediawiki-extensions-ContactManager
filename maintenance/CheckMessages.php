@@ -88,7 +88,6 @@ class CheckMessages extends Maintenance {
 		$schema = $GLOBALS['wgContactManagerSchemasRetrieveMessages'];
 		$query = '[[job::retrieve-messages]]';
 		$printouts = [
-			'fetch',
 			'check_email_interval',
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts );
@@ -99,10 +98,6 @@ class CheckMessages extends Maintenance {
 		foreach ( $results as $value ) {
 			// add session parameter
 			$data_ = array_merge( $value['data'], $data );
-
-			if ( $data_['fetch'] !== 'UIDs incremental' ) {
-				continue;
-			}
 
 			if ( empty( $data_['check_email_interval'] ) ) {
 				continue;

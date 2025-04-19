@@ -74,7 +74,7 @@ class ImportMessage {
 
 		$imapMailbox = $mailbox->getImapMailbox();
 
-		$imapMailbox->switchMailbox( $folder );
+		$imapMailbox->switchMailbox( $folder['folder'] );
 
 		// *** attention, this is empty if called from
 		// 'get messafge' and the toggle 'fetch message'
