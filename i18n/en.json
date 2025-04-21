@@ -16,5 +16,7 @@
 
 	"apihelp-contactmanager-createjob-summary": "apihelp contactmanager createjob summary",
 	"apihelp-contactmanager-createjob-param-pageid": "apihelp contactmanager createjob param pageid",
-	"apihelp-contactmanager-createjob-param-data": "apihelp contactmanager createjob param data"
+	"apihelp-contactmanager-createjob-param-data": "apihelp contactmanager createjob param data",
+
+	"apierror-contactmanager-permissions-error": "contactmanager permissions error"
 }

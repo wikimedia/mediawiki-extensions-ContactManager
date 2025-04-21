@@ -90,7 +90,9 @@ class CheckMessages extends Maintenance {
 		$printouts = [
 			'check_email_interval',
 		];
-		$results = \VisualData::getQueryResults( $schema, $query, $printouts );
+		$params = [
+		];
+		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params );
 
 		$data = [];
 		$data['session'] = $context->exportSession();

@@ -60,6 +60,7 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 
 * modules
 **[[Module:ContactManager/Base64]]
+**[[Module:ContactManager/ConversationsNavigation]]
 **[[Module:ContactManager/FormatReply]]
 
 

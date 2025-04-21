@@ -30,6 +30,7 @@
         <tr>
             <td>
                 <a href="">
+                	<!-- add your logo here -->
                     <img class="full-width" src="" alt="logo">
                 </a>
             </td>

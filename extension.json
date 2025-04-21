@@ -111,6 +111,8 @@
 				"style.css"
 			],
 			"dependencies": [
+			],
+			"messages": [
 			]
 		}
 	},

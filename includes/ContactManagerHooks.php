@@ -94,6 +94,11 @@ class ContactManagerHooks {
 	 */
 	public static function VisualDataOnFormSubmit( $user, $targetTitle, $jsonData, $freetext, $isNewPage, &$errors ) {
 		if ( !empty( $jsonData['schemas'][$GLOBALS['wgContactManagerSchemasComposeEmail']] ) ) {
+
+			if ( !$user->isAllowed( 'contactmanager-can-manage-mailboxes' ) ) {
+				return;
+			}
+
 			\ContactManager::sendEmail( $user,
 				$jsonData['schemas'][$GLOBALS['wgContactManagerSchemasComposeEmail']], $errors );
 		}

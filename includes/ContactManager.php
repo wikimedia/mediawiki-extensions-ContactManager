@@ -614,6 +614,13 @@ class ContactManager {
 	public static function saveContact( $user, $context, $params, $obj, $name, $email,
 		$conversationHash = null, $detectedLanguage = null
 	) {
+		if ( empty( $email ) ) {
+			echo '*** error, no email' . PHP_EOL;
+			print_r( $params );
+			print_r( $obj );
+			return;
+		}
+
 		$fromUsername = false;
 
 		if ( empty( $name ) ) {
