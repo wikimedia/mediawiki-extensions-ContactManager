@@ -21,22 +21,10 @@ See jobs data [[{{FULLPAGENAME}}/Jobs|here]]
 }}  
 
 
-== Headers == 
-
-{{#visualdataquery: [[{{FULLPAGENAME}}/Jobs]] [[mailbox::+]]
-|schema=ContactManager/Job retrieve messages
-|?folders/folder_name=
-|?folders/folder=
-|?folder
-|?mailbox=
-|template?folder=ContactManager/Headers table folder field
-|pagetitle=
-|format=table
-}}
 
 
-== Messages == 
-
+<tabs class="ContactManagerTabs">
+<tab name="Messages" block>
 Messages will be available only if the option "fetch messages" in the schema associated to the "Get messages" button is toggled, or if they are retrieved from the email page.
 
 {{#visualdataquery: [[{{FULLPAGENAME}}/Jobs]] [[mailbox::+]]
@@ -49,6 +37,23 @@ Messages will be available only if the option "fetch messages" in the schema ass
 |template?folder=ContactManager/Messages table folder field
 |format=table
 }}
+</tab>
+
+<tab name="Headers" block>
+{{#visualdataquery: [[{{FULLPAGENAME}}/Jobs]] [[mailbox::+]]
+|schema=ContactManager/Job retrieve messages
+|?folders/folder_name=
+|?folders/folder=
+|?folder
+|?mailbox=
+|template?folder=ContactManager/Headers table folder field
+|pagetitle=
+|format=table
+}}
+</tab>
+
+</tabs>
+
 
 
 
