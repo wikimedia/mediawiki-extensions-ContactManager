@@ -86,7 +86,7 @@ class CheckMessages extends Maintenance {
 		$context->setUser( $user );
 
 		$schema = $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];
-		$query = '[[name::retrieve-messages]][[is_running:false]]';
+		$query = '[[name::retrieve-messages]][[is_running::false]]';
 		$printouts = [
 			'check_email_interval',
 		];
