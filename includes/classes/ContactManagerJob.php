@@ -46,7 +46,7 @@ class ContactManagerJob extends Job {
 		// T279090
 		// $user = User::newFromId( $this->params['user_id'] );
 
-		$requiredParameters = [ 'session', 'mailbox', 'job' ];
+		$requiredParameters = [ 'session', 'mailbox', 'name' ];
 		foreach ( $requiredParameters as $value ) {
 			if ( !isset( $this->params[$value] ) ) {
 				$this->error = "ContactManager: $value parameter not set";
@@ -76,11 +76,10 @@ class ContactManagerJob extends Job {
 		$mailboxName = $this->params['mailbox'];
 		$errors = [];
 
-		switch ( $this->params['job'] ) {
+		switch ( $this->params['name'] ) {
 			case 'mailbox-info':
 				\ContactManager::getInfo( $user, $mailboxName, $errors );
 				break;
-			case 'retrieve-folders':
 			case 'get-folders':
 				\ContactManager::getFolders( $user, $mailboxName, $errors );
 				break;
@@ -88,18 +87,18 @@ class ContactManagerJob extends Job {
 			case 'get-messages':
 				\ContactManager::getMessages( $user, $this->params, $errors );
 				break;
-			case 'retrieve-message':
-				$importMessage = new ImportMessage( $user, $this->params, $errors );
-				$importMessage->doImport();
-				break;
-			case 'record-header':
-				$recordHeader = new RecordHeader( $user, $this->params, $errors );
-				$recordHeader->doImport();
-				break;
-			case 'get-contacts':
-			case 'retrieve-contacts':
-				\ContactManager::retrieveContacts( $user, $this->params, $errors );
-				break;
+			// case 'retrieve-message':
+			// 	$importMessage = new ImportMessage( $user, $this->params, $errors );
+			// 	$importMessage->doImport();
+			// 	break;
+			// case 'record-header':
+			// 	$recordHeader = new RecordHeader( $user, $this->params, $errors );
+			// 	$recordHeader->doImport();
+			// 	break;
+			// case 'get-contacts':
+			// case 'retrieve-contacts':
+			// 	\ContactManager::retrieveContacts( $user, $this->params, $errors );
+			// 	break;
 		}
 
 		if ( count( $errors ) ) {
@@ -108,7 +107,6 @@ class ContactManagerJob extends Job {
 		}
 
 		// @TODO call ECHO when finished
-
 		return true;
 	}
 

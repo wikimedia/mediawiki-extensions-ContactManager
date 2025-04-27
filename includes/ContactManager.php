@@ -139,7 +139,7 @@ class ContactManager {
 			return false;
 		}
 
-		$targetTitle = str_replace( '$1', $mailboxName, $GLOBALS['wgContactManagerMailboxInfoArticle'] );
+		$targetTitle = str_replace( '$1', $mailboxName, $GLOBALS['wgContactManagerMailboxArticle'] );
 
 		$jsonData = [
 			$GLOBALS['wgContactManagerSchemasMailboxInfo'] => [
@@ -156,6 +156,39 @@ class ContactManager {
 
 		$title = TitleClass::newFromText( $targetTitle );
 		\VisualData::updateCreateSchemas( $user, $title, $jsonData, 'jsondata' );
+
+		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobMailboxInfo'], $mailboxName, false );
+	}
+
+	/**
+	 * @param User $user
+	 * @param string $schema
+	 * @param string $mailbox
+	 * @param bool $start true
+	 */
+	public static function setRunningJob( $user, $schema, $mailbox, $start = true ) {
+		$targetTitle = str_replace( '$1', $mailbox, $GLOBALS['wgContactManagerMailboxArticleJobs'] );
+
+		if ( $start ) {
+			$jsonData = [
+				$schema => [
+					'is_running' => true,
+					'start_date' => date( 'Y-m-d H:i:s' ),
+					'end_date' => null,
+				]
+			];
+
+		} else {
+			$jsonData = [
+				$schema => [
+					'is_running' => false,
+					'end_date' => date( 'Y-m-d H:i:s' ),
+				]
+			];
+		}
+
+		$title_ = TitleClass::newFromText( $targetTitle );
+		\VisualData::updateCreateSchemas( $user, $title_, $jsonData, 'jsondata' );
 	}
 
 	/**
@@ -178,7 +211,7 @@ class ContactManager {
 			return false;
 		}
 
-		$targetTitle = str_replace( '$1', $mailboxName, $GLOBALS['wgContactManagerMailboxFoldersArticle'] );
+		$targetTitle = str_replace( '$1', $mailboxName, $GLOBALS['wgContactManagerMailboxArticle'] );
 
 		$jsonData = [
 			$GLOBALS['wgContactManagerSchemasMailboxFolders'] => [
@@ -189,6 +222,8 @@ class ContactManager {
 
 		$title = TitleClass::newFromText( $targetTitle );
 		\VisualData::updateCreateSchemas( $user, $title, $jsonData, 'jsondata' );
+
+		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobGetFolders'], $mailboxName, false );
 	}
 
 	/**
@@ -489,7 +524,9 @@ class ContactManager {
 			}
 		}
 
-		self::pushJobs( $jobs );
+		// self::pushJobs( $jobs );
+
+		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], $params['mailbox'], false );
 	}
 
 	/**

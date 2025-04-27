@@ -54,22 +54,24 @@ __NOTOC__
 |datatables-info=false
 |datatables-searching=false
 }}
+{{#ifeq: {{#urlget:show}} | |
+  == {{#switch: 
+    {{#if: {{#urlget:month}} | {{#urlget:month}} | {{CURRENTMONTH}} }}
+    | 1 = January
+    | 2 = February
+    | 3 = March
+    | 4 = April
+    | 5 = May
+    | 6 = June
+    | 7 = July
+    | 8 = August
+    | 9 = September
+    | 10 = October
+    | 11 = November
+    | 12 = December
+  }} {{#if: {{#urlget:year}} | {{#urlget:year}} | {{CURRENTYEAR}} }} ==
 
-=={{#switch: {{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}
- | 1 = January
- | 2 = February
- | 3 = March
- | 4 = April
- | 5 = May
- | 6 = June
- | 7 = July
- | 8 = August
- | 9 = September
- | 10 = October
- | 11 = November
- | 12 = December
-}} {{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}==
-
+}}
 {{#ifeq:{{#urlget:show}}|all|
   {{#visualdataquery: [[conversationHash::{{#urlget:hash}}]]
     |schema=ContactManager/Incoming mail

@@ -2,7 +2,7 @@
 	"wiki": {
 		"type": "schema",
 		"uuid": "680d700c814c1",
-		"name": "ContactMananger/Job mailbox info"
+		"name": "ContactManager/Job mailbox info"
 	},
 	"properties": {
 		"name": {
@@ -39,30 +39,35 @@
 		},
 		"is_running": {
 			"wiki": {
-				"name": "is_running",
 				"type": "property",
-				"multiple-items": false,
-				"label": "is running",
+				"uuid": "680d704bc4ef8",
+				"name": "is_running",
 				"visibility": "visible",
+				"label": "is running",
+				"help-message": "'''Attention''', this field is automatically handled. Toggle manually off only if a job has not been completed and isn't running.",
+				"multiple-items": false,
 				"preferred-input": "OO.ui.ToggleSwitchWidget",
 				"input-config": [],
-				"required": false,
-				"uuid": "680d704bc4ef8"
+				"required": false
 			},
 			"type": "boolean",
-			"title": "is running"
+			"title": "is running",
+			"description": "\u003Cb\u003EAttention\u003C/b\u003E, this field is automatically handled. Toggle manually off only if a job has not been completed and isn't running."
 		},
 		"start_date": {
 			"wiki": {
-				"type": "property",
 				"name": "start_date",
-				"visibility": "visible",
-				"label": "start date",
+				"type": "property",
 				"multiple-items": false,
+				"visibility": "hidden",
+				"label": "start date",
+				"uuid": "680d84db82924",
 				"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
 				"input-config": [],
-				"required": false,
-				"uuid": "680d84db82fb5"
+				"required": false
+			},
+			"options": {
+				"hidden": true
 			},
 			"type": "string",
 			"format": "datetime",
@@ -70,15 +75,18 @@
 		},
 		"end_date": {
 			"wiki": {
-				"type": "property",
 				"name": "end_date",
-				"visibility": "visible",
-				"label": "end date",
+				"type": "property",
 				"multiple-items": false,
+				"visibility": "hidden",
+				"label": "end date",
+				"uuid": "680d84db82927",
 				"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
 				"input-config": [],
-				"required": false,
-				"uuid": "680d84db82fb6"
+				"required": false
+			},
+			"options": {
+				"hidden": true
 			},
 			"type": "string",
 			"format": "datetime",

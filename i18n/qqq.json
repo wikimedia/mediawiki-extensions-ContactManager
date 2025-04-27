@@ -15,5 +15,7 @@
 	"apihelp-contactmanager-createjob-summary": "A label message",
 	"apihelp-contactmanager-createjob-param-pageid": "A label message",
 	"apihelp-contactmanager-createjob-param-data": "A label message",
-	"apierror-contactmanager-permissions-error": "A label message"
+	"apierror-contactmanager-unknown-job": "A label message",
+	"apierror-contactmanager-permissions-error": "A label message",
+	"apierror-contactmanager-running-job": "A label message"
 }

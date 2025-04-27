@@ -19,7 +19,7 @@
  * @file
  * @ingroup extensions
  * @author thomas-topway-it <support@topway.it>
- * @copyright Copyright ©2023-2024, https://wikisphere.org
+ * @copyright Copyright ©2023-2025, https://wikisphere.org
  */
 
 namespace MediaWiki\Extension\ContactManager;
@@ -55,30 +55,48 @@ class ApiCreateJob extends ApiBase {
 
 		$result = $this->getResult();
 		$params = $this->extractRequestParams();
-		$context = $this->getContext();
 		$data = json_decode( $params['data'], true );
+
+		switch ( $data['name'] ) {
+			case 'retrieve-messages':
+				$schema = $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];
+				break;
+			case 'get-folders':
+				$schema = $GLOBALS['wgContactManagerSchemasJobGetFolders'];
+				break;
+			case 'mailbox-info':
+				$schema = $GLOBALS['wgContactManagerSchemasJobMailboxInfo'];
+				break;
+		}
+
+		$query = '[[name::' . $data['name'] . ']][[mailbox::' . $data['mailbox'] . ']][[is_running:false]]';
+		$printouts = [
+			'name'
+		];
+		$params_ = [
+		];
+		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params_ );
+
+		if ( count( $results ) && $results[0] ) {
+			$this->dieWithError( 'apierror-contactmanager-running-job' );
+		}
+
 		$title = TitleClass::newFromID( $params['pageid'] );
 		$context = RequestContext::getMain();
 		$context->setTitle( $title );
 		$data['pageid'] = $params['pageid'];
 		$data['session'] = $context->exportSession();
 
-		switch ( $data['job'] ) {
-			// case 'retrieve-messages':
-			// case 'get-messages':
-			// 	\ContactManager::getMessages( $data, $errors );
-			// 	break;
+		$job = new ContactManagerJob( $title, $data );
 
-			default:
-				$job = new ContactManagerJob( $title, $data );
-
-				if ( !$job ) {
-					$this->dieWithError( 'apierror-contactmanager-unknown-job' );
-					return;
-				}
-
-				\ContactManager::pushJobs( [ $job ] );
+		if ( !$job ) {
+			$this->dieWithError( 'apierror-contactmanager-unknown-job' );
+			return;
 		}
+
+		\ContactManager::setRunningJob( $user, $schema, $data['mailbox'], true );
+
+		\ContactManager::pushJobs( [ $job ] );
 
 		$result->addValue( [ $this->getModuleName() ], 'data', true );
 	}

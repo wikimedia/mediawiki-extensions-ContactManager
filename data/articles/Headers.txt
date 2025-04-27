@@ -1,5 +1,5 @@
-<big>Folders: {{#visualdataquery: [[ContactManager:Mailboxes/{{#urlget:mailbox}}/Jobs/GetMessages]] [[mailbox::+]]
-|schema=ContactManager/Retrieve messages
+<big>Folders: {{#visualdataquery: [[ContactManager:Mailboxes/{{#urlget:mailbox}}/Jobs]] [[mailbox::+]]
+|schema=ContactManager/Job retrieve messages
 |?folders/folder_name
 |?folders/folder?
 |template?folders/folder_name=ContactManager/Headers folder name field

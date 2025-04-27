@@ -18,5 +18,7 @@
 	"apihelp-contactmanager-createjob-param-pageid": "apihelp contactmanager createjob param pageid",
 	"apihelp-contactmanager-createjob-param-data": "apihelp contactmanager createjob param data",
 
-	"apierror-contactmanager-permissions-error": "contactmanager permissions error"
+	"apierror-contactmanager-unknown-job": "unknown job",
+	"apierror-contactmanager-permissions-error": "contactmanager permissions error",
+	"apierror-contactmanager-running-job": "Job is running. Wait that is completed or set to false if it isn't actually running"
 }

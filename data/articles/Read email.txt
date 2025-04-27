@@ -43,9 +43,9 @@
     {{#VisualDataButton: Get message
       |callback = ContactManager.initJob
       |icon=reload 
-      |schema = ContactManager/Retrieve messages
-      |preload-data=ContactManager:Mailboxes/{{#urlget:mailbox}}/Jobs/GetMessages
-      |preload-data?job=retrieve-message
+      |schema = ContactManager/Job retrieve messages
+      |preload-data=ContactManager:Mailboxes/{{#urlget:mailbox}}/Jobs
+      |preload-data?name=retrieve-message
       |preload-data?uid={{#urlget:uid}}
       |preload-data?folder={{#urlget:shortpath}}
       |preload-data?folder_name={{#urlget:folder}} 

@@ -2,16 +2,16 @@
 	"wiki": {
 		"type": "schema",
 		"uuid": "660830d33f167",
-		"name": "ContactManager/Retrieve messages"
+		"name": "ContactManager/Job retrieve messages"
 	},
 	"properties": {
-		"job": {
+		"name": {
 			"wiki": {
-				"name": "job",
+				"name": "name",
 				"type": "property",
 				"multiple-items": false,
 				"required": true,
-				"label": "job",
+				"label": "name",
 				"default": "a",
 				"uuid": "660830d33f16f",
 				"visibility": "visible",
@@ -20,7 +20,7 @@
 			},
 			"type": "string",
 			"format": "text",
-			"title": "job",
+			"title": "name",
 			"default": "a"
 		},
 		"mailbox": {
@@ -47,14 +47,14 @@
 				"min-items": 1,
 				"unique-items": false,
 				"type": "schema",
-				"uuid": "67b0b31b326dc"
+				"uuid": "680619715ec45"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
-					"uuid": "67b0b2fb07384",
+					"uuid": "67b0b31b326dc",
 					"layout": "section",
 					"visibility": "visible"
 				},
@@ -72,6 +72,7 @@
 							"preferred-input": "OO.ui.DropdownInputWidget",
 							"input-config": [],
 							"options-allow-null": false,
+							"options-query-formula": "\u003Cfolders/fullpath\u003E",
 							"options-label-formula": "\u003Cfolders/shortpath\u003E",
 							"options-query": "[[name::\u003Cmailbox\u003E]]",
 							"query-schema": "ContactManager/Mailbox folders",
@@ -79,12 +80,23 @@
 								"folders/fullpath",
 								"folders/shortpath"
 							],
-							"options-query-formula": "\u003Cfolders/fullpath\u003E"
+							"options-values-parsed": {}
 						},
 						"type": "string",
 						"format": "text",
 						"title": "folder",
-						"description": "remote folder name"
+						"description": "remote folder name",
+						"enum": [
+							"{imappro.zoho.com:993/imap/ssl}INBOX",
+							"{imappro.zoho.com:993/imap/ssl}Drafts",
+							"{imappro.zoho.com:993/imap/ssl}Templates",
+							"{imappro.zoho.com:993/imap/ssl}Snoozed",
+							"{imappro.zoho.com:993/imap/ssl}Sent",
+							"{imappro.zoho.com:993/imap/ssl}Spam",
+							"{imappro.zoho.com:993/imap/ssl}Trash",
+							"{imappro.zoho.com:993/imap/ssl}Notification",
+							"{imappro.zoho.com:993/imap/ssl}NewsLetter"
+						]
 					},
 					"folder_name": {
 						"wiki": {
@@ -102,7 +114,7 @@
 						"type": "string",
 						"format": "text",
 						"title": "folder name",
-						"description": "the article title of this folder, it must not contain any of the  \u003Ca class=\"external text\" target=\"_blank\" href=\"https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters\"\u003EProblem characters\u003C/a\u003E"
+						"description": "the article title of this folder, it must not contain any of the  \u003Ca class=\"external text\" href=\"https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters\"\u003EProblem characters\u003C/a\u003E"
 					},
 					"folder_type": {
 						"wiki": {
@@ -145,8 +157,8 @@
 							"name": "fetch",
 							"type": "property",
 							"multiple-items": false,
-							"label": "fetch",
 							"required": true,
+							"label": "fetch",
 							"uuid": "675494eea5d80",
 							"visibility": "visible",
 							"preferred-input": "OO.ui.DropdownInputWidget",
@@ -531,15 +543,16 @@
 				"wiki": {
 					"name": "categories",
 					"type": "property",
-					"uuid": "6754cc0f72154",
-					"visibility": "visible",
+					"multiple-items": true,
 					"label": "categories",
 					"help-message": "assign one or more categories to download messages (can be overridden by \"filters by messages\")",
-					"multiple-items": true,
+					"default": [],
+					"uuid": "6754cc0f72154",
+					"visibility": "visible",
 					"preferred-input": "mw.widgets.CategoryMultiselectWidget",
 					"input-config": [],
 					"required": false,
-					"default": []
+					"layout": "table"
 				},
 				"format": "text",
 				"title": "categories",
@@ -1271,11 +1284,67 @@
 			"title": "Filters by message fields",
 			"minItems": 0,
 			"uniqueItems": true
+		},
+		"is_running": {
+			"wiki": {
+				"type": "property",
+				"uuid": "680d6fe8c4517",
+				"name": "is_running",
+				"visibility": "visible",
+				"label": "is running",
+				"help-message": "'''Attention''', this field is automatically handled. Toggle manually off only if a job has not been completed and isn't running.",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "boolean",
+			"title": "is running",
+			"description": "\u003Cb\u003EAttention\u003C/b\u003E, this field is automatically handled. Toggle manually off only if a job has not been completed and isn't running."
+		},
+		"start_date": {
+			"wiki": {
+				"name": "start_date",
+				"type": "property",
+				"multiple-items": false,
+				"visibility": "hidden",
+				"label": "start date",
+				"uuid": "680d84b4e4243",
+				"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"options": {
+				"hidden": true
+			},
+			"type": "string",
+			"format": "datetime",
+			"title": "start date"
+		},
+		"end_date": {
+			"wiki": {
+				"name": "end_date",
+				"type": "property",
+				"multiple-items": false,
+				"visibility": "hidden",
+				"label": "end date",
+				"uuid": "680d84b4e4245",
+				"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"options": {
+				"hidden": true
+			},
+			"type": "string",
+			"format": "datetime",
+			"title": "end date"
 		}
 	},
 	"required": [
-		"job",
+		"name",
 		"mailbox"
 	],
 	"type": "object"
 }
+

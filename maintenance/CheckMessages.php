@@ -85,8 +85,8 @@ class CheckMessages extends Maintenance {
 		$context->setTitle( $title );
 		$context->setUser( $user );
 
-		$schema = $GLOBALS['wgContactManagerSchemasRetrieveMessages'];
-		$query = '[[job::retrieve-messages]]';
+		$schema = $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];
+		$query = '[[name::retrieve-messages]][[is_running:false]]';
 		$printouts = [
 			'check_email_interval',
 		];
@@ -117,6 +117,8 @@ class CheckMessages extends Maintenance {
 				// (this is slower)
 				$query_ = $value['pageid'];
 				$printouts_ = [];
+
+				// *** when pageid is set in the query, the first result is returned
 				$value = \VisualData::getQueryResults( $schema, $query_, $printouts_ );
 				$data_ = array_merge( $value['data'], $data );
 
@@ -132,6 +134,8 @@ class CheckMessages extends Maintenance {
 					// $this->dieWithError( 'apierror-contactmanager-unknown-job' );
 					continue;
 				}
+
+				\ContactManager::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], $data_['mailbox'], true );
 
 				$jobs[] = $job;
 			}

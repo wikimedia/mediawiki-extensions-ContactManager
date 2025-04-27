@@ -42,7 +42,7 @@ ContactManager = ( function () {
 					} )
 					.fail( ( res ) => {
 						// eslint-disable-next-line no-alert
-						alert( 'error' + res );
+						alert( 'error ' + res );
 						// console.log("getFolders fail", res);
 					} );
 			} );

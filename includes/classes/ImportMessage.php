@@ -87,7 +87,10 @@ class ImportMessage {
 
 		$imapMailbox->setAttachmentsIgnore( !( (bool)$params['download_attachments'] ) );
 
-		$mail = $imapMailbox->getMail( $uid );
+		// *** optioanlly save the email as eml format
+		// $imapMailbox->getRawMail( $uid, false );
+
+		$mail = $imapMailbox->getMail( $uid, false );
 
 		$obj = json_decode( json_encode( $mail ), true );
 
@@ -208,9 +211,6 @@ class ImportMessage {
 		$showMsg = static function ( $msg ) {
 			echo $msg . PHP_EOL;
 		};
-
-		$context = RequestContext::getMain();
-		$schema = \VisualData::getSchema( $context, $GLOBALS['wgContactManagerSchemasRetrieveMessages'] );
 
 		$pagenameFormula = \ContactManager::replaceParameter( 'ContactManagerMessagePagenameFormula',
 			$params['mailbox'],
