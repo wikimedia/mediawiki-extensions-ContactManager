@@ -4,23 +4,24 @@ function p.fn(frame)
     local args = (type(frame.getParent) == "function") and frame:getParent().args or frame
 
 local months = {
-    January = 1,
-    February = 2,
-    March = 3,
-    April = 4,
-    May = 5,
-    June = 6,
-    July = 7,
-    August = 8,
-    September = 9,
-    October = 10,
-    November = 11,
-    December = 12
+    { name = "January", value = 1 },
+    { name = "February", value = 2 },
+    { name = "March", value = 3 },
+    { name = "April", value = 4 },
+    { name = "May", value = 5 },
+    { name = "June", value = 6 },
+    { name = "July", value = 7 },
+    { name = "August", value = 8 },
+    { name = "September", value = 9 },
+    { name = "October", value = 10 },
+    { name = "November", value = 11 },
+    { name = "December", value = 12 }
 }
 
+
 local monthRet = {}
-for key, value in pairs(months) do
-     table.insert(monthRet, '{{#querylink:{{FULLPAGENAME}}|' .. key .. '|class=item-{{#ifeq:' .. value .. '|{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}||un}}selected|month=' .. value .. '|year={{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}|hash={{#urldecode:{{#urlget:hash}}}}|mailbox={{#urlget:mailbox}} }}')
+for i, month in ipairs(months) do
+     table.insert(monthRet, '{{#querylink:{{FULLPAGENAME}}|' .. month.name .. '|class=item-{{#ifeq:' .. month.value .. '|{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}||un}}selected|month=' .. month.value .. '|year={{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}|hash={{#urldecode:{{#urlget:hash}}}}|mailbox={{#urlget:mailbox}} }}')
 end
 
 local ret = ''
