@@ -1,7 +1,1 @@
-{{#querylink:ContactManager:Headers|{{{folder_name}}}|mailbox={{#urlget:mailbox}}|folder={{{folder_name}}}|shortpath={{#visualdataquery: [[name::{{#urlget:mailbox}}]][[folders/fullpath::{{{folder}}}]]
-   |schema=ContactManager/Mailbox folders
-   |?folders/shortpath
-   |format=raw
-   |limit=1
-  }}
-|class=item-{{#ifeq:{{#urlget:folder}}|{{{folder_name}}}||un}}selected }}
+{{#querylink:ContactManager:Headers|{{{folder_name}}}|mailbox={{#urlget:mailbox}}|folder={{{folder_name}}}|shortpath={{#urlget:shortpath}}|class=item-{{#ifeq:{{#urlget:folder}}|{{{folder_name}}}||un}}selected }}

@@ -28,7 +28,7 @@
       |format=pageid 
     }} 
       |schema=ContactManager/Incoming mail
-      |?date   
+      |?date
       |?headers/fromaddress
       |?subject
       |?replyTo=

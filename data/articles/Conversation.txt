@@ -54,6 +54,11 @@ __NOTOC__
 |datatables-info=false
 |datatables-searching=false
 }}
+[[{{#visualdataquery:[[hash::{{#urlget:hash}}]]
+  |schema=ContactManager/Conversation
+  |limit=1
+  |format=pagetitle
+  }}|'''Source''']]
 {{#ifeq: {{#urlget:show}} | |
   == {{#switch: 
     {{#if: {{#urlget:month}} | {{#urlget:month}} | {{CURRENTMONTH}} }}
