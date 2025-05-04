@@ -40,6 +40,7 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 **[[Template:ContactManager/Mailbox info mailbox field]]
 **[[Template:ContactManager/Mailbox jobs buttons]]
 **[[Template:ContactManager/Mailer edit]]
+**[[Template:ContactManager/Main Page jobs buttons]]
 **[[Template:ContactManager/Messages read email field]]
 **[[Template:ContactManager/Messages table folder field]]
 **[[Template:ContactManager/Preload mailbox]]

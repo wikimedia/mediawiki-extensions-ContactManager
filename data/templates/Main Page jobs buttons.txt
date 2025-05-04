@@ -1,0 +1,9 @@
+<table><tr><td>
+{{#visualDataButton: Delete non-current job revisions
+|callback = ContactManager.initJob
+|schema = ContactManager/Job delete old revisions
+|edit-page=ContactManager:Main_Page/Jobs
+|preload-data?name=delete-old-revisions
+|target-slot = main 
+}}
+</td></tr></table>

@@ -190,6 +190,10 @@ class ContactManager {
 		}
 
 		$title_ = TitleClass::newFromText( $targetTitle );
+
+		$context = RequestContext::getMain();
+		$context->setTitle( $title_ );
+
 		\VisualData::updateCreateSchemas( $user, $title_, $jsonData, 'jsondata' );
 	}
 
@@ -816,6 +820,33 @@ class ContactManager {
 		$dbr = \VisualData::getDB( DB_REPLICA );
 		$dbw = \VisualData::getDB( DB_PRIMARY );
 
+		$method = ( $delete ? 'delete' : 'select' );
+
+		$callFunction = static function ( $tables, $fields, $conds, $options, $joins ) use ( $dbw, $method, $delete ) {
+			$args = [
+				$tables,
+				$fields,
+				$conds,
+				// phpcs:ignore MediaWiki.Usage.MagicConstantClosure.FoundConstantMethod
+				__METHOD__,
+				$options,
+				$joins
+			];
+
+			if ( $delete ) {
+				unset( $args[1] );
+			}
+
+			$ret = call_user_func_array( [ $dbw, $method ], $args );
+
+			if ( $method === 'selectSQLText' ) {
+				echo $ret;
+				return;
+			}
+
+			return $ret;
+		};
+
 		// get user id of maintenance script
 		$tableName = 'user';
 		$conds = [];
@@ -840,92 +871,122 @@ class ContactManager {
 			[ 'LIMIT' => 1 ]
 		);
 
-		// get page_id and last revisions created by maintenance script
-		// in the namespace NS_CONTACTMANAGER
+		// get/delete all non-current slots created by
+		// maintenance script in NS_CONTACTMANAGER namespace
+		$tables = [ 's' => 'slots', 'rev' => 'revision', 'p' => 'page' ];
+		$fields = [ 'rev.rev_id', 'rev.rev_page' ];
+		$joins = [];
+		$joins['rev'] = [ 'JOIN', 's.slot_revision_id=rev.rev_id' ];
+		$joins['p'] = [ 'JOIN', 'p.page_id=rev.rev_page' ];
+
 		$conds = [];
-		$conds['page_namespace'] = NS_CONTACTMANAGER;
+		$conds['p.page_namespace'] = NS_CONTACTMANAGER;
 		$conds['rev.rev_actor'] = $actor_id;
 		$options = [];
-		$joins = [];
-		$tables = [ 'page', 'rev' => 'revision' ];
-		$joins = [];
-		$joins['revision'] = [ 'LEFT JOIN', 'rev.rev_page=page.page_id' ];
 
-		$res = $dbr->select(
-			// tables
+		$tables_ = [ 's2' => 'slots', 'rev2' => 'revision' ];
+		$fields_ = [ 1 ];
+		$conds_ = [];
+		$conds_[] = 's2.slot_role_id = s.slot_role_id';
+		$conds_[] = 'rev2.rev_page = rev.rev_page';
+		$conds_[] = 's2.slot_revision_id > s.slot_revision_id';
+		$options_ = [];
+		$joins_ = [];
+		$joins_['rev2'] = [ 'JOIN', 'rev2.rev_id=s2.slot_revision_id' ];
+		$conds[] = 'EXISTS(' . $dbr->buildSelectSubquery(
+			$tables_,
+			$fields_,
+			$conds_,
+			__METHOD__,
+			$options_,
+			$joins_
+		) . ')';
+
+		$res = $callFunction( $tables, $fields, $conds, $options, $joins );
+
+		if ( !$delete && is_object( $res ) ) {
+			$output[] = 'found ' . $res->numRows() . ' old slots';
+		}
+
+		// delete orphaned revisions
+		$tables = [ 'rev' => 'revision', 'p' => 'page', 's' => 'slots' ];
+		$fields = [ 'rev.rev_page', 'rev.rev_id' ];
+		$joins = [];
+		$joins['p'] = [ 'JOIN', 'rev.rev_page=p.page_id' ];
+		$joins['s'] = [ 'LEFT JOIN', 's.slot_revision_id = rev.rev_id' ];
+
+		$conds = [];
+		$conds[] = 's.slot_revision_id IS NULL';
+		$conds['rev.rev_actor'] = $actor_id;
+		$conds['p.page_namespace'] = NS_CONTACTMANAGER;
+		$options = [];
+
+		$args = [
 			$tables,
-			// fields
-			[ 'rev_page', 'page_latest' ],
-			// where
+			$fields,
 			$conds,
 			__METHOD__,
-			// options
 			$options,
-			// join
 			$joins
-		);
+		];
 
-		$pages = [];
-		$latestRevs = [];
-		foreach ( $res as $row ) {
-			$latestRevs[] = $row->page_latest;
-			$pages[] = $row->rev_page;
+		$res = $callFunction( $tables, $fields, $conds, $options, $joins );
+
+		if ( !$delete && is_object( $res ) ) {
+			$output[] = 'found ' . $res->numRows() . ' orphaned revisions';
 		}
 
-		// get old revision of the given set of pages
-		$tableName = 'revision';
+		// delete orphaned content rows
+		$tables = [ 'c' => 'content' ];
+		$fields = [ 'c.content_id' ];
+		$joins = [];
 		$conds = [];
-		$conds['rev_page'] = $pages;
-		$conds[] = $dbr->expr( 'rev_id', '!=', $latestRevs );
 
-		$res = $dbr->select(
-			// tables
-			$tableName,
-			// fields
-			'rev_id',
-			// where
-			$conds,
+		$tables_ = [ 's' => 'slots' ];
+		$fields_ = [ 1 ];
+		$conds_ = [];
+		$conds_[] = 's.slot_content_id = c.content_id';
+		$options_ = [];
+		$joins_ = [];
+		$conds[] = 'NOT EXISTS(' . $dbr->buildSelectSubquery(
+			$tables_,
+			$fields_,
+			$conds_,
 			__METHOD__,
-			// options
-			$options,
-		);
+			$options_,
+			$joins_
+		) . ')';
 
-		$oldRevs = [];
-		foreach ( $res as $row ) {
-			$oldRevs[] = $row->rev_id;
+		$options = [];
+
+		$res = $callFunction( $tables, $fields, $conds, $options, $joins );
+
+		if ( !$delete && is_object( $res ) ) {
+			$output[] = 'found ' . $res->numRows() . ' orphaned content rows';
 		}
 
-		$count = count( $oldRevs );
-		$output[] = "$count old revisions found";
+		// delete orphaned ip_changes
+		$tables = [ 'ipc' => 'ip_changes', 'rev' => 'revision' ];
+		$fields = [ 'ipc_rev_id' ];
+		$joins = [];
+		$joins['rev'] = [ 'LEFT JOIN', 'rev.rev_id = ipc.ipc_rev_id' ];
+		$conds = [];
+		$conds[] = 'rev.rev_id IS NULL';
+		$options = [];
 
-		if ( !$delete || !$count ) {
-			self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobGetFolders'], false, $mailboxName );
-			return false;
+		$res = $callFunction( $tables, $fields, $conds, $options, $joins );
+
+		if ( !$delete && is_object( $res ) ) {
+			$output[] = 'found ' . $res->numRows() . ' orphaned ip_changes';
 		}
 
-		$output[] = 'Deleting...';
+		if ( $delete ) {
+			$output[] = 'Done';
+		}
 
-		$tableName = 'revision';
-		$conds = [];
-		$conds['rev_id'] = $oldRevs;
-		$dbw->delete(
-			$tableName,
-			$conds,
-			__METHOD__
-		);
+		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobGetFolders'], false );
 
-		$tableName = 'ip_changes';
-		$conds = [];
-		$conds['ipc_rev_id'] = $oldRevs;
-		$dbw->delete(
-			$tableName,
-			$conds,
-			__METHOD__
-		);
-
-		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'], false );
-
-		return true;
+		return $delete;
 	}
 
 }

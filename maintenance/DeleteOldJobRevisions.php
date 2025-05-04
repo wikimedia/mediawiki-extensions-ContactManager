@@ -45,13 +45,14 @@ class DeleteOldJobRevisions extends Maintenance {
 	private function doDelete( $delete = false ) {
 		$user = User::newSystemUser( 'Maintenance script', [ 'steal' => true ] );
 		$output = [];
+
 		$ret = \ContactManager::deleteOldRevisions( $user, $output, $delete );
 
 		foreach ( $output as $value ) {
 			$this->output( "$value\n" );
 		}
 
-		if ( $res ) {
+		if ( $ret ) {
 			$this->purgeRedundantText( true );
 			$this->output( "done.\n" );
 		}
