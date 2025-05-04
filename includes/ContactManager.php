@@ -157,17 +157,19 @@ class ContactManager {
 		$title = TitleClass::newFromText( $targetTitle );
 		\VisualData::updateCreateSchemas( $user, $title, $jsonData, 'jsondata' );
 
-		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobMailboxInfo'], $mailboxName, false );
+		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobMailboxInfo'], false, $mailboxName );
 	}
 
 	/**
 	 * @param User $user
 	 * @param string $schema
-	 * @param string $mailbox
-	 * @param bool $start true
+	 * @param bool $start
+	 * @param string|null $mailbox null
 	 */
-	public static function setRunningJob( $user, $schema, $mailbox, $start = true ) {
-		$targetTitle = str_replace( '$1', $mailbox, $GLOBALS['wgContactManagerMailboxArticleJobs'] );
+	public static function setRunningJob( $user, $schema, $start, $mailbox = null ) {
+		$targetTitle = ( $mailbox
+			? str_replace( '$1', $mailbox, $GLOBALS['wgContactManagerMailboxArticleJobs'] )
+			: $GLOBALS['wgContactManagerMainJobsArticle'] );
 
 		if ( $start ) {
 			$jsonData = [
@@ -223,7 +225,7 @@ class ContactManager {
 		$title = TitleClass::newFromText( $targetTitle );
 		\VisualData::updateCreateSchemas( $user, $title, $jsonData, 'jsondata' );
 
-		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobGetFolders'], $mailboxName, false );
+		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobGetFolders'], false, $mailboxName );
 	}
 
 	/**
@@ -277,7 +279,7 @@ class ContactManager {
 				$errors[] = 'mailbox folders haven\'t yet been retrieved';
 				return false;
 			}
-
+			$foldersTitle = TitleClass::newFromText( $results_[0]['title'] );
 			$foldersData = $results_[0]['data'];
 		}
 
@@ -481,7 +483,7 @@ class ContactManager {
 			$jsonData_ = [
 				$GLOBALS['wgContactManagerSchemasMailboxFolders'] => $foldersData
 			];
-			\VisualData::updateCreateSchemas( $user, $title, $jsonData_ );
+			\VisualData::updateCreateSchemas( $user, $foldersTitle, $jsonData_ );
 		}
 
 		// then retrieve all messages
@@ -526,7 +528,7 @@ class ContactManager {
 
 		// self::pushJobs( $jobs );
 
-		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], $params['mailbox'], false );
+		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], false, $params['mailbox'] );
 	}
 
 	/**
@@ -724,11 +726,16 @@ class ContactManager {
 			]
 		];
 
+		$dataOriginal = [];
+
 		// merge previous entries
 		if ( !array_key_exists( 'errors', $results ) && count( $results ) ) {
 			$pagenameFormula = $results[0]['title'];
-			if ( !empty( $results[0]['data'] ) && !$fromUsername ) {
-				$data = \VisualData::array_merge_recursive( $data, $results[0]['data'] );
+			if ( !empty( $results[0]['data'] ) ) {
+				$dataOriginal = $results[0]['data'];
+				if ( !$fromUsername ) {
+					$data = \VisualData::array_merge_recursive( $data, $results[0]['data'] );
+				}
 			}
 		}
 
@@ -744,6 +751,10 @@ class ContactManager {
 
 		if ( $messageDateTime < $seenSince ) {
 			$data['seen_since'] = date( 'Y-m-d', $messageDateTime );
+		}
+
+		if ( $data === $dataOriginal ) {
+			return;
 		}
 
 		$showMsg = static function ( $msg ) {
@@ -796,32 +807,125 @@ class ContactManager {
 	}
 
 	/**
-	 * @param string $category
-	 * @param int|false $limit
-	 * @return array
+	 * @param User $user
+	 * @param array &$output
+	 * @param bool $delete false
+	 * @return bool
 	 */
-	public static function articlesInCategories( $category, $limit = false ) {
-		// @ATTENTION !! use instead
-		// $cat = MediaWiki\Category\Category::newFromName( $value );
-		// $iterator_ = $cat->getMembers( $limit );
-		if ( empty( $limit ) ) {
-			$options['limit'] = 50;
-		}
-		$dbr = wfGetDB( DB_REPLICA );
-		$res = $dbr->select( 'categorylinks',
-			[ 'pageid' => 'cl_from' ],
-			[ 'cl_to' => str_replace( ' ', '_', $category ) ],
+	public static function deleteOldRevisions( $user, &$output, $delete = false ) {
+		$dbr = \VisualData::getDB( DB_REPLICA );
+		$dbw = \VisualData::getDB( DB_PRIMARY );
+
+		// get user id of maintenance script
+		$tableName = 'user';
+		$conds = [];
+		$conds['user_name'] = 'Maintenance script';
+		$user_id = $dbr->selectField(
+			$tableName,
+			'user_id',
+			$conds,
 			__METHOD__,
-			$options
+			[ 'LIMIT' => 1 ]
 		);
-		$ret = [];
+
+		// get actor id of maintenance script
+		$tableName = 'actor';
+		$conds = [];
+		$conds['actor_user'] = $user_id;
+		$actor_id = $dbr->selectField(
+			$tableName,
+			'actor_id',
+			$conds,
+			__METHOD__,
+			[ 'LIMIT' => 1 ]
+		);
+
+		// get page_id and last revisions created by maintenance script
+		// in the namespace NS_CONTACTMANAGER
+		$conds = [];
+		$conds['page_namespace'] = NS_CONTACTMANAGER;
+		$conds['rev.rev_actor'] = $actor_id;
+		$options = [];
+		$joins = [];
+		$tables = [ 'page', 'rev' => 'revision' ];
+		$joins = [];
+		$joins['revision'] = [ 'LEFT JOIN', 'rev.rev_page=page.page_id' ];
+
+		$res = $dbr->select(
+			// tables
+			$tables,
+			// fields
+			[ 'rev_page', 'page_latest' ],
+			// where
+			$conds,
+			__METHOD__,
+			// options
+			$options,
+			// join
+			$joins
+		);
+
+		$pages = [];
+		$latestRevs = [];
 		foreach ( $res as $row ) {
-			$title_ = TitleClass::newFromID( $row->pageid );
-			if ( $title_ ) {
-				$ret[] = $title_;
-			}
+			$latestRevs[] = $row->page_latest;
+			$pages[] = $row->rev_page;
 		}
-		return $ret;
+
+		// get old revision of the given set of pages
+		$tableName = 'revision';
+		$conds = [];
+		$conds['rev_page'] = $pages;
+		$conds[] = $dbr->expr( 'rev_id', '!=', $latestRevs );
+
+		$res = $dbr->select(
+			// tables
+			$tableName,
+			// fields
+			'rev_id',
+			// where
+			$conds,
+			__METHOD__,
+			// options
+			$options,
+		);
+
+		$oldRevs = [];
+		foreach ( $res as $row ) {
+			$oldRevs[] = $row->rev_id;
+		}
+
+		$count = count( $oldRevs );
+		$output[] = "$count old revisions found";
+
+		if ( !$delete || !$count ) {
+			self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobGetFolders'], false, $mailboxName );
+			return false;
+		}
+
+		$output[] = 'Deleting...';
+
+		$tableName = 'revision';
+		$conds = [];
+		$conds['rev_id'] = $oldRevs;
+		$dbw->delete(
+			$tableName,
+			$conds,
+			__METHOD__
+		);
+
+		$tableName = 'ip_changes';
+		$conds = [];
+		$conds['ipc_rev_id'] = $oldRevs;
+		$dbw->delete(
+			$tableName,
+			$conds,
+			__METHOD__
+		);
+
+		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'], false );
+
+		return true;
 	}
 
 }

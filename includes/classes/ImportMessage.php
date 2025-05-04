@@ -411,7 +411,12 @@ class ImportMessage {
 			'~'
 		);
 		$query = "[[$targetTitle_]][[hash::$hash]]";
-		$results = \VisualData::getQueryResults( $schema, $query );
+		$printouts = [
+			'date_last',
+			'date_first',
+			'count'
+		];
+		$results = \VisualData::getQueryResults( $schema, $query, $printouts );
 
 		// use numeric increment
 		$pagenameFormula = \ContactManager::replaceParameter( 'ContactManagerConversationPagenameFormula',

@@ -46,7 +46,7 @@ class ContactManagerJob extends Job {
 		// T279090
 		// $user = User::newFromId( $this->params['user_id'] );
 
-		$requiredParameters = [ 'session', 'mailbox', 'name' ];
+		$requiredParameters = [ 'session', 'name' ];
 		foreach ( $requiredParameters as $value ) {
 			if ( !isset( $this->params[$value] ) ) {
 				$this->error = "ContactManager: $value parameter not set";
@@ -73,20 +73,24 @@ class ContactManagerJob extends Job {
 		$title = TitleClass::newFromText( $this->params['pageid'] );
 		$context->setTitle( $title );
 
-		$mailboxName = $this->params['mailbox'];
 		$errors = [];
 
 		switch ( $this->params['name'] ) {
 			case 'mailbox-info':
-				\ContactManager::getInfo( $user, $mailboxName, $errors );
+				\ContactManager::getInfo( $user, $this->params['mailbox'], $errors );
 				break;
 			case 'get-folders':
-				\ContactManager::getFolders( $user, $mailboxName, $errors );
+				\ContactManager::getFolders( $user, $this->params['mailbox'], $errors );
 				break;
 			case 'retrieve-messages':
 			case 'get-messages':
 				\ContactManager::getMessages( $user, $this->params, $errors );
 				break;
+			case 'delete-old-revisions':
+				$output = [];
+				\ContactManager::deleteOldRevisions( $user, $output, true );
+				break;
+
 			// case 'retrieve-message':
 			// 	$importMessage = new ImportMessage( $user, $this->params, $errors );
 			// 	$importMessage->doImport();

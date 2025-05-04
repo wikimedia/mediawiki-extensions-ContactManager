@@ -67,9 +67,15 @@ class ApiCreateJob extends ApiBase {
 			case 'mailbox-info':
 				$schema = $GLOBALS['wgContactManagerSchemasJobMailboxInfo'];
 				break;
+			case 'delete-old-revisions':
+				$schema = $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'];
+				break;
 		}
 
-		$query = '[[name::' . $data['name'] . ']][[mailbox::' . $data['mailbox'] . ']][[is_running:false]]';
+		$query = '[[name::' . $data['name'] . ']]';
+		$query .= ( array_key_exists( 'mailbox', $data ) ? '[[mailbox::' . $data['mailbox'] . ']]' : '' );
+		$query .= '[[is_running:false]]';
+
 		$printouts = [
 			'name'
 		];
@@ -94,7 +100,7 @@ class ApiCreateJob extends ApiBase {
 			return;
 		}
 
-		\ContactManager::setRunningJob( $user, $schema, $data['mailbox'], true );
+		\ContactManager::setRunningJob( $user, $schema, true, ( array_key_exists( 'mailbox', $data ) ? $data['mailbox'] : null ) );
 
 		\ContactManager::pushJobs( [ $job ] );
 

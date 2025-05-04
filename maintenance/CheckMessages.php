@@ -76,7 +76,8 @@ class CheckMessages extends Maintenance {
 			if ( $delete ) {
 				$jobQueueGroup->get( 'ContactManagerJob' )->delete();
 			} else {
-				return 'Queued jobs (ContactManagerJob). Wait until they end or run with --delete parameter';
+				echo 'Queued jobs (ContactManagerJob). Wait until they end or run with --delete parameter';
+				return;
 			}
 		}
 
@@ -84,7 +85,39 @@ class CheckMessages extends Maintenance {
 		$context = RequestContext::getMain();
 		$context->setTitle( $title );
 		$context->setUser( $user );
+		$data = [];
+		$data['session'] = $context->exportSession();
+		$jobs = [];
 
+		// execute job 'delete-old-revisions' at least once per day
+		$schema = $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'];
+		$query = '[[name::delete-old-revisions]][[is_running:false]]';
+		$printouts = [
+			'start_date'
+		];
+		$params_ = [
+		];
+		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params_ );
+
+		$found = false;
+		if ( count( $results ) && !empty( $results[0] ) ) {
+			if ( time() - strtotime( $results[0]['start_date'] ) <= strtotime( '1 day', 0 ) ) {
+				$found = true;
+			}
+		}
+
+		if ( !$found ) {
+			$data_ = array_merge( [ 'name' => 'delete-old-revisions' ], $data );
+			$title_ = TitleClass::newFromText( $GLOBALS['wgContactManagerMainJobsArticle'] );
+			$data_['pageid'] = $title_->getArticleID();
+			$job = new ContactManagerJob( $title_, $data_ );
+			if ( $job ) {
+				\ContactManager::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'], true );
+				$jobs[] = $job;
+			}
+		}
+
+		// create job 'retrieve-messages' if check_email_interval is set
 		$schema = $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];
 		$query = '[[name::retrieve-messages]][[is_running::false]]';
 		$printouts = [
@@ -94,9 +127,6 @@ class CheckMessages extends Maintenance {
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params );
 
-		$data = [];
-		$data['session'] = $context->exportSession();
-		$jobs = [];
 		foreach ( $results as $value ) {
 			// add session parameter
 			$data_ = array_merge( $value['data'], $data );
@@ -135,12 +165,18 @@ class CheckMessages extends Maintenance {
 					continue;
 				}
 
-				\ContactManager::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], $data_['mailbox'], true );
+				\ContactManager::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], true, $data_['mailbox'] );
 
 				$jobs[] = $job;
 			}
 		}
+
 		\ContactManager::pushJobs( $jobs );
+
+		echo 'created jobs:' . PHP_EOL;
+		foreach ( $jobs as $value ) {
+			echo $value->params['name'] . PHP_EOL;
+		}
 	}
 }
 

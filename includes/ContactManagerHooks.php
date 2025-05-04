@@ -119,11 +119,19 @@ class ContactManagerHooks {
 			return;
 		}
 
-		$links = [ 'compose', 'mailboxes', 'mailers', 'organizations', 'data-structure' ];
-		foreach ( $links as $value ) {
-			$title_ = TitleClass::newFromText( str_replace( '-', ' ', "ContactManager:$value" ) );
+		$links = [
+			'main-page' => 'Main Page',
+			'compose' => 'Compose',
+			'mailboxes' => 'Mailboxes',
+			'mailers' => 'Mailers',
+			'organizations' => 'Organizations',
+			'data-structure' => 'Data structure',
+		];
+
+		foreach ( $links as $key => $value ) {
+			$title_ = TitleClass::newFromText( "ContactManager:$value" );
 			$bar[ wfMessage( 'contactmanager-sidepanel-section' )->text() ][] = [
-				'text'   => wfMessage( "contactmanager-sidepanel-$value" )->text(),
+				'text'   => wfMessage( "contactmanager-sidepanel-$key" )->text(),
 				'href'   => $title_->getLocalURL()
 			];
 		}

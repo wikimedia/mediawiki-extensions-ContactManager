@@ -11,7 +11,7 @@
 |edit-categories = false
 |edit-content-model = false
 |edit-target-slot = false
-|target-slot = main
+|target-slot = jsondata
 |default-categories = 
 |default-content-model = wikitext
 |preload=

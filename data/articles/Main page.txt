@@ -1,0 +1,13 @@
+{{ContactManager/Main_Page_jobs_buttons }}
+See jobs data [[{{FULLPAGENAME}}/Jobs|here]]
+
+
+[[ContactManager:Compose|Compose]]
+
+[[ContactManager:Mailboxes|Mailboxes]]
+
+[[ContactManager:Mailers|Mailers]]
+
+[[ContactManager:Organizations|Organizations]]
+
+[[ContactManager:Data structure|Data structure]]

@@ -80,23 +80,12 @@
 								"folders/fullpath",
 								"folders/shortpath"
 							],
-							"options-values-parsed": {}
+							"options-values-parsed": []
 						},
 						"type": "string",
 						"format": "text",
 						"title": "folder",
-						"description": "remote folder name",
-						"enum": [
-							"{imappro.zoho.com:993/imap/ssl}INBOX",
-							"{imappro.zoho.com:993/imap/ssl}Drafts",
-							"{imappro.zoho.com:993/imap/ssl}Templates",
-							"{imappro.zoho.com:993/imap/ssl}Snoozed",
-							"{imappro.zoho.com:993/imap/ssl}Sent",
-							"{imappro.zoho.com:993/imap/ssl}Spam",
-							"{imappro.zoho.com:993/imap/ssl}Trash",
-							"{imappro.zoho.com:993/imap/ssl}Notification",
-							"{imappro.zoho.com:993/imap/ssl}NewsLetter"
-						]
+						"description": "remote folder name"
 					},
 					"folder_name": {
 						"wiki": {
@@ -445,25 +434,23 @@
 		},
 		"check_email_interval": {
 			"wiki": {
-				"name": "check_email_interval",
 				"type": "property",
-				"multiple-items": false,
+				"uuid": "67141796052ff",
+				"name": "check_email_interval",
+				"visibility": "visible",
 				"label": "check email every",
 				"help-message": "(minutes)",
-				"default": "5",
-				"uuid": "67141796052ff",
-				"visibility": "condition",
+				"multiple-items": false,
 				"preferred-input": "OO.ui.NumberInputWidget",
 				"input-config": [],
 				"required": false,
-				"showif-field": "fetch",
-				"showif-condition": "=",
-				"showif-value": "UIDs incremental"
+				"default": "0"
 			},
+			"minInclusive": 0,
 			"type": "integer",
 			"title": "check email every",
 			"description": "(minutes)",
-			"default": "5"
+			"default": "0"
 		},
 		"fetch_folder_status": {
 			"wiki": {
@@ -1287,13 +1274,13 @@
 		},
 		"is_running": {
 			"wiki": {
-				"type": "property",
-				"uuid": "680d6fe8c4517",
 				"name": "is_running",
-				"visibility": "visible",
+				"type": "property",
+				"multiple-items": false,
 				"label": "is running",
 				"help-message": "'''Attention''', this field is automatically handled. Toggle manually off only if a job has not been completed and isn't running.",
-				"multiple-items": false,
+				"uuid": "680d6fe8c4517",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.ToggleSwitchWidget",
 				"input-config": [],
 				"required": false
