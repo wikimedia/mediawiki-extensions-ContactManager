@@ -405,7 +405,6 @@ class ContactManager {
 			$folders[$key]['fetchQuery'] = $determineFetchQuery( $folders[$key] );
 		}
 
-		// retrieve first all headers and record status
 		foreach ( $folders as $folder ) {
 			$shortpath = $switchMailbox( $folder );
 			[ $headersQuery, $messagesQuery ] = $folder['fetchQuery'];
@@ -445,6 +444,8 @@ class ContactManager {
 			}
 
 			$overviewHeader = $imapMailbox->fetch_overview( $headersQuery );
+
+			// retrieve all headers in this folder
 			foreach ( $overviewHeader as $header ) {
 				$header = (array)$header;
 
@@ -481,20 +482,8 @@ class ContactManager {
 				// won't be reliable
 				// $jobs[] = $job_;
 			}
-		}
 
-		if ( !empty( $params['fetch_folder_status'] ) || $folder['fetch'] === 'UIDs incremental' ) {
-			$jsonData_ = [
-				$GLOBALS['wgContactManagerSchemasMailboxFolders'] => $foldersData
-			];
-			\VisualData::updateCreateSchemas( $user, $foldersTitle, $jsonData_ );
-		}
-
-		// then retrieve all messages
-		foreach ( $folders as $folder ) {
-			$shortpath = $switchMailbox( $folder );
-			[ $headersQuery, $messagesQuery ] = $folder['fetchQuery'];
-
+			// then retrieve all messages
 			if ( !empty( $folder['fetch_message'] ) ) {
 				$overviewMessage = ( $headersQuery === $messagesQuery
 					 ? $overviewHeader
@@ -528,6 +517,13 @@ class ContactManager {
 					// $jobs[] = $job_;
 				}
 			}
+		}
+
+		if ( !empty( $params['fetch_folder_status'] ) || $folder['fetch'] === 'UIDs incremental' ) {
+			$jsonData_ = [
+				$GLOBALS['wgContactManagerSchemasMailboxFolders'] => $foldersData
+			];
+			\VisualData::updateCreateSchemas( $user, $foldersTitle, $jsonData_ );
 		}
 
 		// self::pushJobs( $jobs );
