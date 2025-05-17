@@ -405,7 +405,6 @@ class ImportMessage {
 		];
 		$importer = new VisualDataImporter( $user, $context, $schema, $options );
 
-		$schema = $GLOBALS['wgContactManagerSchemasConversation'];
 		$targetTitle_ = \ContactManager::replaceParameter( 'ContactManagerConversationPagenameFormula',
 			$params['mailbox'],
 			'~'

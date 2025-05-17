@@ -734,7 +734,9 @@ class ContactManager {
 			if ( !empty( $results[0]['data'] ) ) {
 				$dataOriginal = $results[0]['data'];
 				if ( !$fromUsername ) {
-					$data = \VisualData::array_merge_recursive( $data, $results[0]['data'] );
+					$data = \VisualData::array_merge_recursive( $data, $dataOriginal );
+				} else {
+					$data = \VisualData::array_merge_recursive( $dataOriginal, $data );
 				}
 			}
 		}
