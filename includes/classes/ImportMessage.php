@@ -170,7 +170,7 @@ class ImportMessage {
 
 		// language detect @see https://github.com/patrickschur/language-detection
 		$ld = new Language;
-		$ld->setMaxNgrams( 9000 );
+		$ld->setMaxNgrams( 5000 );
 		$detectedLanguages = $ld->detect( $obj['textPlain'] )->close();
 		$detectedLanguage = ( count( $detectedLanguages ) ? array_key_first( $detectedLanguages ) : null );
 

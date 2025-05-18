@@ -103,7 +103,7 @@
 						"type": "string",
 						"format": "text",
 						"title": "folder name",
-						"description": "the article title of this folder, it must not contain any of the  \u003Ca class=\"external text\" href=\"https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters\"\u003EProblem characters\u003C/a\u003E"
+						"description": "the article title of this folder, it must not contain any of the  \u003Ca class=\"external text\" target=\"_blank\" href=\"https://www.mediawiki.org/wiki/Manual:$wgLegalTitleChars#Problem_characters\"\u003EProblem characters\u003C/a\u003E"
 					},
 					"folder_type": {
 						"wiki": {
@@ -434,17 +434,17 @@
 		},
 		"check_email_interval": {
 			"wiki": {
-				"type": "property",
-				"uuid": "67141796052ff",
 				"name": "check_email_interval",
-				"visibility": "visible",
+				"type": "property",
+				"multiple-items": false,
+				"input-config": [],
 				"label": "check email every",
 				"help-message": "(minutes)",
-				"multiple-items": false,
+				"default": "0",
+				"uuid": "67141796052ff",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.NumberInputWidget",
-				"input-config": [],
-				"required": false,
-				"default": "0"
+				"required": false
 			},
 			"minInclusive": 0,
 			"type": "integer",
@@ -1326,6 +1326,23 @@
 			"type": "string",
 			"format": "datetime",
 			"title": "end date"
+		},
+		"last_status": {
+			"wiki": {
+				"type": "property",
+				"uuid": "6829ffd60a2d6",
+				"name": "last_status",
+				"visibility": "hidden",
+				"multiple-items": false,
+				"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"options": {
+				"hidden": true
+			},
+			"type": "string",
+			"format": "datetime"
 		}
 	},
 	"required": [

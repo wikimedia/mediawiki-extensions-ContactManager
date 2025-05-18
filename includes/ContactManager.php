@@ -41,6 +41,10 @@ class ContactManager {
 	// @see Symfony\Component\Mime\Address
 	private const FROM_STRING_PATTERN = '~(?<displayName>[^<]*)<(?<addrSpec>.*)>[^>]*~';
 
+	public const JOB_START = 1;
+	public const JOB_END = 2;
+	public const JOB_LAST_STATUS = 3;
+
 	public static function initialize() {
 	}
 
@@ -157,42 +161,50 @@ class ContactManager {
 		$title = TitleClass::newFromText( $targetTitle );
 		\VisualData::updateCreateSchemas( $user, $title, $jsonData, 'jsondata' );
 
-		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobMailboxInfo'], false, $mailboxName );
+		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobMailboxInfo'], self::JOB_END, $mailboxName );
 	}
 
 	/**
 	 * @param User $user
 	 * @param string $schema
-	 * @param bool $start
+	 * @param int $status
 	 * @param string|null $mailbox null
 	 */
-	public static function setRunningJob( $user, $schema, $start, $mailbox = null ) {
+	public static function setRunningJob( $user, $schema, $status, $mailbox = null ) {
 		$targetTitle = ( $mailbox
 			? str_replace( '$1', $mailbox, $GLOBALS['wgContactManagerMailboxArticleJobs'] )
 			: $GLOBALS['wgContactManagerMainJobsArticle'] );
 
-		if ( $start ) {
-			$jsonData = [
-				$schema => [
+		switch ( $status ) {
+			case self::JOB_START:
+				$arr = [
 					'is_running' => true,
 					'start_date' => date( 'Y-m-d H:i:s' ),
 					'end_date' => null,
-				]
-			];
+				];
+				break;
 
-		} else {
-			$jsonData = [
-				$schema => [
+			case self::JOB_END:
+				$arr = [
 					'is_running' => false,
 					'end_date' => date( 'Y-m-d H:i:s' ),
-				]
-			];
+				];
+				break;
+
+			case self::JOB_LAST_STATUS:
+				$arr = [
+					'last_status' => date( 'Y-m-d H:i:s' ),
+				];
+				break;
 		}
 
 		$title_ = TitleClass::newFromText( $targetTitle );
-
 		$context = RequestContext::getMain();
 		$context->setTitle( $title_ );
+
+		$jsonData = [
+			$schema => $arr
+		];
 
 		\VisualData::updateCreateSchemas( $user, $title_, $jsonData, 'jsondata' );
 	}
@@ -229,7 +241,7 @@ class ContactManager {
 		$title = TitleClass::newFromText( $targetTitle );
 		\VisualData::updateCreateSchemas( $user, $title, $jsonData, 'jsondata' );
 
-		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobGetFolders'], false, $mailboxName );
+		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobGetFolders'], self::JOB_END, $mailboxName );
 	}
 
 	/**
@@ -453,6 +465,8 @@ class ContactManager {
 
 			$overviewHeader = $imapMailbox->fetch_overview( $headersQuery );
 
+			self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], self::JOB_LAST_STATUS, $params['mailbox'] );
+
 			// retrieve all headers in this folder
 			foreach ( $overviewHeader as $header ) {
 				$header = (array)$header;
@@ -491,6 +505,8 @@ class ContactManager {
 				// $jobs[] = $job_;
 			}
 
+			self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], self::JOB_LAST_STATUS, $params['mailbox'] );
+
 			// then retrieve all messages
 			if ( !empty( $folder['fetch_message'] ) ) {
 				$overviewMessage = ( $headersQuery === $messagesQuery
@@ -507,6 +523,8 @@ class ContactManager {
 					] ), $errors );
 
 					$importMessage->doImport();
+
+					self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], self::JOB_LAST_STATUS, $params['mailbox'] );
 
 					// *** alternatively use
 					// $jobs[] = new ContactManagerJob( $title, array_merge( $params, [
@@ -536,7 +554,7 @@ class ContactManager {
 
 		// self::pushJobs( $jobs );
 
-		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], false, $params['mailbox'] );
+		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], self::JOB_END, $params['mailbox'] );
 	}
 
 	/**
@@ -993,7 +1011,7 @@ class ContactManager {
 			$output[] = 'Done';
 		}
 
-		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobGetFolders'], false );
+		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobGetFolders'], self::JOB_END );
 
 		return $delete;
 	}

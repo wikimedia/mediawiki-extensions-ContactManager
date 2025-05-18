@@ -74,7 +74,7 @@ class ApiCreateJob extends ApiBase {
 
 		$query = '[[name::' . $data['name'] . ']]';
 		$query .= ( array_key_exists( 'mailbox', $data ) ? '[[mailbox::' . $data['mailbox'] . ']]' : '' );
-		$query .= '[[is_running:false]]';
+		$query .= '[[is_running:true]]';
 
 		$printouts = [
 			'name'
@@ -100,7 +100,7 @@ class ApiCreateJob extends ApiBase {
 			return;
 		}
 
-		\ContactManager::setRunningJob( $user, $schema, true, ( array_key_exists( 'mailbox', $data ) ? $data['mailbox'] : null ) );
+		\ContactManager::setRunningJob( $user, $schema, \ContactManager::JOB_START, ( array_key_exists( 'mailbox', $data ) ? $data['mailbox'] : null ) );
 
 		\ContactManager::pushJobs( [ $job ] );
 

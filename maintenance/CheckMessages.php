@@ -85,39 +85,25 @@ class CheckMessages extends Maintenance {
 		$context = RequestContext::getMain();
 		$context->setTitle( $title );
 		$context->setUser( $user );
-		$data = [];
-		$data['session'] = $context->exportSession();
+
 		$jobs = [];
 
-		// execute job 'delete-old-revisions' at least once per day
-		$schema = $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'];
-		$query = '[[name::delete-old-revisions]][[is_running:false]]';
-		$printouts = [
-			'start_date'
-		];
-		$params_ = [
-		];
-		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params_ );
+		$this->deleteOldRevisions( $context, $jobs );
+		$this->retrieveMessages( $context, $jobs );
 
-		$found = false;
-		if ( count( $results ) && !empty( $results[0] ) ) {
-			if ( time() - strtotime( $results[0]['start_date'] ) <= strtotime( '1 day', 0 ) ) {
-				$found = true;
-			}
+		\ContactManager::pushJobs( $jobs );
+
+		echo 'created jobs:' . PHP_EOL;
+		foreach ( $jobs as $value ) {
+			echo $value->params['name'] . PHP_EOL;
 		}
+	}
 
-		if ( !$found ) {
-			$data_ = array_merge( [ 'name' => 'delete-old-revisions' ], $data );
-			$title_ = TitleClass::newFromText( $GLOBALS['wgContactManagerMainJobsArticle'] );
-			$data_['pageid'] = $title_->getArticleID();
-			$job = new ContactManagerJob( $title_, $data_ );
-			if ( $job ) {
-				\ContactManager::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'], true );
-				$jobs[] = $job;
-			}
-		}
-
-		// create job 'retrieve-messages' if check_email_interval is set
+	/**
+	 * @param Context $context
+	 * @param array &$jobs
+	 */
+	public function retrieveMessages( $context, &$jobs ) {
 		$schema = $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];
 		$query = '[[name::retrieve-messages]][[is_running::false]]';
 		$printouts = [
@@ -126,6 +112,9 @@ class CheckMessages extends Maintenance {
 		$params = [
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params );
+
+		$data = [];
+		$data['session'] = $context->exportSession();
 
 		foreach ( $results as $value ) {
 			// add session parameter
@@ -159,23 +148,66 @@ class CheckMessages extends Maintenance {
 				$data_['pageid'] = $title_->getArticleID();
 
 				$job = new ContactManagerJob( $title_, $data_ );
-
-				if ( !$job ) {
-					// $this->dieWithError( 'apierror-contactmanager-unknown-job' );
-					continue;
+				if ( $job ) {
+					\ContactManager::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], \ContactManager::JOB_START, $data_['mailbox'] );
+					$jobs[] = $job;
 				}
+			}
+		}
+	}
 
-				\ContactManager::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], true, $data_['mailbox'] );
+	/**
+	 * @param Context $context
+	 * @param array &$jobs
+	 */
+	public function deleteOldRevisions( $context, &$jobs ) {
+		// execute job 'delete-old-revisions' only if job retrieve-messages
+		// is not running
+		$schema = $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];
+		$query = '[[name::retrieve-messages]][[is_running::true]]';
+		$printouts = [
+			'check_email_interval',
+		];
+		$params = [
+		];
+		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params );
 
-				$jobs[] = $job;
+		if ( count( $results ) ) {
+			return;
+		}
+
+		$schema = $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'];
+		$query = '[[name::delete-old-revisions]]';
+		$printouts = [
+			'start_date'
+		];
+		$params_ = [
+		];
+		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params_ );
+
+		if ( count( $results ) && !empty( $results[0] ) ) {
+
+			if ( $results[0]['is_running'] ) {
+				return;
+			}
+
+			// once per day
+			if ( time() - strtotime( $results[0]['start_date'] ) <= strtotime( '1 day', 0 ) ) {
+				return;
 			}
 		}
 
-		\ContactManager::pushJobs( $jobs );
+		$data = [];
+		$data['session'] = $context->exportSession();
 
-		echo 'created jobs:' . PHP_EOL;
-		foreach ( $jobs as $value ) {
-			echo $value->params['name'] . PHP_EOL;
+		$data_ = array_merge( [ 'name' => 'delete-old-revisions' ], $data );
+		$title_ = TitleClass::newFromText( $GLOBALS['wgContactManagerMainJobsArticle'] );
+		$data_['pageid'] = $title_->getArticleID();
+
+		$job = new ContactManagerJob( $title_, $data_ );
+		if ( $job ) {
+			\ContactManager::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'], \ContactManager::JOB_START );
+			$jobs[] = $job;
 		}
 	}
 }
