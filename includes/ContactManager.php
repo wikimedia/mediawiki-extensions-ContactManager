@@ -245,6 +245,14 @@ class ContactManager {
 			return false;
 		}
 
+		$memoryLimit = ini_get( 'memory_limit' );
+		echo 'memory_limit: ' . $memoryLimit . PHP_EOL;
+
+		// @see RunJobs -> memoryLimit
+		if ( $memoryLimit === '150M' ) {
+			echo '***attention, use parameter --memory-limit default' . PHP_EOL;
+		}
+
 		$imapMailbox = $mailbox->getImapMailbox();
 		$imapMailbox->setAttachmentsIgnore( true );
 
