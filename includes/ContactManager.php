@@ -1011,7 +1011,7 @@ class ContactManager {
 			$output[] = 'Done';
 		}
 
-		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobGetFolders'], self::JOB_END );
+		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'], self::JOB_END );
 
 		return $delete;
 	}
