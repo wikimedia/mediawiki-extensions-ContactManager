@@ -735,7 +735,10 @@ class ContactManager {
 				$dataOriginal = $results[0]['data'];
 				if ( !$fromUsername ) {
 					$data = \VisualData::array_merge_recursive( $data, $dataOriginal );
+
 				} else {
+					$data['seen_until'] = $dataOriginal['seen_until'];
+					$data['seen_since'] = $dataOriginal['seen_since'];
 					$data = \VisualData::array_merge_recursive( $dataOriginal, $data );
 				}
 			}
