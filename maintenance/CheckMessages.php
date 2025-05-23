@@ -88,8 +88,8 @@ class CheckMessages extends Maintenance {
 
 		$jobs = [];
 
-		$this->deleteOldRevisions( $context, $jobs );
-		$this->retrieveMessages( $context, $jobs );
+		$this->deleteOldRevisions( $context, $user, $jobs );
+		$this->retrieveMessages( $context, $user, $jobs );
 
 		\ContactManager::pushJobs( $jobs );
 
@@ -101,9 +101,10 @@ class CheckMessages extends Maintenance {
 
 	/**
 	 * @param Context $context
+	 * @param User $user
 	 * @param array &$jobs
 	 */
-	public function retrieveMessages( $context, &$jobs ) {
+	public function retrieveMessages( $context, $user, &$jobs ) {
 		$schema = $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];
 		$query = '[[name::retrieve-messages]][[is_running::false]]';
 		$printouts = [
@@ -158,9 +159,10 @@ class CheckMessages extends Maintenance {
 
 	/**
 	 * @param Context $context
+	 * @param User $user
 	 * @param array &$jobs
 	 */
-	public function deleteOldRevisions( $context, &$jobs ) {
+	public function deleteOldRevisions( $context, $user, &$jobs ) {
 		// execute job 'delete-old-revisions' only if job retrieve-messages
 		// is not running
 		$schema = $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];

@@ -494,7 +494,7 @@ class ImportMessage {
 			$params['filters_by_message_fields'] = [];
 		}
 
-		foreach ( $params['filters_by_message_fields'] as $value ) {
+		foreach ( (array)$params['filters_by_message_fields'] as $value ) {
 			$value_ = $obj[$v['field']];
 
 			$result_ = false;
