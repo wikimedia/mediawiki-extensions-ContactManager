@@ -9,6 +9,7 @@
     |schema=ContactManager/Incoming mail
     |?date   
     |?headers/fromaddress
+    |?fromAddress
     |?subject
     |?replyTo=
     |?textPlain=
@@ -30,6 +31,7 @@
       |schema=ContactManager/Incoming mail
       |?date
       |?headers/fromaddress
+      |?fromAddress
       |?subject
       |?replyTo=
       |?textPlain=
