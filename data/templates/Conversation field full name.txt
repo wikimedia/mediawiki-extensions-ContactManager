@@ -1,1 +1,1 @@
-{{#querylink:{{{pagetitle}}}|{{{full_name}}}|target=_blank}}
+{{#querylink:ContactManager:Contact|{{{full_name}}}|pageid={{{pageid}}}|target=_blank}}
