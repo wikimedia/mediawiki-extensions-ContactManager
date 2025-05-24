@@ -1,0 +1,79 @@
+{{#if:{{#urlget:pageid}} | | This article is meant to be accessed with a dynamic url }}
+__NOTOC__
+{| class="wikitable infobox"
+! name
+| {{{full_name|}}}
+|-
+! email
+| {{{email|}}}
+|-
+! phone
+| {{{phone|}}}
+|-
+! seen since
+| {{{seen_since|}}}
+|-
+! seen until
+| {{{seen_until|}}}
+|-
+! categories
+| {{#arraymap: {{{categories|}}} | , | @ | [[:Category:@|@]] |<nowiki>, </nowiki> }}
+|-
+|}
+
+[[{{{pagetitle}}}|'''Source''']]
+
+
+{{#visualdataform: ContactManager/Contact
+|title = edit
+|action = edit
+|edit-page = {{{pagetitle}}}
+|return-page=ContactManager:Contact?pageid={{{pageid}}}
+|view = popup
+|popup-size = medium
+|css-class =
+|pagename-formula = 
+|edit-freetext = true   
+|edit-categories = true
+|edit-content-model = false
+|edit-target-slot = false
+|target-slot = main
+|default-categories = 
+|default-content-model = wikitext
+|preload=
+|preload-data=
+|layout-align = top
+|popup-help = false 
+|layout = tabs
+|submit-button-text =
+|validate-button-text =
+|overwrite-existing-article-on-create=false
+}}
+
+
+
+==Conversations==
+
+{{#visualdataquery: [[participants/email::{{#replace:{{{email|}}}|,|{{!}}{{!}} }}]]
+|schema=ContactManager/Conversation
+|limit=40
+|?participants field=conversation
+|?participants/email=
+|?participants/name=
+|?messages
+|?latest
+|?hash=
+|?date_last=
+|?count=
+|?mailbox=
+|pagetitle=
+|template?participants field=ContactManager/Conversations table participants field
+|template?participants=ContactManager/Conversations table participants
+|template?messages=ContactManager/Conversations table messages field
+|template?latest=ContactManager/Conversations table latest field
+|format=table
+|mode=nested 
+}}
+
+{{#arraymap: {{{categories|}}} | , | @ | [[Category:@]] |\s }}
+

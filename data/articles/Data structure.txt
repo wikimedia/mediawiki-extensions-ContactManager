@@ -3,6 +3,7 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 
 * articles
 ** [[ContactManager:Compose]]
+** [[ContactManager:Contact]]
 ** [[ContactManager:Conversation]]
 ** [[ContactManager:Data structure]]
 ** [[ContactManager:Filter header]]
@@ -21,6 +22,7 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 
 * templates
 **[[Template:ContactManager/Compose name field]]
+**[[Template:ContactManager/Contact]]
 **[[Template:ContactManager/Contacts]]
 **[[Template:ContactManager/Contacts table name field]]
 **[[Template:ContactManager/Conversation]]
@@ -64,6 +66,7 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 **[[Module:ContactManager/Base64]]
 **[[Module:ContactManager/ConversationsNavigation]]
 **[[Module:ContactManager/FormatReply]]
+**[[Module:ReplacePipe]]
 
 
 *schemas

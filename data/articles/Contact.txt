@@ -1,0 +1,6 @@
+{{#visualdataprint:{{#urlget:pageid}} 
+|schema=ContactManager/Contact
+|format=template
+|template=ContactManager/Contact
+|categories=true
+}}
