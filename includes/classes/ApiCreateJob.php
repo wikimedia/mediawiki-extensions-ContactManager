@@ -58,6 +58,9 @@ class ApiCreateJob extends ApiBase {
 		$data = json_decode( $params['data'], true );
 
 		switch ( $data['name'] ) {
+			case 'get-message':
+			case 'retrieve-message':
+			case 'get-messages':
 			case 'retrieve-messages':
 				$schema = $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];
 				break;
@@ -74,7 +77,7 @@ class ApiCreateJob extends ApiBase {
 
 		$query = '[[name::' . $data['name'] . ']]';
 		$query .= ( array_key_exists( 'mailbox', $data ) ? '[[mailbox::' . $data['mailbox'] . ']]' : '' );
-		$query .= '[[is_running:true]]';
+		$query .= '[[is_running::true]]';
 
 		$printouts = [
 			'name'
