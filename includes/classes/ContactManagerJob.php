@@ -70,31 +70,40 @@ class ContactManagerJob extends Job {
 			return false;
 		}
 
-		$title = TitleClass::newFromText( $this->params['pageid'] );
+		$title = TitleClass::newFromID( $this->params['pageid'] );
 		$context->setTitle( $title );
 
 		$errors = [];
-
 		switch ( $this->params['name'] ) {
 			case 'mailbox-info':
 				\ContactManager::getInfo( $user, $this->params['mailbox'], $errors );
 				break;
+
 			case 'get-folders':
 				\ContactManager::getFolders( $user, $this->params['mailbox'], $errors );
 				break;
+
 			case 'retrieve-messages':
 			case 'get-messages':
 				\ContactManager::getMessages( $user, $this->params, $errors );
 				break;
+
 			case 'delete-old-revisions':
 				$output = [];
 				\ContactManager::deleteOldRevisions( $user, $output, true );
 				break;
 
-			// case 'retrieve-message':
-			// 	$importMessage = new ImportMessage( $user, $this->params, $errors );
-			// 	$importMessage->doImport();
-			// 	break;
+			case 'get-message':
+			case 'retrieve-message':
+				foreach ( $this->params['folders'] as $folder_ ) {
+					if ( $folder_['folder_name'] === $this->params['folder_name'] ) {
+						$this->params['folder'] = $folder_;
+						break;
+					}
+				}
+				$importMessage = new ImportMessage( $user, $this->params, $errors );
+				$importMessage->doImport();
+				break;
 			// case 'record-header':
 			// 	$recordHeader = new RecordHeader( $user, $this->params, $errors );
 			// 	$recordHeader->doImport();
