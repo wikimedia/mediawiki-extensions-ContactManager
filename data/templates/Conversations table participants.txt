@@ -1,1 +1,1 @@
-{{{email}}}:{{{name}}}{{#if: {{{islast}}} |  | , }}
+{{{email|}}}:{{{name|}}}{{#if: {{{islast}}} |  | , }}

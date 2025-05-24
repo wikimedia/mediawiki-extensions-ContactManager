@@ -3,10 +3,10 @@
 | {{{date}}}
 |-
 ! from
-| [[{{#visualdataquery:[[email::{{{fromAddress}}}]]
+| {{#querylink:ContactManager:Contact|{{{headers/fromaddress}}}|pageid={{#visualdataquery:[[email::{{{fromAddress}}}]]
 |schema=ContactManager/Contact
-|format=pagetitle
-}}|{{{headers/fromaddress}}}]]
+|format=pageid
+}}|target=_blank}}
 |-
 ! subject
 | {{{subject}}}
