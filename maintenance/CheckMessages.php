@@ -116,6 +116,7 @@ class CheckMessages extends Maintenance {
 
 		$data = [];
 		$data['session'] = $context->exportSession();
+		$data['jobSchema'] = $schema;
 
 		foreach ( $results as $value ) {
 			// add session parameter
@@ -198,6 +199,7 @@ class CheckMessages extends Maintenance {
 
 		$data = [];
 		$data['session'] = $context->exportSession();
+		$data['jobSchema'] = $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'];
 
 		$data_ = array_merge( [ 'name' => 'delete-old-revisions' ], $data );
 		$title_ = TitleClass::newFromText( $GLOBALS['wgContactManagerMainJobsArticle'] );
