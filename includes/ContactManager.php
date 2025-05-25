@@ -160,8 +160,6 @@ class ContactManager {
 
 		$title = TitleClass::newFromText( $targetTitle );
 		\VisualData::updateCreateSchemas( $user, $title, $jsonData, 'jsondata' );
-
-		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobMailboxInfo'], self::JOB_END, $mailboxName );
 	}
 
 	/**
@@ -240,8 +238,6 @@ class ContactManager {
 
 		$title = TitleClass::newFromText( $targetTitle );
 		\VisualData::updateCreateSchemas( $user, $title, $jsonData, 'jsondata' );
-
-		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobGetFolders'], self::JOB_END, $mailboxName );
 	}
 
 	/**
@@ -559,8 +555,6 @@ class ContactManager {
 		}
 
 		// self::pushJobs( $jobs );
-
-		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], self::JOB_END, $params['mailbox'] );
 	}
 
 	/**
@@ -1042,8 +1036,6 @@ class ContactManager {
 		if ( $delete ) {
 			$output[] = 'Done';
 		}
-
-		self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'], self::JOB_END );
 
 		return $delete;
 	}

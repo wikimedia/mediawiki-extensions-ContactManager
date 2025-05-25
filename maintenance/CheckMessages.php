@@ -151,7 +151,6 @@ class CheckMessages extends Maintenance {
 
 				$job = new ContactManagerJob( $title_, $data_ );
 				if ( $job ) {
-					\ContactManager::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], \ContactManager::JOB_START, $data_['mailbox'] );
 					$jobs[] = $job;
 				}
 			}
@@ -207,7 +206,6 @@ class CheckMessages extends Maintenance {
 
 		$job = new ContactManagerJob( $title_, $data_ );
 		if ( $job ) {
-			\ContactManager::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'], \ContactManager::JOB_START );
 			$jobs[] = $job;
 		}
 	}
