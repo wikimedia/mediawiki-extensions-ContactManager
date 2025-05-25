@@ -19,7 +19,7 @@
  * @file
  * @ingroup extensions
  * @author thomas-topway-it <support@topway.i>
- * @copyright Copyright ©2023-2024, https://wikisphere.org
+ * @copyright Copyright ©2023-2025, https://wikisphere.org
  */
 
 use Egulias\EmailValidator\EmailValidator;
@@ -425,7 +425,8 @@ class ContactManager {
 			$folders[$key]['fetchQuery'] = $determineFetchQuery( $folders[$key] );
 		}
 
-		foreach ( $folders as $folder ) {
+		$overviewHeaders = [];
+		foreach ( $folders as $key => $folder ) {
 			$shortpath = $switchMailbox( $folder );
 			[ $headersQuery, $messagesQuery ] = $folder['fetchQuery'];
 
@@ -463,12 +464,12 @@ class ContactManager {
 			// if ( !empty( $params['fetch_folder_status'] ) ) {
 			}
 
-			$overviewHeader = $imapMailbox->fetch_overview( $headersQuery );
+			$overviewHeaders[$key] = $imapMailbox->fetch_overview( $headersQuery );
 
 			self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], self::JOB_LAST_STATUS, $params['mailbox'] );
 
 			// retrieve all headers in this folder
-			foreach ( $overviewHeader as $header ) {
+			foreach ( $overviewHeaders[$key] as $header ) {
 				$header = (array)$header;
 
 				// *** an unquoted comma in the name is safe,
@@ -506,11 +507,16 @@ class ContactManager {
 			}
 
 			self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], self::JOB_LAST_STATUS, $params['mailbox'] );
+		}
 
-			// then retrieve all messages
+		// then retrieve all messages
+		foreach ( $folders as $key => $folder ) {
+			$shortpath = $switchMailbox( $folder );
+			[ $headersQuery, $messagesQuery ] = $folder['fetchQuery'];
+
 			if ( !empty( $folder['fetch_message'] ) ) {
 				$overviewMessage = ( $headersQuery === $messagesQuery
-					 ? $overviewHeader
+					 ? $overviewHeaders[$key]
 					 : $imapMailbox->fetch_overview( $messagesQuery )
 				);
 
@@ -847,7 +853,9 @@ class ContactManager {
 		$dbr = \VisualData::getDB( DB_REPLICA );
 		$dbw = \VisualData::getDB( DB_PRIMARY );
 
-		$method = ( $delete ? 'delete' : 'select' );
+		// ***ATTENTION ! delete does not work in conjunction with join on the same table,
+		// use select and delete by id, or use deleteJoin
+		$method = 'select';
 
 		$callFunction = static function ( $tables, $fields, $conds, $options, $joins ) use ( $dbw, $method, $delete ) {
 			$args = [
@@ -860,10 +868,6 @@ class ContactManager {
 				$joins
 			];
 
-			if ( $delete ) {
-				unset( $args[1] );
-			}
-
 			$ret = call_user_func_array( [ $dbw, $method ], $args );
 
 			if ( $method === 'selectSQLText' ) {
@@ -872,6 +876,27 @@ class ContactManager {
 			}
 
 			return $ret;
+		};
+
+		$deleteRows = static function ( $res, $tableName, $field ) use ( $dbw ) {
+			if ( !$res->numRows() ) {
+				echo "no rows to delete from $tableName" . PHP_EOL;
+				return;
+			}
+
+			$delRows = [];
+			foreach ( $res as $row ) {
+				$delRows[] = $row->$field;
+			}
+
+			echo 'deleting ' . $res->numRows() . " entries from $tableName" . PHP_EOL;
+			$conds = [ $field => $delRows ];
+			$dbw->delete(
+				$tableName,
+				$conds,
+				// phpcs:ignore MediaWiki.Usage.MagicConstantClosure.FoundConstantMethod
+				__METHOD__
+			);
 		};
 
 		// get user id of maintenance script
@@ -901,7 +926,7 @@ class ContactManager {
 		// get/delete all non-current slots created by
 		// maintenance script in NS_CONTACTMANAGER namespace
 		$tables = [ 's' => 'slots', 'rev' => 'revision', 'p' => 'page' ];
-		$fields = [ 'rev.rev_id', 'rev.rev_page' ];
+		$fields = [ 's.slot_revision_id' ];
 		$joins = [];
 		$joins['rev'] = [ 'JOIN', 's.slot_revision_id=rev.rev_id' ];
 		$joins['p'] = [ 'JOIN', 'p.page_id=rev.rev_page' ];
@@ -931,13 +956,17 @@ class ContactManager {
 
 		$res = $callFunction( $tables, $fields, $conds, $options, $joins );
 
-		if ( !$delete && is_object( $res ) ) {
-			$output[] = 'found ' . $res->numRows() . ' old slots';
+		if ( is_object( $res ) ) {
+			if ( $delete ) {
+				$deleteRows( $res, 'slots', 'slot_revision_id' );
+			} else {
+				$output[] = 'found ' . $res->numRows() . ' old slots';
+			}
 		}
 
 		// delete orphaned revisions
 		$tables = [ 'rev' => 'revision', 'p' => 'page', 's' => 'slots' ];
-		$fields = [ 'rev.rev_page', 'rev.rev_id' ];
+		$fields = [ 'rev.rev_id' ];
 		$joins = [];
 		$joins['p'] = [ 'JOIN', 'rev.rev_page=p.page_id' ];
 		$joins['s'] = [ 'LEFT JOIN', 's.slot_revision_id = rev.rev_id' ];
@@ -948,19 +977,14 @@ class ContactManager {
 		$conds['p.page_namespace'] = NS_CONTACTMANAGER;
 		$options = [];
 
-		$args = [
-			$tables,
-			$fields,
-			$conds,
-			__METHOD__,
-			$options,
-			$joins
-		];
-
 		$res = $callFunction( $tables, $fields, $conds, $options, $joins );
 
-		if ( !$delete && is_object( $res ) ) {
-			$output[] = 'found ' . $res->numRows() . ' orphaned revisions';
+		if ( is_object( $res ) ) {
+			if ( $delete ) {
+				$deleteRows( $res, 'revision', 'rev_id' );
+			} else {
+				$output[] = 'found ' . $res->numRows() . ' old revisions';
+			}
 		}
 
 		// delete orphaned content rows
@@ -988,8 +1012,12 @@ class ContactManager {
 
 		$res = $callFunction( $tables, $fields, $conds, $options, $joins );
 
-		if ( !$delete && is_object( $res ) ) {
-			$output[] = 'found ' . $res->numRows() . ' orphaned content rows';
+		if ( is_object( $res ) ) {
+			if ( $delete ) {
+				$deleteRows( $res, 'content', 'content_id' );
+			} else {
+				$output[] = 'found ' . $res->numRows() . ' old contents';
+			}
 		}
 
 		// delete orphaned ip_changes
@@ -1003,8 +1031,12 @@ class ContactManager {
 
 		$res = $callFunction( $tables, $fields, $conds, $options, $joins );
 
-		if ( !$delete && is_object( $res ) ) {
-			$output[] = 'found ' . $res->numRows() . ' orphaned ip_changes';
+		if ( is_object( $res ) ) {
+			if ( $delete ) {
+				$deleteRows( $res, 'ip_changes', 'ipc_rev_id' );
+			} else {
+				$output[] = 'found ' . $res->numRows() . ' old ip_changes';
+			}
 		}
 
 		if ( $delete ) {

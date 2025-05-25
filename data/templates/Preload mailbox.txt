@@ -5,7 +5,8 @@
 
 
 == Jobs ==
-Follow the instructions [https://www.mediawiki.org/wiki/Extension:ContactManager here] to setup [https://en.wikipedia.org/wiki/Cron crontab] or execute the following jobs manually. Configure the job options where needed by clicking the edit symbol within each button. After the mailbox creation, "Get folders" must be executed before "Get messages", since the latter controls the retrieval of messages for each folder.
+Follow the instructions [https://www.mediawiki.org/wiki/Extension:ContactManager here] to setup [https://en.wikipedia.org/wiki/Cron crontab] or execute the jobs from command line. In order to create the job's profile tap the edit icon on the buttons below and submit the form. Then press the buttons to actually create the jobs. The jobs "Get mailbox info" and "Get folders" need to be executed before "Get messages", since the folders' list must be known before to execute the latter. It is recommended to first search for messages after a certain date (using fetch "Search", criteria "Since") and then using fetch "UIDs incremental" and "check email every" few minutes to keep your mailbox updated.
+
 
 {{ContactManager/Mailbox jobs buttons|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}} }}
 See jobs data [[{{FULLPAGENAME}}/Jobs|here]]

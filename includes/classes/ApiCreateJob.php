@@ -95,6 +95,7 @@ class ApiCreateJob extends ApiBase {
 		$context->setTitle( $title );
 		$data['pageid'] = $params['pageid'];
 		$data['session'] = $context->exportSession();
+		$data['jobSchema'] = $schema;
 
 		$job = new ContactManagerJob( $title, $data );
 
@@ -102,8 +103,6 @@ class ApiCreateJob extends ApiBase {
 			$this->dieWithError( 'apierror-contactmanager-unknown-job' );
 			return;
 		}
-
-		\ContactManager::setRunningJob( $user, $schema, \ContactManager::JOB_START, ( array_key_exists( 'mailbox', $data ) ? $data['mailbox'] : null ) );
 
 		\ContactManager::pushJobs( [ $job ] );
 

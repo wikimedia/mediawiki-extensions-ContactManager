@@ -1,4 +1,4 @@
-{| class="wikitable infobox"
+{| class="wikitable"
 ! date
 | {{{date}}}
 |-

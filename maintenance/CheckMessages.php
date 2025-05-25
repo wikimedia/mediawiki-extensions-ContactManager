@@ -19,7 +19,7 @@
  * @file
  * @ingroup extensions
  * @author thomas-topway-it <support@topway.it>
- * @copyright Copyright ©2024, https://wikisphere.org
+ * @copyright Copyright ©2024-2025, https://wikisphere.org
  */
 
 use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
@@ -179,7 +179,7 @@ class CheckMessages extends Maintenance {
 		}
 
 		$schema = $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'];
-		$query = '[[name::delete-old-revisions]]';
+		$query = '[[name::delete-old-revisions]][[is_running::false]]';
 		$printouts = [
 			'start_date'
 		];
@@ -188,13 +188,10 @@ class CheckMessages extends Maintenance {
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params_ );
 
 		if ( count( $results ) && !empty( $results[0] ) ) {
-
-			if ( $results[0]['is_running'] ) {
-				return;
-			}
+			$value = $results[0];
 
 			// once per day
-			if ( time() - strtotime( $results[0]['start_date'] ) <= strtotime( '1 day', 0 ) ) {
+			if ( time() - strtotime( $value['start_date'] ) <= strtotime( '1 day', 0 ) ) {
 				return;
 			}
 		}

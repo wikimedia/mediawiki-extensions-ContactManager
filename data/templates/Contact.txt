@@ -1,6 +1,5 @@
-{{#if:{{#urlget:pageid}} | | This article is meant to be accessed with a dynamic url }}
-__NOTOC__
-{| class="wikitable infobox"
+{{#if:{{#urlget:pageid}} | | This article is meant to be accessed with a dynamic url }} __NOTOC__
+{| class="wikitable"
 ! name
 | {{{full_name|}}}
 |-

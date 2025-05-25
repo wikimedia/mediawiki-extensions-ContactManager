@@ -117,6 +117,9 @@ class ContactManagerJob extends Job {
 		if ( count( $errors ) ) {
 			$this->error = array_pop( $errors );
 			return false;
+
+		} else {
+			\ContactManager::setRunningJob( $user, $this->params['jobSchema'], \ContactManager::JOB_START, ( array_key_exists( 'mailbox', $this->params ) ? $this->params['mailbox'] : null ) );
 		}
 
 		// @TODO call ECHO when finished
