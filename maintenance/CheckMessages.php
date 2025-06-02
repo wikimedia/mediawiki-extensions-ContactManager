@@ -106,7 +106,7 @@ class CheckMessages extends Maintenance {
 	 */
 	public function retrieveMessages( $context, $user, &$jobs ) {
 		$schema = $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];
-		$query = '[[name::retrieve-messages]][[is_running::false]]';
+		$query = '[[name::retrieve-messages]]';
 		$printouts = [
 			'check_email_interval',
 		];
@@ -123,6 +123,10 @@ class CheckMessages extends Maintenance {
 			$data_ = array_merge( $value['data'], $data );
 
 			if ( empty( $data_['check_email_interval'] ) ) {
+				continue;
+			}
+
+			if ( \ContactManager::isRunning( $data_ ) ) {
 				continue;
 			}
 
@@ -166,7 +170,7 @@ class CheckMessages extends Maintenance {
 		// execute job 'delete-old-revisions' only if job retrieve-messages
 		// is not running
 		$schema = $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];
-		$query = '[[name::retrieve-messages]][[is_running::true]]';
+		$query = '[[name::retrieve-messages]]';
 		$printouts = [
 			'check_email_interval',
 		];
@@ -174,12 +178,15 @@ class CheckMessages extends Maintenance {
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params );
 
-		if ( count( $results ) ) {
+		if ( count( $results ) &&
+			!empty( $results[0]['data'] ) &&
+			\ContactManager::isRunning( $results[0]['data'] )
+		) {
 			return;
 		}
 
 		$schema = $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'];
-		$query = '[[name::delete-old-revisions]][[is_running::false]]';
+		$query = '[[name::delete-old-revisions]]';
 		$printouts = [
 			'start_date'
 		];
@@ -187,8 +194,12 @@ class CheckMessages extends Maintenance {
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params_ );
 
-		if ( count( $results ) && !empty( $results[0] ) ) {
-			$value = $results[0];
+		if ( count( $results ) && !empty( $results[0]['data'] ) ) {
+			$value = $results[0]['data'];
+
+			if ( \ContactManager::isRunning( $value ) ) {
+				return;
+			}
 
 			// once per day
 			if ( time() - strtotime( $value['start_date'] ) <= strtotime( '1 day', 0 ) ) {

@@ -163,6 +163,32 @@ class ContactManager {
 	}
 
 	/**
+	 * @param array $data
+	 * @return bool
+	 */
+	public static function isRunning( $data ) {
+		if ( empty( $data['is_running'] ) ) {
+			return false;
+		}
+
+		$refDate = array_key_exists( 'last_status', $data ) ? $data['last_status'] : $data['start_date'];
+		$refTime = strtotime( $refDate );
+
+		if (
+			!empty( $data['check_email_interval'] ) &&
+			( time() - $refTime ) <= ( (int)$data['check_email_interval'] * 60 )
+		) {
+			return true;
+		}
+
+		$minutes = is_numeric( $GLOBALS['wgContactManangerConsiderJobDeadMinutes'] )
+			? $GLOBALS['wgContactManangerConsiderJobDeadMinutes']
+			: 10;
+
+		return ( time() - $refTime ) <= ( $minutes * 60 );
+	}
+
+	/**
 	 * @param User $user
 	 * @param string $schema
 	 * @param int $status

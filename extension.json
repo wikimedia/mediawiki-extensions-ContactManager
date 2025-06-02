@@ -140,7 +140,8 @@
 		"ContactManagerContactPagenameFormula": "ContactManager:Mailboxes/$1/contacts/$2",
 		"ContactManagerConversationPagenameFormula": "ContactManager:Mailboxes/$1/conversations/$2",
 		"ContactManagerAttachmentsFolder": "",
-		"ContactManangerDisableSidebarLink": false
+		"ContactManangerDisableSidebarLink": false,
+		"ContactManangerConsiderJobDeadMinutes": 10
 	},
 	"manifest_version": 1
 }
