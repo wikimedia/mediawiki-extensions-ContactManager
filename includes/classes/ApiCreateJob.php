@@ -57,22 +57,10 @@ class ApiCreateJob extends ApiBase {
 		$params = $this->extractRequestParams();
 		$data = json_decode( $params['data'], true );
 
-		switch ( $data['name'] ) {
-			case 'get-message':
-			case 'retrieve-message':
-			case 'get-messages':
-			case 'retrieve-messages':
-				$schema = $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];
-				break;
-			case 'get-folders':
-				$schema = $GLOBALS['wgContactManagerSchemasJobGetFolders'];
-				break;
-			case 'mailbox-info':
-				$schema = $GLOBALS['wgContactManagerSchemasJobMailboxInfo'];
-				break;
-			case 'delete-old-revisions':
-				$schema = $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'];
-				break;
+		$schema = \ContactManager::jobNameToSchema( $data['name'] );
+
+		if ( empty( $schema ) ) {
+			$this->dieWithError( 'apierror-contactmanager-unknown-job-schema' );
 		}
 
 		$query = '[[name::' . $data['name'] . ']]';

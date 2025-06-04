@@ -70,7 +70,7 @@ class ContactManagerJob extends Job {
 			return false;
 		}
 
-		\ContactManager::setRunningJob( $user, $this->params['jobSchema'], \ContactManager::JOB_START, ( array_key_exists( 'mailbox', $this->params ) ? $this->params['mailbox'] : null ) );
+		\ContactManager::setRunningJob( $user, $this->params['name'], \ContactManager::JOB_START, ( array_key_exists( 'mailbox', $this->params ) ? $this->params['mailbox'] : null ) );
 
 		$title = TitleClass::newFromID( $this->params['pageid'] );
 		$context->setTitle( $title );
@@ -116,7 +116,7 @@ class ContactManagerJob extends Job {
 			// 	break;
 		}
 
-		\ContactManager::setRunningJob( $user, $this->params['jobSchema'], \ContactManager::JOB_END, ( array_key_exists( 'mailbox', $this->params ) ? $this->params['mailbox'] : null ) );
+		\ContactManager::setRunningJob( $user, $this->params['name'], \ContactManager::JOB_END, ( array_key_exists( 'mailbox', $this->params ) ? $this->params['mailbox'] : null ) );
 
 		if ( count( $errors ) ) {
 			$this->error = array_pop( $errors );

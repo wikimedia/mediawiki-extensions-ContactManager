@@ -189,12 +189,39 @@ class ContactManager {
 	}
 
 	/**
+	 * @param string $name
+	 * @return string
+	 */
+	public static function jobNameToSchema( $name ) {
+		$schema = '';
+
+		switch ( $name ) {
+			case 'get-message':
+			case 'retrieve-message':
+			case 'get-messages':
+			case 'retrieve-messages':
+				return $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];
+
+			case 'get-folders':
+				return $GLOBALS['wgContactManagerSchemasJobGetFolders'];
+
+			case 'mailbox-info':
+				return $GLOBALS['wgContactManagerSchemasJobMailboxInfo'];
+
+			case 'delete-old-revisions':
+				return $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'];
+		}
+
+		return $schema;
+	}
+
+	/**
 	 * @param User $user
-	 * @param string $schema
+	 * @param string $jobName
 	 * @param int $status
 	 * @param string|null $mailbox null
 	 */
-	public static function setRunningJob( $user, $schema, $status, $mailbox = null ) {
+	public static function setRunningJob( $user, $jobName, $status, $mailbox = null ) {
 		$targetTitle = ( $mailbox
 			? str_replace( '$1', $mailbox, $GLOBALS['wgContactManagerMailboxArticleJobs'] )
 			: $GLOBALS['wgContactManagerMainJobsArticle'] );
@@ -202,6 +229,7 @@ class ContactManager {
 		switch ( $status ) {
 			case self::JOB_START:
 				$arr = [
+					'name' => $jobName,
 					'is_running' => true,
 					'start_date' => date( 'Y-m-d H:i:s' ),
 					'end_date' => null,
@@ -210,6 +238,7 @@ class ContactManager {
 
 			case self::JOB_END:
 				$arr = [
+					'name' => $jobName,
 					'is_running' => false,
 					'end_date' => date( 'Y-m-d H:i:s' ),
 				];
@@ -217,6 +246,7 @@ class ContactManager {
 
 			case self::JOB_LAST_STATUS:
 				$arr = [
+					'name' => $jobName,
 					'last_status' => date( 'Y-m-d H:i:s' ),
 				];
 				break;
@@ -226,6 +256,7 @@ class ContactManager {
 		$context = RequestContext::getMain();
 		$context->setTitle( $title_ );
 
+		$schema = self::jobNameToSchema( $jobName );
 		$jsonData = [
 			$schema => $arr
 		];
@@ -488,7 +519,7 @@ class ContactManager {
 
 			$overviewHeaders[$key] = $imapMailbox->fetch_overview( $headersQuery );
 
-			self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], self::JOB_LAST_STATUS, $params['mailbox'] );
+			self::setRunningJob( $user, 'retrieve-messages', self::JOB_LAST_STATUS, $params['mailbox'] );
 
 			// retrieve all headers in this folder
 			foreach ( $overviewHeaders[$key] as $header ) {
@@ -528,7 +559,7 @@ class ContactManager {
 				// $jobs[] = $job_;
 			}
 
-			self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], self::JOB_LAST_STATUS, $params['mailbox'] );
+			self::setRunningJob( $user, 'retrieve-messages', self::JOB_LAST_STATUS, $params['mailbox'] );
 		}
 
 		// then retrieve all messages
@@ -552,7 +583,7 @@ class ContactManager {
 
 					$importMessage->doImport();
 
-					self::setRunningJob( $user, $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'], self::JOB_LAST_STATUS, $params['mailbox'] );
+					self::setRunningJob( $user, 'retrieve-messages', self::JOB_LAST_STATUS, $params['mailbox'] );
 
 					// *** alternatively use
 					// $jobs[] = new ContactManagerJob( $title, array_merge( $params, [
