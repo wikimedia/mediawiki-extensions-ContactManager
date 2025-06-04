@@ -135,6 +135,10 @@ class RecordHeader {
 	private function applyFilters( $obj, &$pagenameFormula, &$categories ) {
 		$params = $this->params;
 
+		if ( !array_key_exists( 'filters_by_headers', $params ) ) {
+			$params['filters_by_headers'] = [];
+		}
+
 		foreach ( (array)$params['filters_by_headers'] as $v ) {
 			if ( !array_key_exists( 'header', $v ) || empty( $v['header'] ) ) {
 				continue;
