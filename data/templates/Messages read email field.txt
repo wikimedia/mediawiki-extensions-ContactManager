@@ -1,1 +1,1 @@
-{{#querylink:ContactManager:Read email|open|target=_blank|pageid={{{articleid}}} }}
+{{#querylink:ContactManager:Read email|open|target=_blank|pageid={{{articleid}}}|mailbox={{#titleparts: {{PAGENAME}} | 1 | 2 }} }}
