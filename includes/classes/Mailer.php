@@ -443,7 +443,9 @@ class Mailer {
 
 		$this->personalizations[] = [
 			// must be an array
-			$key => [
+			// do not use $key, produces the sendgrid error
+			// "The to array is required for all personalization objects, and must have at least one email object with a valid email address."
+			'to' => [
 				[
 					'email' => $emailAddresses[0],
 					'name' => $name,
@@ -723,6 +725,16 @@ class Mailer {
 				return new Address( $value[1], $value[0] );
 			}, $arr );
 		};
+
+		// avoids symfony error "An email must have a "To", "Cc", or "Bcc" header."
+		if ( count( $this->personalizations ) &&
+			!count( $this->obj['to'] ) &&
+			!count( $this->obj['cc'] ) &&
+			!count( $this->obj['bcc'] )
+		) {
+			// reserved by RFC 2606, will be ignored
+			$this->obj['to'] = [ 'test@example.com' ];
+		}
 
 		if ( count( $this->obj['to'] ) ) {
 			$email->to( ...$getParsedRecipients( $this->obj['to'] ) );
