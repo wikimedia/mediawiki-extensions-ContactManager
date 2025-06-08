@@ -810,7 +810,6 @@ class ContactManager {
 		];
 
 		$dataOriginal = [];
-
 		// merge previous entries
 		if ( !array_key_exists( 'errors', $results ) && count( $results ) ) {
 			$pagenameFormula = $results[0]['title'];
@@ -849,7 +848,6 @@ class ContactManager {
 			echo $msg . PHP_EOL;
 		};
 
-		// $data['categories'] = $obj['categories'];
 		$importer->importData( $pagenameFormula, $data, $showMsg );
 	}
 

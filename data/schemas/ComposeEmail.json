@@ -54,31 +54,12 @@
 				],
 				"options-query-formula": "\u003Cname\u003E - \u003Cprovider\u003E",
 				"required": false,
-				"options-values-parsed": []
+				"options-values-parsed": {}
 			},
 			"type": "string",
 			"format": "text",
-			"title": "mailer"
-		},
-		"substitutions": {
-			"wiki": {
-				"name": "substitutions",
-				"type": "property",
-				"multiple-items": false,
-				"label": "substitutions",
-				"help-message": "in the message text, use any property in the ''ContactManager/Contact'' schema surrounded by \"%\" (for instance %first_name%) to perform substitutions for each recipient",
-				"uuid": "67a73b7651ea1",
-				"visibility": "condition",
-				"showif-field": "mailer",
-				"showif-condition": "regex",
-				"showif-value": "- sendgrid$",
-				"preferred-input": "OO.ui.ToggleSwitchWidget",
-				"input-config": [],
-				"required": false
-			},
-			"type": "boolean",
-			"title": "substitutions",
-			"description": "in the message text, use any property in the \u003Ci\u003EContactManager/Contact\u003C/i\u003E schema surrounded by \"%\" (for instance %first_name%) to perform substitutions for each recipient"
+			"title": "mailer",
+			"enum": []
 		},
 		"from": {
 			"wiki": {
@@ -131,11 +112,12 @@
 				"showif-field": "transport",
 				"showif-condition": "=",
 				"showif-value": "mailer",
-				"options-values-parsed": []
+				"options-values-parsed": {}
 			},
 			"type": "string",
 			"format": "text",
-			"title": "from"
+			"title": "from",
+			"enum": []
 		},
 		"to": {
 			"wiki": {
@@ -190,10 +172,11 @@
 				"wiki": {
 					"name": "cc",
 					"type": "property",
+					"multiple-items": true,
+					"label": "cc",
+					"default": [],
 					"uuid": "6636ad628488f",
 					"visibility": "visible",
-					"label": "cc",
-					"multiple-items": true,
 					"preferred-input": "MenuTagSearchMultiselect",
 					"input-config": [],
 					"options-query": "[[full_name::\u003Cvalue\u003E~]][[ContactManager:Mailboxes/\u003Cmailbox\u003E/contacts/~]]",
@@ -204,7 +187,7 @@
 					],
 					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail\u003E\u003E",
 					"required": false,
-					"default": []
+					"layout": "table"
 				},
 				"format": "text",
 				"title": "cc",
@@ -227,10 +210,11 @@
 				"wiki": {
 					"name": "to",
 					"type": "property",
+					"multiple-items": true,
+					"label": "bcc",
+					"default": [],
 					"uuid": "6636ad628488g",
 					"visibility": "visible",
-					"label": "bcc",
-					"multiple-items": true,
 					"preferred-input": "MenuTagSearchMultiselect",
 					"input-config": [],
 					"options-query": "[[full_name::\u003Cvalue\u003E~]][[ContactManager:Mailboxes/\u003Cmailbox\u003E/contacts/~]]",
@@ -241,7 +225,7 @@
 					],
 					"options-query-formula": "\u003Cfull_name\u003E \u003C\u003Cemail\u003E\u003E",
 					"required": false,
-					"default": []
+					"layout": "table"
 				},
 				"format": "text",
 				"title": "bcc",
@@ -371,13 +355,13 @@
 		},
 		"message_substitutions": {
 			"wiki": {
-				"name": "message_substitutions",
 				"type": "content-block",
-				"content": "Attention!! Substitutions are available only when using a mailer (currently sendgrid) since they take place after sending the email to avoid to send one email for each recipient",
-				"uuid": "67b46fb87684a"
+				"uuid": "67b46fb87684a",
+				"name": "message_substitutions",
+				"content": "To perform substitutions, use any property available in the schema associated to the recipient surrounded by \"%\" (for instance %first_name%) . (only available when using a mailer (currently sendgrid) , since substitutions are performed by the mailer server)"
 			},
 			"type": "object",
-			"description": "Attention!! Substitutions are available only when using a mailer (currently sendgrid) since they take place after sending the email to avoid to send one email for each recipient"
+			"description": "To perform substitutions, use any property available in the schema associated to the recipient surrounded by \"%\" (for instance %first_name%) . (only available when using a mailer (currently sendgrid) , since substitutions are performed by the mailer server)"
 		},
 		"text_html": {
 			"wiki": {
@@ -478,6 +462,52 @@
 			"type": "string",
 			"format": "text",
 			"title": "mailbox"
+		},
+		"new_content_block": {
+			"wiki": {
+				"name": "new_content_block",
+				"type": "content-block",
+				"uuid": "684559a994c1b",
+				"content": "Use offset and limit to distribute sending of large amount of recipients across multiple email providers or batches"
+			},
+			"type": "object",
+			"description": "Use offset and limit to distribute sending of large amount of recipients across multiple email providers or batches"
+		},
+		"offset": {
+			"wiki": {
+				"name": "offset",
+				"type": "property",
+				"multiple-items": false,
+				"input-config": [],
+				"label": "offset",
+				"default": "0",
+				"uuid": "6844748f60fd9",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"required": false
+			},
+			"minInclusive": 0,
+			"type": "integer",
+			"title": "offset",
+			"default": "0"
+		},
+		"limit": {
+			"wiki": {
+				"name": "limit",
+				"type": "property",
+				"multiple-items": false,
+				"input-config": [],
+				"label": "limit",
+				"default": "50",
+				"uuid": "6844748f60fde",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"required": false
+			},
+			"minInclusive": 1,
+			"type": "integer",
+			"title": "limit",
+			"default": "50"
 		}
 	},
 	"required": [
@@ -487,4 +517,3 @@
 	"type": "object",
 	"title": "Compose email"
 }
-

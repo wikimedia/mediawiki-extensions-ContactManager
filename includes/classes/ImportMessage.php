@@ -218,7 +218,7 @@ class ImportMessage {
 			'<ContactManager/Incoming mail/id>'
 		);
 
-		$categories_ = ( array_key_exists( 'categories', $params )
+		$categories = ( array_key_exists( 'categories', $params )
 			&& is_array( $params['categories'] ) ? $params['categories'] : [] );
 
 		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories ) ) {

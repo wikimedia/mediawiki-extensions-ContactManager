@@ -58,6 +58,9 @@ class Mailer {
 	/** @var array */
 	private $personalizations = [];
 
+	/** @var bool */
+	public $usePersonalizations = false;
+
 	/** @var string */
 	private $editor;
 
@@ -465,9 +468,15 @@ class Mailer {
 		$schemaName = $GLOBALS['wgContactManagerSchemasContact'];
 		$schema = \VisualData::getSchema( $context, $schemaName );
 		[ $emailPrintouts, $requiredPrintouts ] = $this->getRelevantPrintouts( $schema, $this->obj['text'] );
+
+		if ( count( $requiredPrintouts ) && !$this->usePersonalizations ) {
+			$this->errors[] = 'Substitutions not allowed';
+			return;
+		}
+
 		$allPrintouts = array_merge( $requiredPrintouts, $emailPrintouts );
 
-		if ( count( $allPrintouts ) > 0 ) {
+		if ( $this->usePersonalizations && count( $allPrintouts ) > 0 ) {
 			if ( !in_array( 'full_name', $allPrintouts ) ) {
 				$allPrintouts[] = 'full_name';
 			}
@@ -505,11 +514,14 @@ class Mailer {
 			foreach ( $this->obj['bcc_categories'] as $value ) {
 				// $title_ = TitleClass::newFromText( $value, NS_CATEGORY );
 
-				// get the schemas associated to the articles within
+				// get the schemas associated to the articles belonging to
 				// the given category and the relevant printouts
+				// loop the first 10 category's articles until a valid
+				// email printout is found
 				$cat = Category::newFromName( $value );
 				$iterator_ = $cat->getMembers( 10 );
-				while ( $iterator_->valid() ) {
+				$found = false;
+				while ( $iterator_->valid() && !$found ) {
 					$title_ = $iterator_->current();
 					$data_ = \VisualData::getJsonData( $title_ );
 					if ( !empty( $data_['schemas'] ) ) {
@@ -520,6 +532,8 @@ class Mailer {
 
 							if ( $emailPrintouts ) {
 								$categoriesParams[$value][$schemaName_] = [ $emailPrintouts, $requiredPrintouts, $schema_ ];
+								$found = true;
+								break;
 							}
 						}
 					}
@@ -530,16 +544,55 @@ class Mailer {
 			// get articles data of the requested categories
 			// using the relevant schema and the required printouts
 			$categoriesData = [];
-			foreach ( $categoriesParams as $cat => $value ) {
-				foreach ( $value as $schemaName => $values ) {
-					$query = '[[' . implode( '||', array_map( static function ( $value ) {
-						return "Category:$value";
-					}, $this->obj['bcc_categories'] ) ) . ']]';
+			$collected = 0;
+			$skipped = 0;
 
+			// the following assumes that all categories share the same
+			// schema
+			// $query = '[[' . implode( '||', array_map( static function ( $value ) {
+			// 	return "Category:$value";
+			// }, $this->obj['bcc_categories'] ) ) . ']]';
+
+			foreach ( $categoriesParams as $cat => $value ) {
+				$query = "[[Category:$cat]]";
+
+				// contains no more than 1 schema
+				foreach ( $value as $schemaName => $values ) {
 					[ $emailPrintouts, $requiredPrintouts ] = $values;
-					$params = [ 'format' => 'json-raw' ];
+
+					$params = [ 'format' => 'count' ];
 					$allPrintouts = array_merge( $emailPrintouts, $requiredPrintouts );
-					$categoriesData[$cat][$schemaName] = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts, $params );
+					$count_ = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts, $params );
+
+					// >>>>>>>>>>>>>>>>>> ChatGPT idea
+					if ( $skipped + $count_ <= $this->obj['offset'] ) {
+						$skipped += $count_;
+						continue 2;
+					}
+
+					$localOffset = max( 0, $this->obj['offset'] - $skipped );
+					$localLimit = $this->obj['limit'] - $collected;
+					// <<<<<<<<<<<<<<<<<< ChatGPT idea
+
+					$params = [ 'format' => 'json-raw', 'offset' => $localOffset, 'limit' => $localLimit ];
+					$allPrintouts = array_merge( $emailPrintouts, $requiredPrintouts );
+					$results_ = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts, $params );
+
+					if ( array_key_exists( 'errors', $results_ ) ) {
+						$this->errors = array_merge( $this->errors, $results_['errors'] );
+						continue;
+					}
+
+					$categoriesData[$cat][$schemaName] = $results_;
+
+					// >>>>>>>>>>>>>>>>>> ChatGPT idea
+					$collected += count( $results_ );
+					$skipped += $count_;
+
+					if ( $collected >= $this->obj['limit'] ) {
+						break 2;
+					}
+					// <<<<<<<<<<<<<<<<<< ChatGPT idea
 				}
 			}
 
@@ -581,8 +634,6 @@ class Mailer {
 				}
 			}
 		}
-
-		$this->transportClass->setPersonalizations( $this->personalizations );
 	}
 
 	/**
@@ -623,8 +674,13 @@ class Mailer {
 	 * @return bool
 	 */
 	public function sendEmail() {
-		if ( $this->transportClass && method_exists( $this->transportClass, 'setPersonalizations' ) ) {
-			$this->prepareData();
+		$this->usePersonalizations = $this->transportClass &&
+			method_exists( $this->transportClass, 'setPersonalizations' );
+
+		$this->prepareData();
+
+		if ( $this->usePersonalizations ) {
+			$this->transportClass->setPersonalizations( $this->personalizations );
 		}
 
 		$email = new Email();
@@ -657,6 +713,9 @@ class Mailer {
 		// however it filters the invalid email addresses
 		$getParsedRecipients = static function ( $recipients ) {
 			$arr = array_filter( array_map( static function ( $value ) {
+				if ( $value instanceof Address ) {
+					return [ $value->getName(), $value->getAddress() ];
+				}
 				return \ContactManager::parseRecipient( $value );
 			}, $recipients ) );
 
