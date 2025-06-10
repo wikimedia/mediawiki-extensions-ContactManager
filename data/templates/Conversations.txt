@@ -5,16 +5,15 @@
 |?participants/email=
 |?participants/name=
 |?messages
-|?latest
+|?date_last=latest 
 |?hash=
-|?date_last=
 |?count=
 |?mailbox=
 |pagetitle=
 |template?participants field=ContactManager/Conversations table participants field
 |template?participants=ContactManager/Conversations table participants
 |template?messages=ContactManager/Conversations table messages field
-|template?latest=ContactManager/Conversations table latest field
+|template?date_last=ContactManager/Conversations table latest field
 |order=date_last desc
 |format=datatable
 |datatables-synch=true
