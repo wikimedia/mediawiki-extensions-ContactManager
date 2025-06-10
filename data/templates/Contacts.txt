@@ -11,7 +11,6 @@
 |datatables-buttons=colvis,copy, csv, excel, download, print
 |datatables-synch=true
 |datatables-synch.interval=100
-|datatables-synch.property=Modification date
 |datatables-searchPanes=true
 |datatables-searchPanes.columns=0,2
 |datatables-searchPanes.threshold=1

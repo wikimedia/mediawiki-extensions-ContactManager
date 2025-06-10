@@ -19,5 +19,6 @@
 |format=datatable
 |datatables-synch=true
 |datatables-synch.interval=100
+|datatables-synch.property=Modification date
 |mode=nested 
 }}
