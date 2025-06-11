@@ -358,7 +358,12 @@ class Mailer {
 		}
 
 		$schemaName = $GLOBALS['wgContactManagerSchemasContact'];
-		$query = '[[' . implode( '||', array_map( static function ( $value ) {
+		$targetTitle_ = \ContactManager::replaceParameter( 'ContactManagerContactPagenameFormula',
+			$this->obj['mailbox'],
+			'~'
+		);
+		$query = "[[$targetTitle_]]";
+		$query .= '[[' . implode( '||', array_map( static function ( $value ) {
 			return "email::$value";
 		}, $emailAddresses ) ) . ']]';
 

@@ -256,12 +256,16 @@ class ContactManager {
 		$context = RequestContext::getMain();
 		$context->setTitle( $title_ );
 
+		if ( $mailbox ) {
+			$arr['mailbox'] = $mailbox;
+		}
+
 		$schema = self::jobNameToSchema( $jobName );
 		$jsonData = [
 			$schema => $arr
 		];
 
-		\VisualData::updateCreateSchemas( $user, $title_, $jsonData, 'jsondata' );
+		\VisualData::updateCreateSchemas( $user, $title_, $jsonData, 'main' );
 	}
 
 	/**
@@ -771,7 +775,11 @@ class ContactManager {
 		}
 
 		$schema = $GLOBALS['wgContactManagerSchemasContact'];
-		$query = '[[email::' . $email . ']]';
+		$targetTitle_ = self::replaceParameter( 'ContactManagerContactPagenameFormula',
+			$params['mailbox'],
+			'~'
+		);
+		$query = "[[email::$email]][[$targetTitle_]]";
 		$results = \VisualData::getQueryResults( $schema, $query );
 
 		$pagenameFormula = self::replaceParameter( 'ContactManagerContactPagenameFormula',
