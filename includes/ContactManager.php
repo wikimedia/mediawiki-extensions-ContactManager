@@ -139,6 +139,8 @@ class ContactManager {
 
 		$res = $mailbox->getInfo( $errors );
 
+		$mailbox->disconnect();
+
 		if ( !$res ) {
 			return false;
 		}
@@ -283,6 +285,8 @@ class ContactManager {
 
 		$res = $mailbox->getFolders( $errors );
 
+		$mailbox->disconnect();
+
 		if ( !$res ) {
 			// $this->error = array_pop( $errors );
 			return false;
@@ -308,18 +312,20 @@ class ContactManager {
 	 * @return array
 	 */
 	public static function getMessages( $user, $params, &$errors ) {
-		$mailbox = new Mailbox( $params['mailbox'], $errors );
-
-		if ( !$mailbox ) {
-			return false;
-		}
-
 		$memoryLimit = ini_get( 'memory_limit' );
 		echo 'memory_limit: ' . $memoryLimit . PHP_EOL;
 
 		// @see RunJobs -> memoryLimit
 		if ( $memoryLimit === '150M' ) {
 			echo '***attention, use parameter --memory-limit default' . PHP_EOL;
+		}
+
+		echo 'connecting to mailbox ' . $params['mailbox'] . PHP_EOL;
+
+		$mailbox = new Mailbox( $params['mailbox'], $errors );
+
+		if ( !$mailbox ) {
+			return false;
 		}
 
 		$imapMailbox = $mailbox->getImapMailbox();
@@ -352,6 +358,8 @@ class ContactManager {
 		// get folders data, required to check
 		// for uidvalidity
 		if ( !empty( $params['fetch_folder_status'] ) || $fetchUIDsIncremental() ) {
+			echo 'getting mailbox status' . PHP_EOL;
+
 			$schema_ = $GLOBALS['wgContactManagerSchemasMailboxFolders'];
 			$query_ = '[[name::' . $params['mailbox'] . ']]';
 			$results_ = \VisualData::getQueryResults( $schema_, $query_ );
@@ -475,6 +483,8 @@ class ContactManager {
 			}
 		};
 
+		echo 'determining fetch query' . PHP_EOL;
+
 		// determine fetch query
 		foreach ( $folders as $key => $folder ) {
 			$folders[$key]['shortpath'] = $switchMailbox( $folder );
@@ -482,8 +492,12 @@ class ContactManager {
 			$folders[$key]['fetchQuery'] = $determineFetchQuery( $folders[$key] );
 		}
 
+		echo 'retrieving headers' . PHP_EOL;
+
 		$overviewHeaders = [];
 		foreach ( $folders as $key => $folder ) {
+			echo 'switching folder ' . $folder['shortpath'] . PHP_EOL;
+
 			$shortpath = $switchMailbox( $folder );
 			[ $headersQuery, $messagesQuery ] = $folder['fetchQuery'];
 
@@ -521,12 +535,23 @@ class ContactManager {
 			// if ( !empty( $params['fetch_folder_status'] ) ) {
 			}
 
+			echo 'getting folder overview: ' . PHP_EOL;
+			echo $headersQuery . PHP_EOL;
+
 			$overviewHeaders[$key] = $imapMailbox->fetch_overview( $headersQuery );
+
+			echo 'recording job status' . PHP_EOL;
 
 			self::setRunningJob( $user, 'retrieve-messages', self::JOB_LAST_STATUS, $params['mailbox'] );
 
+			$n = 0;
+			$size_ = count( $overviewHeaders[$key] );
+			echo 'size ' . $size_ . PHP_EOL;
+
 			// retrieve all headers in this folder
 			foreach ( $overviewHeaders[$key] as $header ) {
+				echo 'importing header ' . ( $n + 1 ) . '/' . $size_ . PHP_EOL;
+
 				$header = (array)$header;
 
 				// *** an unquoted comma in the name is safe,
@@ -561,60 +586,92 @@ class ContactManager {
 				// what we want, since the $lastKnowMessageUid
 				// won't be reliable
 				// $jobs[] = $job_;
+
+				$n++;
 			}
+
+			echo 'recording job status' . PHP_EOL;
 
 			self::setRunningJob( $user, 'retrieve-messages', self::JOB_LAST_STATUS, $params['mailbox'] );
 		}
 
+		echo 'retrieve messages' . PHP_EOL;
+
 		// then retrieve all messages
 		foreach ( $folders as $key => $folder ) {
+			if ( empty( $folder['fetch_message'] ) ) {
+				continue;
+			}
+
+			echo 'switching folder ' . $folder['shortpath'] . PHP_EOL;
+
 			$shortpath = $switchMailbox( $folder );
+
 			[ $headersQuery, $messagesQuery ] = $folder['fetchQuery'];
 
-			if ( !empty( $folder['fetch_message'] ) ) {
-				$overviewMessage = ( $headersQuery === $messagesQuery
-					 ? $overviewHeaders[$key]
-					 : $imapMailbox->fetch_overview( $messagesQuery )
-				);
+			if ( $headersQuery !== $messagesQuery ) {
+				echo 'retrieving messages overview' . PHP_EOL;
+				print_r( $messagesQuery );
+			}
 
-				foreach ( $overviewMessage as $header ) {
-					$header = (array)$header;
+			$overviewMessages = ( $headersQuery === $messagesQuery
+				 ? $overviewHeaders[$key]
+				 : $imapMailbox->fetch_overview( $messagesQuery )
+			);
 
-					$importMessage = new ImportMessage( $user, array_merge( $params, [
-						'folder' => $folder,
-						'uid' => $header['uid']
-					] ), $errors );
+			$n = 0;
+			$size_ = count( $overviewMessages );
+			echo 'size ' . $size_ . PHP_EOL;
 
-					$importMessage->doImport();
+			foreach ( $overviewMessages as $header ) {
+				echo 'importing message ' . ( $n + 1 ) . '/' . $size_ . PHP_EOL;
 
+				$header = (array)$header;
+
+				$importMessage = new ImportMessage( $user, array_merge( $params, [
+					'folder' => $folder,
+					'uid' => $header['uid']
+				] ), $errors );
+
+				$importMessage->doImport();
+
+				if ( $n % 10 === 0 ) {
+					echo 'recording job status' . PHP_EOL;
 					self::setRunningJob( $user, 'retrieve-messages', self::JOB_LAST_STATUS, $params['mailbox'] );
-
-					// *** alternatively use
-					// $jobs[] = new ContactManagerJob( $title, array_merge( $params, [
-					// 	'job' => 'retrieve-message',
-					// 	'folder' => $folder['folder'],
-					// 	'folder_name' => $folder['folder_name'],
-					// 	'uid' => $header['uid']
-					// ] ) );
-
-					// run synch
-					// $job_->run();
-
-					// *** this will run asynch, which is not
-					// what we want, since the $lastKnowMessageUid
-					// won't be reliable
-					// $jobs[] = $job_;
 				}
+
+				// *** alternatively use
+				// $jobs[] = new ContactManagerJob( $title, array_merge( $params, [
+				// 	'job' => 'retrieve-message',
+				// 	'folder' => $folder['folder'],
+				// 	'folder_name' => $folder['folder_name'],
+				// 	'uid' => $header['uid']
+				// ] ) );
+
+				// run synch
+				// $job_->run();
+
+				// *** this will run asynch, which is not
+				// what we want, since the $lastKnowMessageUid
+				// won't be reliable
+				// $jobs[] = $job_;
+
+				$n++;
 			}
 		}
 
 		if ( !empty( $params['fetch_folder_status'] ) || $folder['fetch'] === 'UIDs incremental' ) {
+			echo 'saving folders status' . PHP_EOL;
+
 			$jsonData_ = [
 				$GLOBALS['wgContactManagerSchemasMailboxFolders'] => $foldersData
 			];
 			\VisualData::updateCreateSchemas( $user, $foldersTitle, $jsonData_ );
 		}
 
+		echo 'disconnecting' . PHP_EOL;
+
+		$mailbox->disconnect();
 		// self::pushJobs( $jobs );
 	}
 

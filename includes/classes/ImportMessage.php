@@ -77,7 +77,7 @@ class ImportMessage {
 		$imapMailbox->switchMailbox( $folder['folder'] );
 
 		// *** attention, this is empty if called from
-		// 'get messafge' and the toggle 'fetch message'
+		// 'get message' and the toggle 'fetch message'
 		// is false in the ContactManager/Retrieve messages form
 		if ( !array_key_exists( 'download_attachments', $params ) ) {
 			$params['download_attachments'] = false;
@@ -147,14 +147,20 @@ class ImportMessage {
 		// email => name with "name <email>"
 		foreach ( [ 'to', 'cc', 'bcc', 'replyTo' ] as $value ) {
 			$formattedRecipients = [];
-			foreach ( $obj[$value] as $k => $v ) {
-				if ( !empty( $v ) ) {
-					$v = trim( $v, '"' );
+			foreach ( $obj[$value] as $addresss_ => $name_ ) {
+				if ( empty( $addresss_ ) ) {
+					echo '*** warning, address is empty' . PHP_EOL;
+					print_r( $obj[$value] );
+					continue;
 				}
-				$formattedRecipients[] = ( $v ? "$v <$k>" : $k );
 
-				if ( !array_key_exists( $k, $allContacts ) || !empty( $v ) ) {
-					$allContacts[$k] = $v;
+				if ( !empty( $name_ ) ) {
+					$name_ = trim( $name_, '"' );
+				}
+				$formattedRecipients[] = ( $name_ ? "$name_ <$addresss_>" : $addresss_ );
+
+				if ( !array_key_exists( $addresss_, $allContacts ) || !empty( $name_ ) ) {
+					$allContacts[$addresss_] = $name_;
 				}
 			}
 			$obj[$value] = $formattedRecipients;
@@ -283,6 +289,8 @@ class ImportMessage {
 				}
 			}
 		}
+
+		$mailbox->disconnect();
 
 		if ( !empty( $params['save_contacts'] ) ) {
 			foreach ( $allContacts as $email => $name ) {
@@ -495,6 +503,11 @@ class ImportMessage {
 		}
 
 		foreach ( (array)$params['filters_by_message_fields'] as $value ) {
+			if ( !array_key_exists( $v['field'], $obj ) ) {
+				echo 'error, ignoring filter ' . $v['field'] . PHP_EOL;
+				continue;
+			}
+
 			$value_ = $obj[$v['field']];
 
 			$result_ = false;

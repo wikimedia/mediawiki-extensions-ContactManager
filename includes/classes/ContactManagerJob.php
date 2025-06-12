@@ -70,6 +70,8 @@ class ContactManagerJob extends Job {
 			return false;
 		}
 
+		echo 'recording job status (start)' . PHP_EOL;
+
 		\ContactManager::setRunningJob( $user, $this->params['name'], \ContactManager::JOB_START, ( array_key_exists( 'mailbox', $this->params ) ? $this->params['mailbox'] : null ) );
 
 		$title = TitleClass::newFromID( $this->params['pageid'] );
@@ -115,6 +117,8 @@ class ContactManagerJob extends Job {
 			// 	\ContactManager::retrieveContacts( $user, $this->params, $errors );
 			// 	break;
 		}
+
+		echo 'recording job status (end)' . PHP_EOL;
 
 		\ContactManager::setRunningJob( $user, $this->params['name'], \ContactManager::JOB_END, ( array_key_exists( 'mailbox', $this->params ) ? $this->params['mailbox'] : null ) );
 

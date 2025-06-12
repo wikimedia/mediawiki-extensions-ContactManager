@@ -69,6 +69,10 @@ class Mailbox {
 		return $this->mailbox;
 	}
 
+	public function disconnect() {
+		$this->mailbox->disconnect();
+	}
+
 	/**
 	 * @param array &$errors []
 	 * @return array|null

@@ -143,6 +143,12 @@ class RecordHeader {
 			if ( !array_key_exists( 'header', $v ) || empty( $v['header'] ) ) {
 				continue;
 			}
+
+			if ( !array_key_exists( $v['header'], $obj ) ) {
+				echo 'error, ignoring filter ' . $v['header'] . PHP_EOL;
+				continue;
+			}
+
 			$result_ = false;
 			$value_ = $obj[$v['header']];
 			switch ( $v['header'] ) {
