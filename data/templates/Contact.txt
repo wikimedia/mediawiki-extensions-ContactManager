@@ -53,7 +53,7 @@
 
 ==Conversations==
 
-{{#visualdataquery: [[participants/email::{{#replace:{{{email|}}}|,|{{!}}{{!}} }}]]
+{{#if: {{{email|}}}|{{#visualdataquery: [[participants/email::{{#replace:{{{email|}}}|,|{{!}}{{!}} }}]]
 |schema=ContactManager/Conversation
 |limit=40
 |?participants field=conversation
@@ -72,7 +72,7 @@
 |template?latest=ContactManager/Conversations table latest field
 |format=table
 |mode=nested 
-}}
+}}| you don't have permissions to access this contact }}
 
 {{#arraymap: {{{categories|}}} | , | @ | [[Category:@]] |\s }}
 

@@ -20,14 +20,11 @@
     |template=ContactManager/Email
   }} 
 |
-  {{#if: {{#visualdataquery: [[id::{{#urlget:uid}}]] [[mailboxFolder:: {{#urlget:shortpath}} ]] 
+  {{#if: {{#visualdataquery: [[ContactManager:Mailboxes/{{#urldecode:{{#urlget:mailbox}}}}/messages/{{#urldecode:{{#urlget:folder}}}}/~]] [[id::{{#urlget:uid}}]]
     |schema=ContactManager/Incoming mail 
     |format=pageid 
   }} |
-    {{#visualdataprint: {{#visualdataquery: [[id::{{#urlget:uid}}]] [[mailboxFolder:: {{#urlget:shortpath}} ]] 
-      |schema=ContactManager/Incoming mail 
-      |format=pageid 
-    }} 
+    {{#visualdataquery: [[ContactManager:Mailboxes/{{#urldecode:{{#urlget:mailbox}}}}/messages/{{#urldecode:{{#urlget:folder}}}}/~]] [[id::{{#urlget:uid}}]]
       |schema=ContactManager/Incoming mail
       |?date
       |?headers/fromaddress
