@@ -228,7 +228,6 @@ class ImportMessage {
 			&& is_array( $params['categories'] ) ? $params['categories'] : [] );
 
 		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories ) ) {
-			echo 'skip message ' . $uid . PHP_EOL;
 			return;
 		}
 
@@ -502,7 +501,11 @@ class ImportMessage {
 			$params['filters_by_message_fields'] = [];
 		}
 
-		foreach ( (array)$params['filters_by_message_fields'] as $value ) {
+		foreach ( (array)$params['filters_by_message_fields'] as $v ) {
+			if ( !array_key_exists( 'field', $v ) || empty( $v['field'] ) ) {
+				continue;
+			}
+
 			if ( !array_key_exists( $v['field'], $obj ) ) {
 				echo 'error, ignoring filter ' . $v['field'] . PHP_EOL;
 				continue;
@@ -607,16 +610,21 @@ class ImportMessage {
 
 			// apply filter
 			if ( $result_ ) {
+				echo 'matching filter ' . $value_ . ' on ' . $v['field'] . PHP_EOL;
+
 				switch ( $v['action'] ) {
 					case 'skip':
+						echo 'skipping message' . PHP_EOL;
 						return false;
 					default:
 						if ( !empty( $v['pagename_formula'] ) ) {
 							$pagenameFormula = $v['pagename_formula'];
+							echo 'new pagenameFormula ' . $pagenameFormula . PHP_EOL;
 						}
 
 						if ( !empty( $v['categories'] ) ) {
 							$categories = array_merge( $categories, $v['categories'] );
+							echo 'apply categories ' . implode( ', ', $categories ) . PHP_EOL;
 						}
 				}
 			}

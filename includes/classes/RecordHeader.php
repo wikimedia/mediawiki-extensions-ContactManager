@@ -85,7 +85,6 @@ class RecordHeader {
 
 		$categories_ = [];
 		if ( !$this->applyFilters( $obj, $pagenameFormula_, $categories_ ) ) {
-			echo 'skip message ' . $header['uid'] . PHP_EOL;
 			return;
 		}
 
@@ -197,16 +196,21 @@ class RecordHeader {
 
 			// apply filter
 			if ( $result_ ) {
+				echo 'matching filter ' . $value_ . ' on ' . $v['header'] . PHP_EOL;
+
 				switch ( $v['action'] ) {
 					case 'skip':
+						echo 'skipping message' . PHP_EOL;
 						return false;
 					default:
 						if ( !empty( $v['pagename_formula'] ) ) {
 							$pagenameFormula = $v['pagename_formula'];
+							echo 'new pagenameFormula ' . $pagenameFormula . PHP_EOL;
 						}
 
 						if ( !empty( $v['categories'] ) ) {
 							$categories = array_merge( $categories, $v['categories'] );
+							echo 'apply categories ' . implode( ', ', $categories ) . PHP_EOL;
 						}
 				}
 			}
