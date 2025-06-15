@@ -279,7 +279,7 @@ class ImportMessage {
 		$pathTarget = $attachmentsFolder . '/' . $title->getArticleID();
 
 		if ( $obj['hasAttachments'] ) {
-			echo '$pathTarget ' . $pathTarget . PHP_EOL;
+			echo 'attachment path ' . $pathTarget . PHP_EOL;
 
 			if ( mkdir( $pathTarget, 0777, true ) ) {
 				foreach ( $obj['attachments'] as $value ) {

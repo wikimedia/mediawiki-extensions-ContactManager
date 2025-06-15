@@ -884,8 +884,12 @@ class ContactManager {
 					$data = \VisualData::array_merge_recursive( $data, $dataOriginal );
 
 				} else {
-					$data['seen_until'] = $dataOriginal['seen_until'];
-					$data['seen_since'] = $dataOriginal['seen_since'];
+					if ( !empty( $dataOriginal['seen_until'] ) ) {
+						$data['seen_until'] = $dataOriginal['seen_until'];
+					}
+					if ( !empty( $dataOriginal['seen_since'] ) ) {
+						$data['seen_since'] = $dataOriginal['seen_since'];
+					}
 					$data = \VisualData::array_merge_recursive( $dataOriginal, $data );
 				}
 			}
