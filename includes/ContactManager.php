@@ -426,8 +426,8 @@ class ContactManager {
 						$folder['UID_from'] = 1;
 					}
 					return [
-						$folder['UID_from'] . ':' . $folder['mailboxStatus']['messages'],
-						$folder['UID_from'] . ':' . $folder['mailboxStatus']['messages']
+						$folder['UID_from'] . ':' . $folder['mailboxStatus']['uidnext'],
+						$folder['UID_from'] . ':' . $folder['mailboxStatus']['uidnext']
 					];
 
 				case 'uids less than or equal':
@@ -473,11 +473,11 @@ class ContactManager {
 						$lastKnowMessageUid = ( !empty( $results_[0] ) && !empty( $results_[0]['data']['id'] ) ?
 							$results_[0]['data']['id'] : 0 );
 
-						$UIDsMessageSequence = ( $lastKnowMessageUid + 1 ) . ':' . $folder['mailboxStatus']['messages'];
+						$UIDsMessageSequence = ( $lastKnowMessageUid + 1 ) . ':' . $folder['mailboxStatus']['uidnext'];
 					}
 
 					return [
-						( $lastKnowHeaderUid + 1 ) . ':' . $folder['mailboxStatus']['messages'],
+						( $lastKnowHeaderUid + 1 ) . ':' . $folder['mailboxStatus']['uidnext'],
 						$UIDsMessageSequence
 					];
 			}
@@ -489,6 +489,8 @@ class ContactManager {
 		foreach ( $folders as $key => $folder ) {
 			$folders[$key]['shortpath'] = $switchMailbox( $folder );
 			$folders[$key]['mailboxStatus'] = (array)$imapMailbox->statusMailbox( $errors );
+			echo 'mailboxStatus' . PHP_EOL;
+			print_r( $folders[$key]['mailboxStatus'] );
 			$folders[$key]['fetchQuery'] = $determineFetchQuery( $folders[$key] );
 		}
 
@@ -611,7 +613,7 @@ class ContactManager {
 
 			if ( $headersQuery !== $messagesQuery ) {
 				echo 'retrieving messages overview' . PHP_EOL;
-				print_r( $messagesQuery );
+				echo $messagesQuery . PHP_EOL;
 			}
 
 			$overviewMessages = ( $headersQuery === $messagesQuery
@@ -1162,6 +1164,27 @@ class ContactManager {
 		}
 
 		return $delete;
+	}
+
+	/**
+	 * @param array $data
+	 * @param string $prefix
+	 * @return array
+	 */
+	public static function flattenArray( $data, $prefix = '' ) {
+		$ret = [];
+
+		foreach ( (array)$data as $key => $value ) {
+			$fullKey = ( $prefix !== '' ? "$prefix/$key" : $key );
+
+			if ( is_array( $value ) || is_object( $value ) ) {
+				$ret += self::flattenArray( $value, $fullKey );
+			} else {
+				$ret[$fullKey] = $value;
+			}
+		}
+
+		return $ret;
 	}
 
 }

@@ -494,6 +494,8 @@ class ImportMessage {
 	private function applyFilters( $obj, &$pagenameFormula, &$categories ) {
 		$params = $this->params;
 
+		$obj = \ContactManager::flattenArray( $obj );
+
 		// *** attention, this is empty if called from
 		// 'get message' and the toggle 'fetch message'
 		// is false in the ContactManager/Retrieve messages form
