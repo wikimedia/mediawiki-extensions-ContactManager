@@ -366,6 +366,7 @@ class ContactManager {
 
 			if ( empty( $results_ ) ) {
 				$errors[] = 'mailbox folders haven\'t yet been retrieved';
+				$mailbox->disconnect();
 				return false;
 			}
 			$foldersTitle = TitleClass::newFromText( $results_[0]['title'] );
@@ -515,6 +516,7 @@ class ContactManager {
 
 				if ( $folderKey === -1 ) {
 					$errors[] = 'mailbox folder (' . $shortpath . ') hasn\'t been retrieved';
+					$mailbox->disconnect();
 					return false;
 				}
 
@@ -524,6 +526,7 @@ class ContactManager {
 					&& (int)$folder['mailboxStatus']['uidvalidity'] !== $folder['mailboxStatus']['uidvalidity']
 				) {
 					$errors[] = 'mailbox\'s UIDs have been reorganized, fetch again the entire mailbox';
+					$mailbox->disconnect();
 					return false;
 				}
 
@@ -630,7 +633,7 @@ class ContactManager {
 
 				$header = (array)$header;
 
-				$importMessage = new ImportMessage( $user, array_merge( $params, [
+				$importMessage = new ImportMessage( $user, $mailbox, array_merge( $params, [
 					'folder' => $folder,
 					'uid' => $header['uid']
 				] ), $errors );

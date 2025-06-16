@@ -46,13 +46,18 @@ class ImportMessage {
 	/** @var array */
 	private $errors;
 
+	/** @var MediaWiki\Extension\ContactManager\Mailbox */
+	private $mailbox;
+
 	/**
 	 * @param User $user
+	 * @param MediaWiki\Extension\ContactManager\Mailbox $mailbox
 	 * @param array $params
 	 * @param array &$errors []
 	 */
-	public function __construct( $user, $params, &$errors = [] ) {
+	public function __construct( $user, $mailbox, $params, &$errors = [] ) {
 		$this->user = $user;
+		$this->mailbox = $mailbox;
 		$this->params = $params;
 		$this->errors = &$errors;
 	}
@@ -63,18 +68,18 @@ class ImportMessage {
 	public function doImport() {
 		$params = $this->params;
 		$user = $this->user;
-		$mailbox = new Mailbox( $params['mailbox'], $this->errors );
+		$imapMailbox = $this->mailbox->getImapMailbox();
 
-		if ( !$mailbox ) {
+		if ( !$imapMailbox ) {
 			return false;
 		}
 
 		$uid = $params['uid'];
 		$folder = $params['folder'];
 
-		$imapMailbox = $mailbox->getImapMailbox();
-
-		$imapMailbox->switchMailbox( $folder['folder'] );
+		// *** not necessary, but ensure doImport is called from
+		// the right folder
+		// $imapMailbox->switchMailbox( $folder['folder'] );
 
 		// *** attention, this is empty if called from
 		// 'get message' and the toggle 'fetch message'
@@ -288,8 +293,6 @@ class ImportMessage {
 				}
 			}
 		}
-
-		$mailbox->disconnect();
 
 		if ( !empty( $params['save_contacts'] ) ) {
 			foreach ( $allContacts as $email => $name ) {
