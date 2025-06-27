@@ -765,6 +765,19 @@ class Mailer {
 
 		$email->subject( $this->obj['subject'] );
 
+		// @see https://symfony.com/doc/5.x/mailer.html#file-attachments
+		if ( is_array( $this->obj['attachments'] ) ) {
+			foreach ( $this->obj['attachments'] as $value_ ) {
+				// $email->attach( $value['body'], $value['name'], $value['contentType'] );
+				$file_ = \ContactManager::getFile( $value_ );
+				if ( $file_ ) {
+					if ( $file_->isLocal() ) {
+						$email->attachFromPath( $file_->getLocalRefPath(), $file_->getTitle()->getText(), $file_->getMimeType() );
+					}
+				}
+			}
+		}
+
 		try {
 			$this->mailer->send( $email );
 

@@ -1170,6 +1170,21 @@ class ContactManager {
 	}
 
 	/**
+	 * @param array $name
+	 * @return bool|File
+	 */
+	public static function getFile( $name ) {
+		$title = TitleClass::newFromText( $name, NS_FILE );
+
+		if ( !$title ) {
+			return false;
+		}
+
+		$wikiFilePage = new \WikiFilePage( $title );
+		return $wikiFilePage->getFile();
+	}
+
+	/**
 	 * @param array $data
 	 * @param string $prefix
 	 * @return array
@@ -1189,5 +1204,4 @@ class ContactManager {
 
 		return $ret;
 	}
-
 }
