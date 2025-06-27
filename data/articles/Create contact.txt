@@ -1,0 +1,35 @@
+<big>Mailboxes: {{#visualdataquery:[[name::+]]
+|schema=ContactManager/Mailbox 
+|?name
+|template?name=ContactManager/Create contact_name_field
+|format=template
+|separator=, <nowiki> </nowiki>
+}}</big>
+<templatestyles src="ContactManager:Styles.css" />
+
+{{#if:{{#urlget:mailbox}}|{{#visualdataform: ContactManager/Contact
+  |title = New contact
+  |action = create
+  |edit-page = 
+  |return-page = 
+  |view = inline
+  |popup-size = large
+  |css-class = 
+  |pagename-formula = ContactManager:Mailboxes/{{#urlget:mailbox}}/contacts/#count
+  |edit-freetext = false   
+  |edit-categories = false
+  |edit-content-model = false
+  |edit-target-slot = false
+  |target-slot = main
+  |default-categories = 
+  |default-content-model = wikitext
+  |preload=
+  |preload-data=
+  |layout-align = top
+  |popup-help = false 
+  |layout = tabs
+  |submit-button-text =
+  |validate-button-text =
+  |overwrite-existing-article-on-create=false
+}}
+| '''select a mailbox''' }}

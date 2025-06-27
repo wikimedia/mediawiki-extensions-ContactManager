@@ -1,0 +1,1 @@
+{{#querylink:ContactManager:Create contact|{{{name}}}|mailbox={{{name}}}|class=item-{{#ifeq:{{#urlget:mailbox}}|{{{name}}}||un}}selected }}

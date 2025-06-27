@@ -481,6 +481,10 @@ class Mailer {
 			return;
 		}
 
+		if ( !count( $requiredPrintouts ) ) {
+			$this->usePersonalizations = false;
+		}
+
 		$allPrintouts = array_merge( $requiredPrintouts, $emailPrintouts );
 
 		if ( $this->usePersonalizations && count( $allPrintouts ) > 0 ) {
@@ -535,10 +539,10 @@ class Mailer {
 						$schemas_ = array_keys( $data_['schemas'] );
 						foreach ( $schemas_ as $schemaName_ ) {
 							$schema_ = \VisualData::getSchema( $context, $schemaName_ );
-							[ $emailPrintouts, $requiredPrintouts ] = $this->getRelevantPrintouts( $schema_, $this->obj['text'] );
+							[ $emailPrintouts_, $requiredPrintouts_ ] = $this->getRelevantPrintouts( $schema_, $this->obj['text'] );
 
-							if ( $emailPrintouts ) {
-								$categoriesParams[$value][$schemaName_] = [ $emailPrintouts, $requiredPrintouts, $schema_ ];
+							if ( $emailPrintouts_ ) {
+								$categoriesParams[$value][$schemaName_] = [ $emailPrintouts_, $requiredPrintouts_, $schema_ ];
 								$found = true;
 								break;
 							}
@@ -565,11 +569,11 @@ class Mailer {
 
 				// contains no more than 1 schema
 				foreach ( $value as $schemaName => $values ) {
-					[ $emailPrintouts, $requiredPrintouts ] = $values;
+					[ $emailPrintouts_, $requiredPrintouts_ ] = $values;
 
 					$params = [ 'format' => 'count' ];
-					$allPrintouts = array_merge( $emailPrintouts, $requiredPrintouts );
-					$count_ = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts, $params );
+					$allPrintouts_ = array_merge( $emailPrintouts_, $requiredPrintouts_ );
+					$count_ = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts_, $params );
 
 					// >>>>>>>>>>>>>>>>>> ChatGPT idea
 					if ( $skipped + $count_ <= $this->obj['offset'] ) {
@@ -582,8 +586,7 @@ class Mailer {
 					// <<<<<<<<<<<<<<<<<< ChatGPT idea
 
 					$params = [ 'format' => 'json-raw', 'offset' => $localOffset, 'limit' => $localLimit ];
-					$allPrintouts = array_merge( $emailPrintouts, $requiredPrintouts );
-					$results_ = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts, $params );
+					$results_ = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts_, $params );
 
 					if ( array_key_exists( 'errors', $results_ ) ) {
 						$this->errors = array_merge( $this->errors, $results_['errors'] );
@@ -614,11 +617,11 @@ class Mailer {
 			// to nested data
 			foreach ( $categoriesData as $cat => $value ) {
 				foreach ( $value as $schemaName => $values ) {
-					[ $emailPrintouts, $requiredPrintouts, $schema_ ] = $categoriesParams[$cat][$schemaName];
+					[ $emailPrintouts_, $requiredPrintouts_, $schema_ ] = $categoriesParams[$cat][$schemaName];
 
 					$recipientsParams = [
-						'emailPrintouts' => $emailPrintouts,
-						'requiredPrintouts' => $requiredPrintouts,
+						'emailPrintouts' => $emailPrintouts_,
+						'requiredPrintouts' => $requiredPrintouts_,
 						'schema' => $schema_
 					];
 
@@ -636,7 +639,7 @@ class Mailer {
 								break;
 							}
 						}
-						$this->appendToPayload( 'bcc', $name, $requiredPrintouts, $emailAddresses, $dataMap );
+						$this->appendToPayload( 'bcc', $name, $requiredPrintouts_, $emailAddresses, $dataMap );
 					}
 				}
 			}

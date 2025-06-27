@@ -124,6 +124,7 @@ class ContactManagerHooks {
 			'compose' => 'Compose',
 			'mailboxes' => 'Mailboxes',
 			'mailers' => 'Mailers',
+			'create-contact' => 'Create contact',
 			'organizations' => 'Organizations',
 			'data-structure' => 'Data structure',
 		];
