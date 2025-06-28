@@ -11,6 +11,9 @@
 ! subject
 | {{{subject}}}
 |-
+! attachments
+| {{#arraymap:{{{attachments|}}} | @@ | @@ | [[Special:ContactManagerGetResource/{{{pageid}}}/@@|@@]] | ,\s | ,\s  }}
+|-
 |}
 
 [[{{{pagetitle}}}|'''Source''']]
@@ -56,4 +59,3 @@
 <tab name="html">{{#shadowroot:{{#base64encode:{{{textHtml|}}}}}|host}}</tab>
 <tab name="headers">{{#shadowroot:{{#base64encode:{{{headersRaw|}}}}}|host}}</tab>
 </tabs>
-

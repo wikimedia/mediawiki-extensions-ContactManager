@@ -16,6 +16,8 @@
     |?textHtml=
     |?visibleText=
     |?headersRaw=
+    |?attachments/name=
+    |values-separator=@@
     |format=template
     |template=ContactManager/Email
   }} 
@@ -35,6 +37,8 @@
       |?textHtml=
       |?visibleText=
       |?headersRaw=
+      |?attachments/name=
+      |values-separator=@@
       |format=template
       |template=ContactManager/Email
     }} 
@@ -50,4 +54,3 @@
     }}
   }}
 }}
-

@@ -4,6 +4,7 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 * articles
 ** [[ContactManager:Compose]]
 ** [[ContactManager:Contact]]
+** [[ContactManager:Create contact]]
 ** [[ContactManager:Conversation]]
 ** [[ContactManager:Data structure]]
 ** [[ContactManager:Filter header]]
@@ -31,6 +32,7 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 **[[Template:ContactManager/Conversations table messages field]]
 **[[Template:ContactManager/Conversations table participants]]
 **[[Template:ContactManager/Conversations table participants field]]
+**[[Template:ContactManager/Create contact name field]]
 **[[Template:ContactManager/Email]]
 **[[Template:ContactManager/Format reply]]
 **[[Template:ContactManager/Get mailbox]]
