@@ -47,6 +47,9 @@
 				"PermissionManager",
 				"UserIdentityLookup"
 			]
+		},
+		"ContactManagerTracking": {
+			"class": "MediaWiki\\Extension\\ContactManager\\Special\\Tracking"
 		}
 	},
 	"AutoloadNamespaces": {

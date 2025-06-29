@@ -8,6 +8,8 @@ See jobs data [[{{FULLPAGENAME}}/Jobs|here]]
 
 [[ContactManager:Mailers|Mailers]]
 
+[[ContactManager:Create contact|Create contact]]
+
 [[ContactManager:Organizations|Organizations]]
 
 [[ContactManager:Data structure|Data structure]]

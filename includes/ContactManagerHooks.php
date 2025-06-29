@@ -50,6 +50,29 @@ class ContactManagerHooks {
 	 * @param DatabaseUpdater|null $updater
 	 */
 	public static function onLoadExtensionSchemaUpdates( ?DatabaseUpdater $updater = null ) {
+		$base = __DIR__;
+		$db = $updater->getDB();
+		$dbType = $db->getType();
+		$tables = [
+			'contactmanager_tracking',
+			'contactmanager_tracking_sendgrid'
+		];
+
+		foreach ( $tables as $tableName ) {
+			$filename = "$base/../$dbType/$tableName.sql";
+
+			// echo $filename;
+			if ( file_exists( $filename ) && !$db->tableExists( $tableName ) ) {
+				$updater->addExtensionUpdate(
+					[
+						'addTable',
+						$tableName,
+						$filename,
+						true
+					]
+				);
+			}
+		}
 	}
 
 	/**
@@ -85,22 +108,21 @@ class ContactManagerHooks {
 
 	/**
 	 * @param User $user
-	 * @param string $targetTitle
+	 * @param Title|Mediawiki\Title\Title $targetTitle
 	 * @param array $jsonData
 	 * @param string $freetext
 	 * @param bool $isNewPage
 	 * @param array &$errors
 	 * @return void
 	 */
-	public static function VisualDataOnFormSubmit( $user, $targetTitle, $jsonData, $freetext, $isNewPage, &$errors ) {
+	public static function VisualDataOnFormSubmit( $user, $targetTitle, $jsonData, $freetext, $isNewPage, &$errors = [] ) {
 		if ( !empty( $jsonData['schemas'][$GLOBALS['wgContactManagerSchemasComposeEmail']] ) ) {
 
 			if ( !$user->isAllowed( 'contactmanager-can-manage-mailboxes' ) ) {
 				return;
 			}
 
-			\ContactManager::sendEmail( $user,
-				$jsonData['schemas'][$GLOBALS['wgContactManagerSchemasComposeEmail']], $errors );
+			\ContactManager::sendEmail( $user, $targetTitle, $jsonData, $freetext, $isNewPage, $errors );
 		}
 	}
 

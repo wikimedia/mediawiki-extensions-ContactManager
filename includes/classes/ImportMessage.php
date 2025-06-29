@@ -174,6 +174,12 @@ class ImportMessage {
 		$attachments = $mail->getAttachments();
 		$attachments = json_decode( json_encode( $attachments ), true );
 
+		if ( count( $attachments ) ) {
+			foreach ( $attachments as $k => $v ) {
+				$attachments[$k]['name'] = $imapMailbox->decodeMimeStr( $v['name'] );
+			}
+		}
+
 		$parsedEmail = ( new EmailParser() )->parse( $mail->textPlain );
 
 		$obj['textPlain'] = $mail->textPlain;

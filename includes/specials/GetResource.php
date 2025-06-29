@@ -55,8 +55,7 @@ class GetResource extends \SpecialPage {
 	 * @inheritDoc
 	 */
 	public function execute( $par ) {
-		$this->requireLogin();
-
+		// $this->requireLogin();
 		// $this->setHeaders();
 		// $this->outputHeader();
 

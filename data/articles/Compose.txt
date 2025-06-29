@@ -11,11 +11,11 @@
   |title = New email
   |action = create
   |edit-page = 
-  |return-page = ContactManager:Success?mailbox={{#urlget:mailbox}}
+  |return-page = 
   |view = inline
   |popup-size = large
   |css-class =
-  |pagename-formula = ContactManager:Mailboxes/{{#urlget:mailbox}}/Sent email
+  |pagename-formula = ContactManager:Mailboxes/{{#urlget:mailbox}}/Sent/#count
   |edit-freetext = true   
   |edit-categories = false
   |edit-content-model = false
@@ -34,5 +34,3 @@
   |preload-data?mailbox={{#urlget:mailbox}}
 }}
 | '''select a mailbox''' }}
-
-

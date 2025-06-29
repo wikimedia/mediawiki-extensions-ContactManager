@@ -355,9 +355,9 @@
 		},
 		"message_substitutions": {
 			"wiki": {
+				"name": "message_substitutions",
 				"type": "content-block",
 				"uuid": "67b46fb87684a",
-				"name": "message_substitutions",
 				"content": "To perform substitutions, use any property available in the schema associated to the recipient surrounded by \"%\" (for instance %first_name%) . (only available when using a mailer (currently sendgrid) , since substitutions are performed by the mailer server)"
 			},
 			"type": "object",
@@ -404,18 +404,20 @@
 		"attachments": {
 			"wiki": {
 				"name": "attachments",
-				"title-parsed": "attachments",
 				"title": "attachments",
 				"unique-items": false,
 				"type": "schema",
-				"uuid": "65f73d69661e5"
+				"uuid": "6861ba480b246"
 			},
 			"items": {
 				"type": "string",
 				"wiki": {
-					"name": "",
+					"name": "attachments",
 					"type": "property",
+					"uuid": "65f73d69661e5",
+					"visibility": "visible",
 					"multiple-items": true,
+					"preferred-input": "OO.ui.SelectFileWidget",
 					"input-config": {
 						"accept": [
 							"image/png",
@@ -428,14 +430,9 @@
 							"application/pdf"
 						]
 					},
-					"default": [],
-					"value-prefix": "File:",
-					"default-parsed": [],
-					"visibility": "visible",
-					"preferred-input": "OO.ui.SelectFileWidget",
 					"required": false,
-					"layout": "table",
-					"uuid": "65f73d69661e7"
+					"default": [],
+					"filepath": "ContactManagerFiles/{{PAGEID}}/\u003Cvalue\u003E"
 				},
 				"format": "text",
 				"default": []

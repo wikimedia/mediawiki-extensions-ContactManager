@@ -83,20 +83,25 @@ class ContactManager {
 
 	/**
 	 * @param User $user
-	 * @param array $obj
+	 * @param Title|Mediawiki\Title\Title $targetTitle
+	 * @param array $jsonData
+	 * @param string $freetext
+	 * @param bool $isNewPage
 	 * @param array &$errors
 	 * @return bool
 	 */
-	public static function sendEmail( $user, $obj, &$errors = [] ) {
+	public static function sendEmail( $user, $targetTitle, $jsonData, $freetext, $isNewPage, &$errors = [] ) {
+		$data = $jsonData['schemas'][$GLOBALS['wgContactManagerSchemasComposeEmail']];
 		$context = RequestContext::getMain();
 		$schema = \VisualData::getSchema( $context, $GLOBALS['wgContactManagerSchemasComposeEmail'] );
 		$editor = $schema['properties']['text']['wiki']['preferred-input'];
 
-		$mailer = new Mailer( $user, $obj, $editor );
+		$mailer = new Mailer( $user, $targetTitle, $data, $editor );
 		if ( count( $mailer->errors ) ) {
 			$errors = $mailer->errors;
 			return false;
 		}
+
 		if ( $mailer->sendEmail() === false ) {
 			$errors = $mailer->errors;
 			return false;

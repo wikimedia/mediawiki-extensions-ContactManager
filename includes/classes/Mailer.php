@@ -65,22 +65,30 @@ class Mailer {
 	private $editor;
 
 	/** @var SymfonyMailer */
-	private $mailer;
+	private $mailerClass;
 
 	/** @var User */
 	private $user;
 
+	/** @var Title */
+	private $title;
+
 	/** @var array */
 	public $errors = [];
 
+	/** @var string */
+	public $mailer;
+
 	/**
 	 * @param User $user
+	 * @param Title|Mediawiki\Title\Title $title
 	 * @param array $obj
 	 * @param string $editor
 	 * @return bool
 	 */
-	public function __construct( $user, $obj, $editor ) {
+	public function __construct( $user, $title, $obj, $editor ) {
 		$this->user = $user;
+		$this->title = $title;
 		$this->obj = $obj;
 		$this->editor = $editor;
 
@@ -150,6 +158,8 @@ class Mailer {
 						break;
 
 					default:
+						$this->mailer = $data['provider'];
+
 						switch ( $data['transport'] ) {
 							case 'smtp':
 								switch ( $data['provider'] ) {
@@ -270,7 +280,7 @@ class Mailer {
 		}
 
 		if ( $this->transportClass ) {
-			$this->mailer = new SymfonyMailer( $this->transportClass );
+			$this->mailerClass = new SymfonyMailer( $this->transportClass );
 			return true;
 		}
 
@@ -291,7 +301,7 @@ class Mailer {
 		}
 
 		$transport = Transport::fromDsn( $dns );
-		$this->mailer = new SymfonyMailer( $transport );
+		$this->mailerClass = new SymfonyMailer( $transport );
 
 		return true;
 	}
@@ -337,9 +347,10 @@ class Mailer {
 	/**
 	 * @param array $recipients
 	 * @param array $allPrintouts
+	 * @param array $emailPrintouts
 	 * @return array
 	 */
-	public function getContactDataFromRecipients( $recipients, $allPrintouts ) {
+	public function getContactDataFromRecipients( $recipients, $allPrintouts, $emailPrintouts ) {
 		if ( !count( $recipients ) ) {
 			return [];
 		}
@@ -362,17 +373,45 @@ class Mailer {
 			$this->obj['mailbox'],
 			'~'
 		);
-		$query = "[[$targetTitle_]]";
-		$query .= '[[' . implode( '||', array_map( static function ( $value ) {
-			return "email::$value";
-		}, $emailAddresses ) ) . ']]';
 
+		$query = "[[$targetTitle_]]";
+
+		$cond_ = [];
+		foreach ( $emailPrintouts as $emailPrintout ) {
+			$cond_[] = implode( '||', array_map( static function ( $value ) use ( $emailPrintout ) {
+				return "$emailPrintout::$value";
+			}, $emailAddresses ) );
+		}
+
+		$query .= '[[' . implode( '||', $cond_ ) . ']]';
+
+		// retrieves one email address per row
 		$params = [ 'nested' => false ];
 		$ret = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts, $params );
 
 		// @TODO log errors
 		if ( array_key_exists( 'errors', $ret ) ) {
 			return [];
+		}
+
+		foreach ( $parsedRecipients as $value ) {
+			$found = false;
+			foreach ( $ret as $data ) {
+				foreach ( $emailPrintouts as $emailPrintout ) {
+					if ( !empty( $data['data'][$emailPrintout] ) ) {
+						$found = true;
+						break 2;
+					}
+				}
+			}
+			if ( !$found ) {
+				$ret[] = [
+					'data' => [
+						$emailPrintouts[0] => trim( $value[1] ),
+						'full_name' => $value[0],
+					]
+				];
+			}
 		}
 
 		return $ret;
@@ -441,12 +480,13 @@ class Mailer {
 	 * @param array $dataMap
 	 */
 	private function appendToPayload( $key, $name, $requiredPrintouts, $emailAddresses, $dataMap ) {
-		if ( count( $requiredPrintouts ) === 0 ) {
-			$this->obj[$key][] = new Address( $emailAddresses[0], $name );
-			return;
-		}
+		// use always personalizations
+		// if ( count( $requiredPrintouts ) === 0 ) {
+		// 	$this->obj[$key][] = new Address( $emailAddresses[0], $name );
+		// 	return;
+		// }
 
-		$this->personalizations[] = [
+		$val = [
 			// must be an array
 			// do not use $key, produces the sendgrid error
 			// "The to array is required for all personalization objects, and must have at least one email object with a valid email address."
@@ -455,11 +495,16 @@ class Mailer {
 					'email' => $emailAddresses[0],
 					'name' => $name,
 				]
-			],
-			'substitutions' => array_combine( array_map( static function ( $value ) {
-				return "%$value%";
-			}, array_keys( $dataMap ) ), array_values( $dataMap ) )
+			]
 		];
+
+		if ( count( $requiredPrintouts ) > 0 ) {
+			$val['substitutions'] = array_combine( array_map( static function ( $value ) {
+				return "%$value%";
+			}, array_keys( $dataMap ) ), array_values( $dataMap ) );
+		}
+
+		$this->personalizations[] = $val;
 	}
 
 	private function prepareData() {
@@ -481,9 +526,9 @@ class Mailer {
 			return;
 		}
 
-		if ( !count( $requiredPrintouts ) ) {
-			$this->usePersonalizations = false;
-		}
+		// if ( !count( $requiredPrintouts ) ) {
+		// 	$this->usePersonalizations = false;
+		// }
 
 		$allPrintouts = array_merge( $requiredPrintouts, $emailPrintouts );
 
@@ -492,9 +537,9 @@ class Mailer {
 				$allPrintouts[] = 'full_name';
 			}
 
-			$contactsData['to'] = $this->getContactDataFromRecipients( $this->obj['to'], $allPrintouts );
-			$contactsData['cc'] = $this->getContactDataFromRecipients( $this->obj['cc'], $allPrintouts );
-			$contactsData['bcc'] = $this->getContactDataFromRecipients( $this->obj['bcc'], $allPrintouts );
+			$contactsData['to'] = $this->getContactDataFromRecipients( $this->obj['to'], $allPrintouts, $emailPrintouts );
+			$contactsData['cc'] = $this->getContactDataFromRecipients( $this->obj['cc'], $allPrintouts, $emailPrintouts );
+			$contactsData['bcc'] = $this->getContactDataFromRecipients( $this->obj['bcc'], $allPrintouts, $emailPrintouts );
 
 			// $recipientsParams = [
 			// 	'emailPrintouts' => $emailPrintouts,
@@ -683,6 +728,41 @@ class Mailer {
 	/**
 	 * @return bool
 	 */
+	private function setupTracking() {
+		if ( !count( $this->personalizations ) ) {
+			return;
+		}
+
+		$rows = [];
+		$dateTime = date( 'Y-m-d H:i:s' );
+		foreach ( $this->personalizations as $field ) {
+			foreach ( $field as $values ) {
+				foreach ( $values as $value ) {
+					$rows[] = [
+						'page_id' => $this->title->getArticleID(),
+						'email' => $value['email'],
+						'name' => $value['name'],
+						'mailer' => $this->mailer,
+						'created_at' => $dateTime
+					];
+				}
+			}
+		}
+
+		$dbw = \VisualData::getDB( DB_PRIMARY );
+		$tableName = 'contactmanager_tracking';
+		$options = [];
+		$res = $dbw->insert(
+			$tableName,
+			$rows,
+			__METHOD__,
+			$options
+		);
+	}
+
+	/**
+	 * @return bool
+	 */
 	public function sendEmail() {
 		$this->usePersonalizations = $this->transportClass &&
 			method_exists( $this->transportClass, 'setPersonalizations' );
@@ -690,6 +770,11 @@ class Mailer {
 		$this->prepareData();
 
 		if ( $this->usePersonalizations ) {
+			$dbr = \VisualData::getDB( DB_REPLICA );
+			if ( !$dbr->tableExists( 'contactmanager_tracking' ) ) {
+				$this->errors[] = "table 'contactmanager_tracking' does not exist (run maintenance/update.php)";
+				return false;
+			}
 			$this->transportClass->setPersonalizations( $this->personalizations );
 		}
 
@@ -765,26 +850,52 @@ class Mailer {
 
 		$email->subject( $this->obj['subject'] );
 
+		// $filePaths = [];
 		// @see https://symfony.com/doc/5.x/mailer.html#file-attachments
 		if ( is_array( $this->obj['attachments'] ) ) {
 			foreach ( $this->obj['attachments'] as $value_ ) {
-				// $email->attach( $value['body'], $value['name'], $value['contentType'] );
-				$file_ = \ContactManager::getFile( $value_ );
-				if ( $file_ ) {
-					if ( $file_->isLocal() ) {
-						$email->attachFromPath( $file_->getLocalRefPath(), $file_->getTitle()->getText(), $file_->getMimeType() );
-					}
+				// *** already entered as filepath formula within the schema
+				// \ContactManager::getAttachmentsFolder() . '/' . $this->title->getArticleID() . '/' .
+				$path_ = $value_;
+
+				// #method 1: attach uploaded (unpublished) file
+				if ( file_exists( $path_ ) ) {
+					$email->attachFromPath( $path_, $value_ );
+				} else {
+					$this->errors[] = "file '$path_' does not exist";
+					return false;
 				}
+
+				// #method 2: attach published file
+				// $file_ = \ContactManager::getFile( $value_ );
+				// if ( $file_ ) {
+				// 	if ( $file_->isLocal() ) {
+				// 		$filePaths[] = $file_->getLocalRefPath();
+				// 		$email->attachFromPath( $file_->getLocalRefPath(), $file_->getTitle()->getText(), $file_->getMimeType() );
+				// 	}
+				// }
 			}
 		}
 
+		$headersEmail = $email->getHeaders();
+		// @see Symfony\Component\Mailer\Header\MetadataHeader
+		// @see MediaWiki\Extension\ContactManager\Transport\SendgridApiTransport
+		// saved as $payload['custom_args']
+		$headersEmail->addTextHeader( 'X-Metadata-page_id', $this->title->getArticleID() );
+
+		if ( $this->mailer ) {
+			$headersEmail->addTextHeader( 'X-Metadata-mailer', $this->mailer );
+		}
+
 		try {
-			$this->mailer->send( $email );
+			$this->mailerClass->send( $email );
 
 		} catch ( TransportExceptionInterface | TransportException | \Exception $e ) {
 			$this->errors[] = $e->getMessage();
 			return false;
 		}
+
+		$this->setupTracking();
 
 		return true;
 	}
