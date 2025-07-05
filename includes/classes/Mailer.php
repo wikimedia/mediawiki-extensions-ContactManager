@@ -38,6 +38,7 @@ use ParserOptions;
 use RequestContext;
 use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\Header\MetadataHeader;
 use Symfony\Component\Mailer\Mailer as SymfonyMailer;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Transport\AbstractApiTransport;
@@ -881,10 +882,10 @@ class Mailer {
 		// @see Symfony\Component\Mailer\Header\MetadataHeader
 		// @see MediaWiki\Extension\ContactManager\Transport\SendgridApiTransport
 		// saved as $payload['custom_args']
-		$headersEmail->addTextHeader( 'X-Metadata-page_id', $this->title->getArticleID() );
+		$headersEmail->add( new MetadataHeader( 'page_id', $this->title->getArticleID() ) );
 
 		if ( $this->mailer ) {
-			$headersEmail->addTextHeader( 'X-Metadata-mailer', $this->mailer );
+			$headersEmail->add( new MetadataHeader( 'mailer', $this->mailer ) );
 		}
 
 		try {
