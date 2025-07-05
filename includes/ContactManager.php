@@ -276,6 +276,45 @@ class ContactManager {
 	}
 
 	/**
+	 * @return int|bool
+	 */
+	public static function updateRecentChangesTable() {
+		$dbw = \VisualData::getDB( DB_PRIMARY );
+
+		// get actor_id of maintenance script
+		$tableName = 'actor';
+		$conds = [];
+		$conds['actor_name'] = 'Maintenance script';
+		$actor_id = $dbw->selectField(
+			$tableName,
+			'actor_id',
+			$conds,
+			__METHOD__,
+			[ 'LIMIT' => 1 ]
+		);
+
+		if ( !$actor_id ) {
+			return false;
+		}
+
+		$tableName = 'recentchanges';
+		$conds = [
+			'rc_actor' => $actor_id,
+			'rc_namespace' => NS_CONTACTMANAGER
+		];
+		$update = [
+			'rc_bot' => 1
+		];
+
+		return $dbw->update(
+			$tableName,
+			$update,
+			$conds,
+			__METHOD__
+		);
+	}
+
+	/**
 	 * @param User $user
 	 * @param string $mailboxName
 	 * @param array &$errors []
@@ -1027,29 +1066,21 @@ class ContactManager {
 			);
 		};
 
-		// get user id of maintenance script
-		$tableName = 'user';
-		$conds = [];
-		$conds['user_name'] = 'Maintenance script';
-		$user_id = $dbr->selectField(
-			$tableName,
-			'user_id',
-			$conds,
-			__METHOD__,
-			[ 'LIMIT' => 1 ]
-		);
-
-		// get actor id of maintenance script
+		// get actor_id of maintenance script
 		$tableName = 'actor';
 		$conds = [];
-		$conds['actor_user'] = $user_id;
-		$actor_id = $dbr->selectField(
+		$conds['actor_name'] = 'Maintenance script';
+		$actor_id = $dbw->selectField(
 			$tableName,
 			'actor_id',
 			$conds,
 			__METHOD__,
 			[ 'LIMIT' => 1 ]
 		);
+
+		if ( !$actor_id ) {
+			return false;
+		}
 
 		// get/delete all non-current slots created by
 		// maintenance script in NS_CONTACTMANAGER namespace

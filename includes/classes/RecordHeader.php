@@ -114,6 +114,7 @@ class RecordHeader {
 				$parsed_ = EmailParse::getInstance()->parse( $obj[$value] );
 				if ( $parsed_['success'] ) {
 					foreach ( $parsed_['email_addresses'] as $v_ ) {
+						$v_['simple_address'] = strtolower( $v_['simple_address'] );
 						$allContacts[$v_['simple_address']] = $v_['name'];
 					}
 				}

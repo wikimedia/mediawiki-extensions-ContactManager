@@ -11,5 +11,7 @@ $specialPageAliases = [];
  * English
  */
 $specialPageAliases['en'] = [
-	'ContactManager' => [ 'ContactManager' ]
+	'ContactManager' => [ 'ContactManager' ],
+	'ContactManagerGetResource' => [ 'ContactManagerGetResource' ],
+	'ContactManagerTracking' => [ 'ContactManagerTracking' ]
 ];

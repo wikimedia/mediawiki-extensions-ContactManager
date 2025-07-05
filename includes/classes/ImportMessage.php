@@ -146,6 +146,7 @@ class ImportMessage {
 		$recIterator( $obj, $decode );
 
 		$allContacts = [];
+		$obj['fromAddress'] = strtolower( $obj['fromAddress'] );
 		$allContacts[$obj['fromAddress']] = $obj['fromName'];
 
 		// replace the unwanted format
@@ -158,6 +159,9 @@ class ImportMessage {
 					print_r( $obj[$value] );
 					continue;
 				}
+
+				// @see https://datatracker.ietf.org/doc/html/rfc5321#section-2.4
+				$addresss_ = strtolower( $addresss_ );
 
 				if ( !empty( $name_ ) ) {
 					$name_ = trim( $name_, '"' );

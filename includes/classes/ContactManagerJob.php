@@ -122,6 +122,9 @@ class ContactManagerJob extends Job {
 
 		\ContactManager::setRunningJob( $user, $this->params['name'], \ContactManager::JOB_END, ( array_key_exists( 'mailbox', $this->params ) ? $this->params['mailbox'] : null ) );
 
+		// set rc_bot to 1 to avoid polluting Special:RecentChanges
+		\ContactManager::updateRecentChangesTable();
+
 		if ( count( $errors ) ) {
 			$this->error = array_pop( $errors );
 			return false;

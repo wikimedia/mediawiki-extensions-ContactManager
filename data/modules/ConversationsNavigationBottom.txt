@@ -1,0 +1,74 @@
+-- This file has been created directing ChatGPT, with a few edits
+
+local p = {}
+
+function p.fn(frame)
+	local args = frame.args or {}
+
+	local pageSize = 100
+	local offset = tonumber(args.offset) or 0
+	local count = tonumber(args.count) or 0
+
+	-- Calculate display range
+	local startItem = offset + 1
+	local endItem = math.min(offset + pageSize, count)
+
+	-- Build query string helper
+	local function buildQuery(args, offsetValue)
+		local parts = {}
+
+		if offsetValue and offsetValue ~= '' then
+			table.insert(parts, 'offset=' .. mw.uri.encode(tostring(offsetValue)))
+		end
+
+		local paramNames = { 'mailbox', 'month', 'year', 'hash', 'show' }
+
+		for _, param in ipairs(paramNames) do
+			local val = args[param]
+			if val and val ~= '' then
+				table.insert(parts, mw.uri.encode(param) .. '=' .. mw.uri.encode(tostring(val)))
+			end
+		end
+
+		return table.concat(parts, '|')
+	end
+
+	local ret = ""
+
+	local title = mw.title.getCurrentTitle()
+
+	-- Prev link: only if offset > 0
+	if offset > 0 then
+		local prevOffset = math.max(offset - pageSize, 0)
+		ret = ret .. string.format(
+			'{{#querylink:%s|◀ Previous 100| %s }}',
+			title.fullText,
+			buildQuery(args, prevOffset)
+		)
+	end
+
+	-- Show range info only if count > 0
+	if count > 0 then
+		if offset > 0 then
+			ret = ret .. " | "
+		end
+		ret = ret .. string.format("Showing %d - %d of %d", startItem, endItem, count)
+	end
+
+	-- Next link: only if endItem < count (means more pages)
+	if endItem < count then
+		if offset > 0 or count > 0 then
+			ret = ret .. " | "
+		end
+		local nextOffset = offset + pageSize
+		ret = ret .. string.format(
+			'{{#querylink:%s|Next 100 ▶| %s }}',
+			title.fullText,
+			buildQuery(args, nextOffset)
+		)
+	end
+
+	return frame:preprocess(ret)
+end
+
+return p

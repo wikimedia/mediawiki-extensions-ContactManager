@@ -89,7 +89,23 @@ __NOTOC__
     |template=ContactManager/Conversation
     |format=template
     |order=date asc
+    |limit = 100
+    |offset = {{#if: {{#urlget:offset}} | {{#urlget:offset}} | 0 }}
   }}
+
+<big>{{#invoke:ContactManager/ConversationsNavigationBottom|fn
+   | mailbox={{#urlget:mailbox}}
+   | month={{#urlget:month}}
+   | year={{#urlget:year}}
+   | hash={{#urlget:hash}}
+   | show={{#urlget:show}}
+   | offset={{#urlget:offset}}
+   | count= {{#visualdataquery: [[conversationHash::{{#urlget:hash}}]]
+    |schema=ContactManager/Incoming mail
+    |format=count
+   }}
+  }}</big>
+
 |
   {{#visualdataquery: [[conversationHash::{{#urlget:hash}}]]
     [[date::>{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}-{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}-01]]
@@ -104,6 +120,23 @@ __NOTOC__
     |template=ContactManager/Conversation
     |format=template
     |order=date asc
+    |limit = 100
+    |offset = {{#if: {{#urlget:offset}} | {{#urlget:offset}} | 0 }}
   }}
+
+<big>{{#invoke:ContactManager/ConversationsNavigationBottom|fn
+   | mailbox={{#urlget:mailbox}}
+   | month={{#urlget:month}}
+   | year={{#urlget:year}}
+   | hash={{#urlget:hash}}
+   | show={{#urlget:show}}
+   | offset={{#urlget:offset}}
+   | count= {{#visualdataquery: [[conversationHash::{{#urlget:hash}}]]
+    [[date::>{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}-{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}-01]]
+    [[date::<{{#expr:{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|+1|+0}} }}-{{padleft:{{#expr:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|-11|+1}} }} |2|0}}-01]]
+    |schema=ContactManager/Incoming mail
+    |format=count
+  }}
+  }}</big>
 }}
 
