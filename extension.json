@@ -1,7 +1,7 @@
 {
 	"name": "ContactManager",
 	"author": "thomas-topway-it",
-	"version": "1.2.6",
+	"version": "1.2.7",
 	"url": "https://www.mediawiki.org/wiki/Extension:ContactManager",
 	"descriptionmsg": "contactcmanager-extension-desc",
 	"license-name": "GPL-2.0-or-later",
@@ -50,23 +50,30 @@
 		},
 		"ContactManagerTracking": {
 			"class": "MediaWiki\\Extension\\ContactManager\\Special\\Tracking"
+		},
+		"ContactManagerBrowseTracking": {
+			"class": "MediaWiki\\Extension\\ContactManager\\Special\\BrowseTracking"
 		}
 	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\ContactManager\\Aliases\\": "includes/aliases/",
 		"MediaWiki\\Extension\\ContactManager\\": "includes/classes/",
 		"MediaWiki\\Extension\\ContactManager\\Special\\": "includes/specials/",
+		"MediaWiki\\Extension\\ContactManager\\Pagers\\": "includes/specials/pagers/",
 		"MediaWiki\\Extension\\ContactManager\\Transport\\": "includes/classes/transports/"
 	},
 	"GroupPermissions": {
 		"sysop": {
-			"contactmanager-can-manage-mailboxes": true
+			"contactmanager-can-manage-mailboxes": true,
+			"contactmanager-can-browse-tracking": true
 		},
 		"bureaucrat": {
-			"contactmanager-can-manage-mailboxes": true
+			"contactmanager-can-manage-mailboxes": true,
+			"contactmanager-can-browse-tracking": true
 		},
 		"contactmanager-admin": {
-			"contactmanager-can-manage-mailboxes": true
+			"contactmanager-can-manage-mailboxes": true,
+			"contactmanager-can-browse-tracking": true
 		}
 	},
 	"AddGroups": {
@@ -80,7 +87,8 @@
 		]
 	},
 	"AvailableRights": [
-		"contactmanager-can-manage-mailboxes"
+		"contactmanager-can-manage-mailboxes",
+		"contactmanager-can-browse-tracking"
 	],
 	"namespaces": [
 		{

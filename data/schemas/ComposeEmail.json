@@ -31,17 +31,18 @@
 				"mailer"
 			]
 		},
-		"mailer": {
+		"account": {
 			"wiki": {
-				"name": "mailer",
 				"type": "property",
-				"multiple-items": false,
-				"label": "mailer",
 				"uuid": "6636aafd53818",
+				"name": "account",
 				"visibility": "condition",
 				"showif-field": "transport",
 				"showif-condition": "=",
 				"showif-value": "mailer",
+				"showif-value-wikitext": false,
+				"label": "mailer",
+				"multiple-items": false,
 				"preferred-input": "OO.ui.DropdownInputWidget",
 				"input-config": [],
 				"options-allow-null": false,
@@ -52,9 +53,8 @@
 					"name",
 					"provider"
 				],
-				"options-query-formula": "\u003Cname\u003E - \u003Cprovider\u003E",
-				"required": false,
-				"options-values-parsed": {}
+				"options-query-formula": "\u003Cname\u003E",
+				"required": false
 			},
 			"type": "string",
 			"format": "text",
@@ -350,7 +350,7 @@
 			"type": "string",
 			"format": "text",
 			"title": "template",
-			"description": "",
+			"description": "Any page in the \u003Ca href=\"/mediawiki-1.43.0/index.php?title=Special:AllPages\u0026amp;namespace=2262\" class=\"external text\" title=\"Special:AllPages\" target=\"_blank\"\u003EEmailTemplate namespace\u003C/a\u003E",
 			"default": "Default"
 		},
 		"message_substitutions": {
@@ -414,10 +414,7 @@
 				"wiki": {
 					"name": "attachments",
 					"type": "property",
-					"uuid": "65f73d69661e5",
-					"visibility": "visible",
 					"multiple-items": true,
-					"preferred-input": "OO.ui.SelectFileWidget",
 					"input-config": {
 						"accept": [
 							"image/png",
@@ -430,9 +427,14 @@
 							"application/pdf"
 						]
 					},
-					"required": false,
 					"default": [],
-					"filepath": "ContactManagerFiles/{{PAGEID}}/\u003Cvalue\u003E"
+					"value-prefix": "File:",
+					"uuid": "65f73d69661e5",
+					"visibility": "visible",
+					"preferred-input": "OO.ui.SelectFileWidget",
+					"required": false,
+					"filepath": "ContactManagerFiles/{{PAGEID}}/\u003Cvalue\u003E",
+					"layout": "table"
 				},
 				"format": "text",
 				"default": []

@@ -118,14 +118,25 @@ class Mailer {
 			case 'mailer':
 				$this->obj['from'] = $this->obj['from_mailer'];
 				$schema = $GLOBALS['wgContactManagerSchemasMailer'];
-				$mailer = preg_replace( '/\s*-[^-]+$/', '', $obj['mailer'] );
-				$query = '[[name::' . $mailer . ']]';
+				// the provider was appended to the value via the value formula
+				// now removed (ensure the schema ContactManager/Compose email
+				// is updated)
+				// $mailer = preg_replace( '/\s*-[^-]+$/', '', $obj['mailer'] );
+				$account = $obj['account'];
+				$query = '[[name::' . $account . ']]';
 				$results = \VisualData::getQueryResults( $schema, $query );
 
-				if ( empty( $results[0]['data'] ) ) {
+				if ( array_key_exists( 'errors', $results ) ) {
+					$this->errors[] = 'error query';
+					$this->errors = array_merge( $this->errors, $results['errors'] );
+					return false;
+				}
+
+				if ( !count( $results ) ) {
 					$this->errors[] = 'mailer not found';
 					return false;
 				}
+
 				$data = $results[0]['data'];
 				if ( empty( $GLOBALS['wgContactManager' . strtoupper( $data['provider'] ) ][$data['name']] ) ) {
 					$this->errors[] = 'credentials not found';
@@ -390,8 +401,9 @@ class Mailer {
 		$params = [ 'nested' => false ];
 		$ret = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts, $params );
 
-		// @TODO log errors
 		if ( array_key_exists( 'errors', $ret ) ) {
+			$this->errors[] = 'error query';
+			$this->errors = array_merge( $this->errors, $ret['errors'] );
 			return [];
 		}
 
@@ -621,6 +633,17 @@ class Mailer {
 					$allPrintouts_ = array_merge( $emailPrintouts_, $requiredPrintouts_ );
 					$count_ = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts_, $params );
 
+					if ( $count_ === -1 ) {
+						$this->errors[] = 'query error';
+						continue;
+					}
+
+					if ( is_array( $count_ ) && array_key_exists( 'errors', $count_ ) ) {
+						$this->errors[] = 'query error';
+						$this->errors = array_merge( $this->errors, $count_['errors'] );
+						continue;
+					}
+
 					// >>>>>>>>>>>>>>>>>> ChatGPT idea
 					if ( $skipped + $count_ <= $this->obj['offset'] ) {
 						$skipped += $count_;
@@ -635,6 +658,7 @@ class Mailer {
 					$results_ = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts_, $params );
 
 					if ( array_key_exists( 'errors', $results_ ) ) {
+						$this->errors[] = 'query error';
 						$this->errors = array_merge( $this->errors, $results_['errors'] );
 						continue;
 					}
@@ -734,23 +758,43 @@ class Mailer {
 			return;
 		}
 
-		$rows = [];
+		$dbw = \VisualData::getDB( DB_PRIMARY );
 		$dateTime = date( 'Y-m-d H:i:s' );
+		$tableName = 'contactmanager_sent';
+
+		$rows = [];
+		$count = 0;
 		foreach ( $this->personalizations as $field ) {
 			foreach ( $field as $values ) {
 				foreach ( $values as $value ) {
+					$count++;
 					$rows[] = [
 						'page_id' => $this->title->getArticleID(),
 						'email' => $value['email'],
 						'name' => $value['name'],
-						'mailer' => $this->mailer,
 						'created_at' => $dateTime
 					];
 				}
 			}
 		}
 
-		$dbw = \VisualData::getDB( DB_PRIMARY );
+		$row = [
+			'user' => $this->user->getId(),
+			'mailbox' => $this->obj['mailbox'],
+			'page_id' => $this->title->getArticleID(),
+			'subject' => $this->obj['subject'],
+			'account' => $this->obj['account'],
+			'recipients' => $count,
+			'created_at' => $dateTime
+		];
+		$options = [];
+		$res = $dbw->insert(
+			$tableName,
+			$rows,
+			__METHOD__,
+			$options
+		);
+
 		$tableName = 'contactmanager_tracking';
 		$options = [];
 		$res = $dbw->insert(

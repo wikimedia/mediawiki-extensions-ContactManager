@@ -2,14 +2,10 @@
 See jobs data [[{{FULLPAGENAME}}/Jobs|here]]
 
 
-[[ContactManager:Compose|Compose]]
-
-[[ContactManager:Mailboxes|Mailboxes]]
-
-[[ContactManager:Mailers|Mailers]]
-
-[[ContactManager:Create contact|Create contact]]
-
-[[ContactManager:Organizations|Organizations]]
-
-[[ContactManager:Data structure|Data structure]]
+* [[ContactManager:Compose|Compose]]
+* [[ContactManager:Mailboxes|Mailboxes]]
+* [[ContactManager:Mailers|Mailers]]
+* [[ContactManager:Create contact|Create contact]]
+* [[ContactManager:Organizations|Organizations]]
+* [[ContactManager:Data structure|Data structure]]
+* [[Special:ContactManagerBrowseTracking|Browse tracking]]

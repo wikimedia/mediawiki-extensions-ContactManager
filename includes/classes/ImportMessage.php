@@ -63,7 +63,7 @@ class ImportMessage {
 	}
 
 	/**
-	 * @return bool
+	 * @return array|false|void
 	 */
 	public function doImport() {
 		$params = $this->params;
@@ -213,19 +213,27 @@ class ImportMessage {
 			$schema_ = $GLOBALS['wgContactManagerSchemasMailbox'];
 			$query_ = '[[name::' . $params['mailbox'] . ']]';
 			$results_ = \VisualData::getQueryResults( $schema_, $query_ );
-			$mailboxData = $results_[0]['data'];
-			if ( !array_key_exists( 'delivered-to', $mailboxData )
-				|| !is_array( $mailboxData['delivered-to'] )
-			) {
-				$mailboxData['delivered-to'] = [];
+
+			if ( array_key_exists( 'errors', $results_ ) ) {
+				echo 'error query' . PHP_EOL;
+				print_r( $results_ );
 			}
-			if ( !in_array( $deliveredTo, $mailboxData['delivered-to'] ) ) {
-				$mailboxData['delivered-to'][] = $deliveredTo;
-				$jsonData_ = [
-					$GLOBALS['wgContactManagerSchemasMailbox'] => $mailboxData
-				];
-				$title_ = TitleClass::newFromText( $results_[0]['title'] );
-				\VisualData::updateCreateSchemas( $user, $title_, $jsonData_ );
+
+			if ( count( $results_ ) && !empty( $results_[0]['data'] ) ) {
+				$mailboxData = $results_[0]['data'];
+				if ( !array_key_exists( 'delivered-to', $mailboxData )
+					|| !is_array( $mailboxData['delivered-to'] )
+				) {
+					$mailboxData['delivered-to'] = [];
+				}
+				if ( !in_array( $deliveredTo, $mailboxData['delivered-to'] ) ) {
+					$mailboxData['delivered-to'][] = $deliveredTo;
+					$jsonData_ = [
+						$GLOBALS['wgContactManagerSchemasMailbox'] => $mailboxData
+					];
+					$title_ = TitleClass::newFromText( $results_[0]['title'] );
+					\VisualData::updateCreateSchemas( $user, $title_, $jsonData_ );
+				}
 			}
 		}
 
@@ -281,7 +289,7 @@ class ImportMessage {
 
 		$obj['categories'] = $categories;
 
-		$importer->importData( $pagenameFormula, $obj, $showMsg );
+		$retMessage = $importer->importData( $pagenameFormula, $obj, $showMsg );
 		$title = TitleClass::newFromText( $pagenameFormula );
 
 		if ( !$title ) {
@@ -304,15 +312,22 @@ class ImportMessage {
 			}
 		}
 
+		$retContacts = [];
 		if ( !empty( $params['save_contacts'] ) ) {
 			foreach ( $allContacts as $email => $name ) {
-				\ContactManager::saveContact( $user, $context, $params, $obj, $name, $email, $conversationHash,
+				$ret_ = \ContactManager::saveContact( $user, $context, $params, $obj, $name, $email, $conversationHash,
 					( $email === $obj['fromAddress'] ? $detectedLanguage : null ) );
+
+				if ( is_array( $ret_ ) ) {
+					$retContacts = array_merge( $retContacts, $ret_ );
+				}
 			}
 		}
 
-		$this->saveConversation( $user, $context, $params, $conversationHash,
+		$retConversation = $this->saveConversation( $user, $context, $params, $conversationHash,
 			$deliveredTo, $conversationRecipients, $obj['date'] );
+
+		return [ ( is_array( $retMessage ) ? $retMessage : [] ), $retContacts, ( is_array( $retConversation ) ? $retConversation : [] ) ];
 	}
 
 	/**
@@ -405,6 +420,7 @@ class ImportMessage {
 	 * @param string $deliveredTo
 	 * @param array $conversationRecipients
 	 * @param string $date
+	 * @return bool|void|array
 	 */
 	private function saveConversation( $user, $context, $params, $hash, $deliveredTo, $conversationRecipients, $date ) {
 		$participants = [];
@@ -437,6 +453,11 @@ class ImportMessage {
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts );
 
+		if ( array_key_exists( 'errors', $results ) ) {
+			echo 'error query' . PHP_EOL;
+			print_r( $results );
+		}
+
 		// use numeric increment
 		$pagenameFormula = \ContactManager::replaceParameter( 'ContactManagerConversationPagenameFormula',
 			$params['mailbox'],
@@ -453,12 +474,11 @@ class ImportMessage {
 		];
 
 		// merge previous entries
-		if ( !array_key_exists( 'errors', $results ) && count( $results ) ) {
+		if ( count( $results ) && !empty( $results[0]['data'] ) ) {
 			$pagenameFormula = $results[0]['title'];
-			if ( !empty( $results[0]['data'] ) ) {
-				$data = \VisualData::array_merge_recursive( $data, $results[0]['data'] );
-			}
+			$data = \VisualData::array_merge_recursive( $data, $results[0]['data'] );
 		}
+
 		$data = \VisualData::array_filter_recursive( $data, 'array_unique' );
 
 		$messageDateTime = strtotime( $date );
@@ -487,7 +507,16 @@ class ImportMessage {
 		$params = [ 'format' => 'count' ];
 		$count = \VisualData::getQueryResults( $schema, $query, $printouts, $params );
 
-		if ( $count !== -1 ) {
+		if ( is_array( $count ) && array_key_exists( 'errors', $count ) ) {
+			echo 'error query' . PHP_EOL;
+			print_r( $count );
+		}
+
+		if ( $count === -1 ) {
+			echo 'error query' . PHP_EOL;
+		}
+
+		if ( !is_array( $count ) && $count !== -1 ) {
 			$data['count'] = $count;
 		}
 
@@ -495,7 +524,7 @@ class ImportMessage {
 			echo $msg . PHP_EOL;
 		};
 
-		$importer->importData( $pagenameFormula, $data, $showMsg );
+		return $importer->importData( $pagenameFormula, $data, $showMsg );
 	}
 
 	/**

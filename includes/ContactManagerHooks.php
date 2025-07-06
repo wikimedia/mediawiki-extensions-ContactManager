@@ -54,6 +54,7 @@ class ContactManagerHooks {
 		$db = $updater->getDB();
 		$dbType = $db->getType();
 		$tables = [
+			'contactmanager_sent',
 			'contactmanager_tracking',
 			'contactmanager_tracking_sendgrid'
 		];
@@ -158,5 +159,11 @@ class ContactManagerHooks {
 				'href'   => $title_->getLocalURL()
 			];
 		}
+
+		$title_ = \SpecialPage::getTitleFor( 'ContactManagerBrowseTracking' );
+		$bar[ wfMessage( 'contactmanager-sidepanel-section' )->text() ][] = [
+				'text'   => wfMessage( 'contactmanagerbrowsetracking' )->text(),
+				'href'   => $title_->getLocalURL()
+			];
 	}
 }

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS /*_*/contactmanager_tracking_sendgrid (
 	`id` int(11) NOT NULL,
 	`page_id` int(11) NOT NULL,
 	`email` varchar(255) NOT NULL,
-	`event_type` varchar(50) NOT NULL,
+	`event` varchar(50) NOT NULL,
 	`timestamp` int(11) NOT NULL,
 	`smtp_id` varchar(255) DEFAULT NULL,
 	`sg_event_id` varchar(255) DEFAULT NULL,
@@ -34,7 +34,7 @@ ALTER TABLE /*_*/contactmanager_tracking_sendgrid
 	ADD INDEX `email` (`email`);
 
 ALTER TABLE /*_*/contactmanager_tracking_sendgrid
-	ADD INDEX `event_type` (`event_type`);
+	ADD INDEX `event` (`event`);
 
 ALTER TABLE /*_*/contactmanager_tracking_sendgrid
 	ADD INDEX `sg_message_id` (`sg_message_id`);

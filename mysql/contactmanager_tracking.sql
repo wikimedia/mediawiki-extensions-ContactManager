@@ -7,8 +7,7 @@ CREATE TABLE IF NOT EXISTS /*_*/contactmanager_tracking (
 	`page_id` int(11) NOT NULL,
 	`email` varchar(255) NOT NULL,
 	`name` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-	`event_type` varchar(50) NULL,
-	`mailer` varchar(255) NOT NULL,
+	`event` varchar(50) NULL,
 	`created_at` datetime NOT NULL,
 	`updated_at` datetime NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

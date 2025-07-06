@@ -73,6 +73,11 @@ class ApiCreateJob extends ApiBase {
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params_ );
 
+		if ( array_key_exists( 'errors', $results ) ) {
+			$result->addValue( [ $this->getModuleName() ], 'error', $results );
+			return;
+		}
+
 		if ( count( $results ) &&
 			!empty( $results[0]['data'] ) &&
 			\ContactManager::isRunning( $results[0]['data'] )

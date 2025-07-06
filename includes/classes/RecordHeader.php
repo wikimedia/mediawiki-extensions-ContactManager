@@ -57,7 +57,7 @@ class RecordHeader {
 	}
 
 	/**
-	 * @return bool
+	 * @return array|false|void
 	 */
 	public function doImport() {
 		$params = $this->params;
@@ -106,8 +106,9 @@ class RecordHeader {
 
 		$obj['categories'] = $categories_;
 
-		$importer->importData( $pagenameFormula_, $obj, $showMsg );
+		$retHeader = $importer->importData( $pagenameFormula_, $obj, $showMsg );
 
+		$retContacts = [];
 		if ( !empty( $params['save_contacts'] ) ) {
 			$allContacts = [];
 			foreach ( [ 'to', 'from' ] as $value ) {
@@ -121,9 +122,14 @@ class RecordHeader {
 			}
 
 			foreach ( $allContacts as $email => $name ) {
-				\ContactManager::saveContact( $user, $context, $params, $obj, $name, $email );
+				$ret_ = \ContactManager::saveContact( $user, $context, $params, $obj, $name, $email );
+				if ( is_array( $ret_ ) ) {
+					$retContacts = array_merge( $retContacts, $ret_ );
+				}
 			}
 		}
+
+		return [ ( is_array( $retHeader ) ? $retHeader : [] ), $retContacts ];
 	}
 
 	/**

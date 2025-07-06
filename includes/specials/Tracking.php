@@ -26,6 +26,29 @@ namespace MediaWiki\Extension\ContactManager\Special;
 
 class Tracking extends \SpecialPage {
 
+	/**
+	 * @see https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event
+	 * @var array
+	 */
+	public static $sendgridColumns = [
+		'id',
+		'page_id',
+		'email',
+		'event',
+		'timestamp',
+		'smtp_id',
+		'sg_event_id',
+		'sg_message_id',
+		'category',
+		'ip',
+		'url',
+		'useragent',
+		'response',
+		'reason',
+		'sg_machine_open',
+		'created_at',
+	];
+
 	public function __construct() {
 		$listed = false;
 		parent::__construct( 'ContactManagerTracking', '', $listed );
@@ -115,7 +138,7 @@ class Tracking extends \SpecialPage {
 
 			$tableName = 'contactmanager_tracking';
 			$update = [
-				'event_type' => $event['event'],
+				'event' => $event['event'],
 				'updated_at' => $dateTime
 			];
 			$conds_ = [
@@ -125,7 +148,7 @@ class Tracking extends \SpecialPage {
 
 			$previousEvent = $dbw->selectField(
 				$tableName,
-				'event_type',
+				'event',
 				$conds_,
 				__METHOD__
 			);
@@ -158,33 +181,12 @@ class Tracking extends \SpecialPage {
 
 			switch ( $mailer ) {
 				case 'sendgrid':
-					// @see https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event
-					$columns = [
-						'id',
-						'page_id',
-						'email',
-						'event_type',
-						'timestamp',
-						'smtp_id',
-						'sg_event_id',
-						'sg_message_id',
-						'category',
-						'ip',
-						'url',
-						'useragent',
-						'response',
-						'reason',
-						'sg_machine_open',
-						'created_at',
-					];
-
 					$row = [
 						'page_id' => $pageId,
-						'event_type' => $event['event'],
 						'smtp_id' => $event['smtp-id'],
 						'created_at' => $dateTime
 					];
-					foreach ( $columns as $value ) {
+					foreach ( self::$sendgridColumns as $value ) {
 						if ( array_key_exists( $value, $event ) ) {
 							$row[$value] = $event[$value];
 						}

@@ -45,6 +45,9 @@ class ContactManager {
 	public const JOB_END = 2;
 	public const JOB_LAST_STATUS = 3;
 
+	/** @var array */
+	public static $UserAuthCache = [];
+
 	public static function initialize() {
 	}
 
@@ -408,7 +411,13 @@ class ContactManager {
 			$query_ = '[[name::' . $params['mailbox'] . ']]';
 			$results_ = \VisualData::getQueryResults( $schema_, $query_ );
 
-			if ( empty( $results_ ) ) {
+			if ( array_key_exists( 'errors', $results_ ) ) {
+				echo 'error query' . PHP_EOL;
+				print_r( $results_ );
+				return false;
+			}
+
+			if ( !count( $results_ ) ) {
 				$errors[] = 'mailbox folders haven\'t yet been retrieved';
 				$mailbox->disconnect();
 				return false;
@@ -499,8 +508,16 @@ class ContactManager {
 					$options_ = [ 'limit' => 1, 'order' => 'uid DESC' ];
 					$results_ = \VisualData::getQueryResults( $schema_, $query_, $printouts_, $options_ );
 
-					$lastKnowHeaderUid = ( !empty( $results_[0] ) && !empty( $results_[0]['data']['uid'] ) ?
-						$results_[0]['data']['uid'] : 0 );
+					if ( array_key_exists( 'errors', $results_ ) ) {
+						echo 'error query' . PHP_EOL;
+						print_r( $results_ );
+						// return false;
+						$lastKnowHeaderUid = 0;
+
+					} else {
+						$lastKnowHeaderUid = ( !empty( $results_[0] ) && !empty( $results_[0]['data']['uid'] ) ?
+							$results_[0]['data']['uid'] : 0 );
+					}
 
 					$UIDsMessageSequence = '';
 					if ( !empty( $folder['fetch_message'] ) ) {
@@ -515,8 +532,15 @@ class ContactManager {
 						$options_ = [ 'limit' => 1, 'order' => 'id DESC' ];
 						$results_ = \VisualData::getQueryResults( $schema_, $query_, $printouts_, $options_ );
 
-						$lastKnowMessageUid = ( !empty( $results_[0] ) && !empty( $results_[0]['data']['id'] ) ?
-							$results_[0]['data']['id'] : 0 );
+						if ( array_key_exists( 'errors', $results_ ) ) {
+							echo 'error query' . PHP_EOL;
+							print_r( $results_ );
+							$lastKnowMessageUid = 0;
+
+						} else {
+							$lastKnowMessageUid = ( !empty( $results_[0] ) && !empty( $results_[0]['data']['id'] ) ?
+								$results_[0]['data']['id'] : 0 );
+						}
 
 						$UIDsMessageSequence = ( $lastKnowMessageUid + 1 ) . ':' . $folder['mailboxStatus']['uidnext'];
 					}
@@ -541,6 +565,8 @@ class ContactManager {
 
 		echo 'retrieving headers' . PHP_EOL;
 
+		$newHeaders = 0;
+		$newContacts = 0;
 		$overviewHeaders = [];
 		foreach ( $folders as $key => $folder ) {
 			echo 'switching folder ' . $folder['shortpath'] . PHP_EOL;
@@ -619,7 +645,12 @@ class ContactManager {
 					'obj' => $header
 				] ), $errors );
 
-				$recordHeader->doImport();
+				$res_ = $recordHeader->doImport();
+				if ( is_array( $res_ ) ) {
+					[ $newHeaders_, $newContacts_ ] = $res_;
+					$newHeaders += count( $newHeaders_ );
+					$newContacts += count( $newContacts_ );
+				}
 
 				// *** alternatively use
 				// $job_ = new ContactManagerJob( $title, array_merge( $params, [
@@ -644,8 +675,13 @@ class ContactManager {
 			self::setRunningJob( $user, 'retrieve-messages', self::JOB_LAST_STATUS, $params['mailbox'] );
 		}
 
+		// @TODO show Echo notification
+		echo "$newHeaders new headers" . PHP_EOL;
+
 		echo 'retrieve messages' . PHP_EOL;
 
+		$newMessages = 0;
+		$newConversations = 0;
 		// then retrieve all messages
 		foreach ( $folders as $key => $folder ) {
 			if ( empty( $folder['fetch_message'] ) ) {
@@ -682,7 +718,13 @@ class ContactManager {
 					'uid' => $header['uid']
 				] ), $errors );
 
-				$importMessage->doImport();
+				$res_ = $importMessage->doImport();
+				if ( is_array( $res_ ) ) {
+					[ $newMessages_, $newContacts_, $newConversations_ ] = $res_;
+					$newMessages += count( $newMessages_ );
+					$newContacts += count( $newContacts_ );
+					$newConversations += count( $newConversations_ );
+				}
 
 				if ( $n % 10 === 0 ) {
 					echo 'recording job status' . PHP_EOL;
@@ -708,6 +750,11 @@ class ContactManager {
 				$n++;
 			}
 		}
+
+		// @TODO show Echo notification
+		echo "$newMessages new messages" . PHP_EOL;
+		echo "$newContacts new contacts" . PHP_EOL;
+		echo "$newConversations new conversations" . PHP_EOL;
 
 		if ( !empty( $params['fetch_folder_status'] ) || $folder['fetch'] === 'UIDs incremental' ) {
 			echo 'saving folders status' . PHP_EOL;
@@ -842,6 +889,7 @@ class ContactManager {
 	 * @param string $email
 	 * @param string|null $conversationHash
 	 * @param string|null $detectedLanguage
+	 * @return array|false|void
 	 */
 	public static function saveContact( $user, $context, $params, $obj, $name, $email,
 		$conversationHash = null, $detectedLanguage = null
@@ -850,7 +898,7 @@ class ContactManager {
 			echo '*** error, no email' . PHP_EOL;
 			print_r( $params );
 			print_r( $obj );
-			return;
+			return false;
 		}
 
 		$fromUsername = false;
@@ -887,6 +935,11 @@ class ContactManager {
 		);
 		$query = "[[email::$email]][[$targetTitle_]]";
 		$results = \VisualData::getQueryResults( $schema, $query );
+
+		if ( array_key_exists( 'errors', $results ) ) {
+			echo 'error query' . PHP_EOL;
+			print_r( $results );
+		}
 
 		$pagenameFormula = self::replaceParameter( 'ContactManagerContactPagenameFormula',
 			$params['mailbox'],
@@ -925,22 +978,20 @@ class ContactManager {
 
 		$dataOriginal = [];
 		// merge previous entries
-		if ( !array_key_exists( 'errors', $results ) && count( $results ) ) {
+		if ( count( $results ) && !empty( $results[0]['data'] ) ) {
 			$pagenameFormula = $results[0]['title'];
-			if ( !empty( $results[0]['data'] ) ) {
-				$dataOriginal = $results[0]['data'];
-				if ( !$fromUsername ) {
-					$data = \VisualData::array_merge_recursive( $data, $dataOriginal );
+			$dataOriginal = $results[0]['data'];
+			if ( !$fromUsername ) {
+				$data = \VisualData::array_merge_recursive( $data, $dataOriginal );
 
-				} else {
-					if ( !empty( $dataOriginal['seen_until'] ) ) {
-						$data['seen_until'] = $dataOriginal['seen_until'];
-					}
-					if ( !empty( $dataOriginal['seen_since'] ) ) {
-						$data['seen_since'] = $dataOriginal['seen_since'];
-					}
-					$data = \VisualData::array_merge_recursive( $dataOriginal, $data );
+			} else {
+				if ( !empty( $dataOriginal['seen_until'] ) ) {
+					$data['seen_until'] = $dataOriginal['seen_until'];
 				}
+				if ( !empty( $dataOriginal['seen_since'] ) ) {
+					$data['seen_since'] = $dataOriginal['seen_since'];
+				}
+				$data = \VisualData::array_merge_recursive( $dataOriginal, $data );
 			}
 		}
 
@@ -966,7 +1017,7 @@ class ContactManager {
 			echo $msg . PHP_EOL;
 		};
 
-		$importer->importData( $pagenameFormula, $data, $showMsg );
+		return $importer->importData( $pagenameFormula, $data, $showMsg );
 	}
 
 	/**
@@ -990,12 +1041,18 @@ class ContactManager {
 
 	/**
 	 * @param string|null $mailboxName
+	 * @param array &$errors []
 	 * @return array
 	 */
-	public static function getMailboxes( $mailboxName = null ) {
+	public static function getMailboxes( $mailboxName = null, &$errors = [] ) {
 		$schema = $GLOBALS['wgContactManagerSchemasMailbox'];
 		$query = '[[name::' . ( $mailboxName ?? '+' ) . ']]';
 		$results = \VisualData::getQueryResults( $schema, $query );
+
+		if ( array_key_exists( 'errors', $results ) ) {
+			$errors = $results['errors'];
+			return false;
+		}
 
 		if ( !$mailboxName ) {
 			return $results;
@@ -1007,7 +1064,28 @@ class ContactManager {
 			}
 		}
 
-		return null;
+		return [];
+	}
+
+	/**
+	 * @param User $user
+	 * @return bool
+	 */
+	public static function isAuthorizedGroup( $user ) {
+		$cacheKey = $user->getName();
+		if ( array_key_exists( $cacheKey, self::$UserAuthCache ) ) {
+			return self::$UserAuthCache[$cacheKey];
+		}
+		$userGroupManager = MediaWikiServices::getInstance()->getUserGroupManager();
+		$userGroups = $userGroupManager->getUserEffectiveGroups( $user );
+		$authorizedGroups = [
+			'sysop',
+			'bureaucrat',
+			'interface-admin',
+			'autoconfirmed'
+		];
+		self::$UserAuthCache[$cacheKey] = count( array_intersect( $authorizedGroups, $userGroups ) );
+		return self::$UserAuthCache[$cacheKey];
 	}
 
 	/**

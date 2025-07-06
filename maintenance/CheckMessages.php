@@ -114,6 +114,12 @@ class CheckMessages extends Maintenance {
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params );
 
+		if ( array_key_exists( 'errors', $results ) ) {
+			echo 'error query' . PHP_EOL;
+			print_r( $results );
+			return;
+		}
+
 		$data = [];
 		$data['session'] = $context->exportSession();
 		$data['jobSchema'] = $schema;
@@ -145,6 +151,13 @@ class CheckMessages extends Maintenance {
 
 				// *** when pageid is set in the query, the first result is returned
 				$value = \VisualData::getQueryResults( $schema, $query_, $printouts_ );
+
+				if ( array_key_exists( 'errors', $value ) ) {
+					echo 'error query' . PHP_EOL;
+					print_r( $value );
+					continue;
+				}
+
 				$data_ = array_merge( $value['data'], $data );
 
 				// must be a valid title, otherwise if an "inner"
@@ -165,6 +178,7 @@ class CheckMessages extends Maintenance {
 	 * @param Context $context
 	 * @param User $user
 	 * @param array &$jobs
+	 * @return bool|void
 	 */
 	public function deleteOldRevisions( $context, $user, &$jobs ) {
 		// execute job 'delete-old-revisions' only if job retrieve-messages
@@ -177,6 +191,12 @@ class CheckMessages extends Maintenance {
 		$params = [
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params );
+
+		if ( array_key_exists( 'errors', $results ) ) {
+			echo 'error query' . PHP_EOL;
+			print_r( $results );
+			return false;
+		}
 
 		if ( count( $results ) &&
 			!empty( $results[0]['data'] ) &&
@@ -193,6 +213,12 @@ class CheckMessages extends Maintenance {
 		$params_ = [
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params_ );
+
+		if ( array_key_exists( 'errors', $results ) ) {
+			echo 'error query' . PHP_EOL;
+			print_r( $results );
+			return false;
+		}
 
 		if ( count( $results ) && !empty( $results[0]['data'] ) ) {
 			$value = $results[0]['data'];
@@ -219,6 +245,8 @@ class CheckMessages extends Maintenance {
 		if ( $job ) {
 			$jobs[] = $job;
 		}
+
+		return true;
 	}
 }
 
