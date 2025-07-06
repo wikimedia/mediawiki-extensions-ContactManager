@@ -162,7 +162,7 @@ class ContactManagerHooks {
 
 		$title_ = \SpecialPage::getTitleFor( 'ContactManagerBrowseTracking' );
 		$bar[ wfMessage( 'contactmanager-sidepanel-section' )->text() ][] = [
-				'text'   => wfMessage( 'contactmanagerbrowsetracking' )->text(),
+				'text'   => wfMessage( 'contactmanager-browse-tracking' )->text(),
 				'href'   => $title_->getLocalURL()
 			];
 	}

@@ -790,7 +790,7 @@ class Mailer {
 		$options = [];
 		$res = $dbw->insert(
 			$tableName,
-			$rows,
+			$row,
 			__METHOD__,
 			$options
 		);

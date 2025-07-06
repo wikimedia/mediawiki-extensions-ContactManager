@@ -3,7 +3,8 @@
 		"authors": []
 	},
 	"contactmanager-extension-desc": "A complete webmail, contact manager and email marketing software for MediaWiki based on VisualData",
-	"contactmanagerbrowsetracking": "Browse tracking",
+	"contactmanager-browse-tracking": "Browse tracking",
+	"specialpages-group-contactmanager": "Contact Manager",
 	"contactmanager-browsetracking-tracking": "Browse tracking (recipients)",
 	"contactmanager-browsetracking-details": "Browse tracking (details)",
 	"contactmanager-browsetracking-form-returnlink-placeholder": "← $1",

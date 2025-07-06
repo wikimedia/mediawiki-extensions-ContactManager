@@ -67,7 +67,7 @@ class BrowseTracking extends \SpecialPage {
 		$par = (int)$bits[1];
 
 		if ( !$par ) {
-			$msg = $this->msg( 'contactmanagerbrowsetracking' );
+			$msg = $this->msg( 'contactmanager-browse-tracking' );
 
 		} else {
 			$view = strtolower( (string)$this->getRequest()->getVal( 'view' ) );

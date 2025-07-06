@@ -101,6 +101,7 @@ class Tracking extends \SpecialPage {
 		]
 		*/
 
+		// @see https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event
 		$eventPriority = [
 			'click',
 			'open',
@@ -111,6 +112,8 @@ class Tracking extends \SpecialPage {
 			'blocked',
 			'deferred',
 			'unsubscribe',
+			'group_unsubscribe',
+			'group_resubscribe',
 			'processed'
 		];
 
