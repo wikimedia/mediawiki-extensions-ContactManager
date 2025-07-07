@@ -126,7 +126,7 @@ class Mailer {
 				$query = '[[name::' . $account . ']]';
 				$results = \VisualData::getQueryResults( $schema, $query );
 
-				if ( array_key_exists( 'errors', $results ) ) {
+				if ( \ContactManager::queryError( $results, true ) ) {
 					$this->errors[] = 'error query';
 					$this->errors = array_merge( $this->errors, $results['errors'] );
 					return false;
@@ -401,7 +401,7 @@ class Mailer {
 		$params = [ 'nested' => false ];
 		$ret = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts, $params );
 
-		if ( array_key_exists( 'errors', $ret ) ) {
+		if ( \ContactManager::queryError( $ret, false ) ) {
 			$this->errors[] = 'error query';
 			$this->errors = array_merge( $this->errors, $ret['errors'] );
 			return [];
@@ -638,7 +638,7 @@ class Mailer {
 						continue;
 					}
 
-					if ( is_array( $count_ ) && array_key_exists( 'errors', $count_ ) ) {
+					if ( is_array( $count_ ) && \ContactManager::queryError( $count_, true ) ) {
 						$this->errors[] = 'query error';
 						$this->errors = array_merge( $this->errors, $count_['errors'] );
 						continue;
@@ -657,7 +657,7 @@ class Mailer {
 					$params = [ 'format' => 'json-raw', 'offset' => $localOffset, 'limit' => $localLimit ];
 					$results_ = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts_, $params );
 
-					if ( array_key_exists( 'errors', $results_ ) ) {
+					if ( \ContactManager::queryError( $results_, true ) ) {
 						$this->errors[] = 'query error';
 						$this->errors = array_merge( $this->errors, $results_['errors'] );
 						continue;

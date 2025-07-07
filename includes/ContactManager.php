@@ -411,7 +411,7 @@ class ContactManager {
 			$query_ = '[[name::' . $params['mailbox'] . ']]';
 			$results_ = \VisualData::getQueryResults( $schema_, $query_ );
 
-			if ( array_key_exists( 'errors', $results_ ) ) {
+			if ( self::queryError( $results_, true ) ) {
 				echo 'error query' . PHP_EOL;
 				print_r( $results_ );
 				return false;
@@ -508,7 +508,7 @@ class ContactManager {
 					$options_ = [ 'limit' => 1, 'order' => 'uid DESC' ];
 					$results_ = \VisualData::getQueryResults( $schema_, $query_, $printouts_, $options_ );
 
-					if ( array_key_exists( 'errors', $results_ ) ) {
+					if ( self::queryError( $results_, false ) ) {
 						echo 'error query' . PHP_EOL;
 						print_r( $results_ );
 						// return false;
@@ -532,7 +532,7 @@ class ContactManager {
 						$options_ = [ 'limit' => 1, 'order' => 'id DESC' ];
 						$results_ = \VisualData::getQueryResults( $schema_, $query_, $printouts_, $options_ );
 
-						if ( array_key_exists( 'errors', $results_ ) ) {
+						if ( self::queryError( $results_, false ) ) {
 							echo 'error query' . PHP_EOL;
 							print_r( $results_ );
 							$lastKnowMessageUid = 0;
@@ -936,7 +936,7 @@ class ContactManager {
 		$query = "[[email::$email]][[$targetTitle_]]";
 		$results = \VisualData::getQueryResults( $schema, $query );
 
-		if ( array_key_exists( 'errors', $results ) ) {
+		if ( self::queryError( $results, false ) ) {
 			echo 'error query' . PHP_EOL;
 			print_r( $results );
 		}
@@ -1049,7 +1049,7 @@ class ContactManager {
 		$query = '[[name::' . ( $mailboxName ?? '+' ) . ']]';
 		$results = \VisualData::getQueryResults( $schema, $query );
 
-		if ( array_key_exists( 'errors', $results ) ) {
+		if ( self::queryError( $results, true ) ) {
 			$errors = $results['errors'];
 			return false;
 		}
@@ -1065,6 +1065,25 @@ class ContactManager {
 		}
 
 		return [];
+	}
+
+	/**
+	 * @param array $results
+	 * @param bool $mustExist
+	 * @return bool
+	 */
+	public static function queryError( $results, $mustExist ) {
+		if ( !array_key_exists( 'errors', $results ) ) {
+			return false;
+		}
+
+		if ( !$mustExist && count( $results['errors'] ) === 1 &&
+			$results['errors'][0] === 'schema has no data'
+		) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

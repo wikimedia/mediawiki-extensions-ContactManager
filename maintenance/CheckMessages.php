@@ -114,7 +114,7 @@ class CheckMessages extends Maintenance {
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params );
 
-		if ( array_key_exists( 'errors', $results ) ) {
+		if ( \ContactManager::queryError( $results, true ) ) {
 			echo 'error query' . PHP_EOL;
 			print_r( $results );
 			return;
@@ -152,7 +152,7 @@ class CheckMessages extends Maintenance {
 				// *** when pageid is set in the query, the first result is returned
 				$value = \VisualData::getQueryResults( $schema, $query_, $printouts_ );
 
-				if ( array_key_exists( 'errors', $value ) ) {
+				if ( \ContactManager::queryError( $value, true ) ) {
 					echo 'error query' . PHP_EOL;
 					print_r( $value );
 					continue;
@@ -192,7 +192,7 @@ class CheckMessages extends Maintenance {
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params );
 
-		if ( array_key_exists( 'errors', $results ) ) {
+		if ( \ContactManager::queryError( $results, false ) ) {
 			echo 'error query' . PHP_EOL;
 			print_r( $results );
 			return false;
@@ -214,7 +214,7 @@ class CheckMessages extends Maintenance {
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params_ );
 
-		if ( array_key_exists( 'errors', $results ) ) {
+		if ( \ContactManager::queryError( $results, false ) ) {
 			echo 'error query' . PHP_EOL;
 			print_r( $results );
 			return false;

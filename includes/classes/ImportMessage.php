@@ -214,7 +214,7 @@ class ImportMessage {
 			$query_ = '[[name::' . $params['mailbox'] . ']]';
 			$results_ = \VisualData::getQueryResults( $schema_, $query_ );
 
-			if ( array_key_exists( 'errors', $results_ ) ) {
+			if ( \ContactManager::queryError( $results_, true ) ) {
 				echo 'error query' . PHP_EOL;
 				print_r( $results_ );
 			}
@@ -453,7 +453,7 @@ class ImportMessage {
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts );
 
-		if ( array_key_exists( 'errors', $results ) ) {
+		if ( \ContactManager::queryError( $results, false ) ) {
 			echo 'error query' . PHP_EOL;
 			print_r( $results );
 		}
@@ -507,7 +507,7 @@ class ImportMessage {
 		$params = [ 'format' => 'count' ];
 		$count = \VisualData::getQueryResults( $schema, $query, $printouts, $params );
 
-		if ( is_array( $count ) && array_key_exists( 'errors', $count ) ) {
+		if ( is_array( $count ) && \ContactManager::queryError( $count, false ) ) {
 			echo 'error query' . PHP_EOL;
 			print_r( $count );
 		}

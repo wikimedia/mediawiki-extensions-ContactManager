@@ -215,12 +215,12 @@ class BrowseTracking extends \SpecialPage {
 		$printouts = [ 'name' ];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts );
 
-		if ( array_key_exists( 'errors', $results ) ) {
+		if ( \ContactManager::queryError( $results, false ) ) {
 			throw new \MWException( 'error query: ' . print_r( $results, true ) );
 		}
 
 		$mailboxes = [];
-		if ( !array_key_exists( 'errors', $results ) ) {
+		if ( !empty( $results[0]['data'] ) ) {
 			foreach ( $results as $value ) {
 				$mailboxes[$value['data']['name']] = $value['data']['name'];
 			}
@@ -242,12 +242,12 @@ class BrowseTracking extends \SpecialPage {
 		$printouts = [ 'name' ];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts );
 
-		if ( array_key_exists( 'errors', $results ) ) {
+		if ( \ContactManager::queryError( $results, false ) ) {
 			throw new \MWException( 'error query: ' . print_r( $results, true ) );
 		}
 
 		$accounts = [];
-		if ( !array_key_exists( 'errors', $results ) ) {
+		if ( !empty( $results[0]['data'] ) ) {
 			foreach ( $results as $value ) {
 				$accounts[$value['data']['name']] = $value['data']['name'];
 			}
