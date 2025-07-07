@@ -57,7 +57,7 @@ class RecordHeader {
 	}
 
 	/**
-	 * @return array|false|void
+	 * @return array|false
 	 */
 	public function doImport() {
 		$params = $this->params;
@@ -85,7 +85,7 @@ class RecordHeader {
 
 		$categories_ = [];
 		if ( !$this->applyFilters( $obj, $pagenameFormula_, $categories_ ) ) {
-			return;
+			return false;
 		}
 
 		// only if provided from applyFilters

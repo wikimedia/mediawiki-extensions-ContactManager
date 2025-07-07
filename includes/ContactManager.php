@@ -568,11 +568,13 @@ class ContactManager {
 		$newHeaders = 0;
 		$newContacts = 0;
 		$overviewHeaders = [];
+		$skippedByFilters = [];
 		foreach ( $folders as $key => $folder ) {
 			echo 'switching folder ' . $folder['shortpath'] . PHP_EOL;
 
 			$shortpath = $switchMailbox( $folder );
 			[ $headersQuery, $messagesQuery ] = $folder['fetchQuery'];
+			$skippedByFilters[$shortpath] = [];
 
 			if ( !empty( $params['fetch_folder_status'] ) || $folder['fetch'] === 'UIDs incremental' ) {
 
@@ -650,6 +652,9 @@ class ContactManager {
 					[ $newHeaders_, $newContacts_ ] = $res_;
 					$newHeaders += count( $newHeaders_ );
 					$newContacts += count( $newContacts_ );
+
+				} elseif ( $res_ === false ) {
+					$skippedByFilters[$shortpath][] = $header['uid'];
 				}
 
 				// *** alternatively use
@@ -712,6 +717,11 @@ class ContactManager {
 				echo 'importing message ' . ( $n + 1 ) . '/' . $size_ . PHP_EOL;
 
 				$header = (array)$header;
+
+				if ( in_array( $header['uid'], $skippedByFilters[$shortpath] ) ) {
+					echo $header['uid'] . ' skipped by header\'s filter' . PHP_EOL;
+					continue;
+				}
 
 				$importMessage = new ImportMessage( $user, $mailbox, array_merge( $params, [
 					'folder' => $folder,
