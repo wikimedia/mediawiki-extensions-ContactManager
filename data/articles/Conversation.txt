@@ -84,9 +84,10 @@ __NOTOC__
     |?date
     |?subject
     |?toString
-    |?attachments
+    |?regularAttachments
     |?visibleText
     |template=ContactManager/Conversation
+    |values-separator=@@
     |format=template
     |order=date asc
     |limit = 100
@@ -115,9 +116,10 @@ __NOTOC__
     |?date
     |?subject
     |?toString
-    |?attachments
+    |?regularAttachments
     |?visibleText
     |template=ContactManager/Conversation
+    |values-separator=@@
     |format=template
     |order=date asc
     |limit = 100

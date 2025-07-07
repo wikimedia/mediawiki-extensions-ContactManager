@@ -12,7 +12,7 @@
 | {{{subject}}}
 |-
 ! attachments
-| {{#arraymap:{{{attachments|}}} | @@ | @@ | [[Special:ContactManagerGetResource/{{{pageid}}}/@@|@@]] | ,\s | ,\s  }}
+| {{#arraymap:{{{regularAttachments|}}} | @@ | @@ | [[Special:ContactManagerGetResource/{{{pageid}}}/@@|@@]] | ,\s | ,\s  }}
 |-
 |}
 

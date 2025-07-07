@@ -45,6 +45,10 @@ class ContactManager {
 	public const JOB_END = 2;
 	public const JOB_LAST_STATUS = 3;
 
+	public const SKIPPED_ON_ERROR = 1;
+	public const SKIPPED_ON_FILTER = 2;
+	public const SKIPPED_ON_EXISTING = 3;
+
 	/** @var array */
 	public static $UserAuthCache = [];
 
@@ -465,7 +469,7 @@ class ContactManager {
 					$UIDs = $imapMailbox->searchMailbox( implode( ' ', $criteria ) );
 					$UIDs = array_values( $UIDs );
 					$len_ = count( $UIDs );
-					if ( $len_ === $UIDs[$len_ - 1] - $UIDs[0] ) {
+					if ( $len_ === ( $UIDs[$len_ - 1] - $UIDs[0] + 1 ) ) {
 						$UIDs = $UIDs[0] . ':' . $UIDs[$len_ - 1];
 					} else {
 						$UIDs = implode( ',', $UIDs );
@@ -557,10 +561,14 @@ class ContactManager {
 		// determine fetch query
 		foreach ( $folders as $key => $folder ) {
 			$folders[$key]['shortpath'] = $switchMailbox( $folder );
+			echo 'shortpath: ' . $folders[$key]['shortpath'] . PHP_EOL;
+
 			$folders[$key]['mailboxStatus'] = (array)$imapMailbox->statusMailbox( $errors );
 			echo 'mailboxStatus' . PHP_EOL;
 			print_r( $folders[$key]['mailboxStatus'] );
+
 			$folders[$key]['fetchQuery'] = $determineFetchQuery( $folders[$key] );
+			echo 'fetchQuery: ' . $folders[$key]['fetchQuery'] . PHP_EOL;
 		}
 
 		echo 'retrieving headers' . PHP_EOL;
@@ -653,24 +661,9 @@ class ContactManager {
 					$newHeaders += count( $newHeaders_ );
 					$newContacts += count( $newContacts_ );
 
-				} elseif ( $res_ === false ) {
+				} elseif ( $res_ === self::SKIPPED_ON_FILTER ) {
 					$skippedByFilters[$shortpath][] = $header['uid'];
 				}
-
-				// *** alternatively use
-				// $job_ = new ContactManagerJob( $title, array_merge( $params, [
-				// 	'job' => 'record-header',
-				// 	'folder' => $folder,
-				// 	'obj' => $header
-				// ] ) );
-
-				// run synch
-				// $job_->run();
-
-				// *** this will run asynch, which is not
-				// what we want, since the $lastKnowMessageUid
-				// won't be reliable
-				// $jobs[] = $job_;
 
 				$n++;
 			}
@@ -906,7 +899,6 @@ class ContactManager {
 	) {
 		if ( empty( $email ) ) {
 			echo '*** error, no email' . PHP_EOL;
-			print_r( $params );
 			print_r( $obj );
 			return false;
 		}

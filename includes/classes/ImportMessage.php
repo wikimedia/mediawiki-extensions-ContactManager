@@ -63,7 +63,7 @@ class ImportMessage {
 	}
 
 	/**
-	 * @return array|false|void
+	 * @return array|int
 	 */
 	public function doImport() {
 		$params = $this->params;
@@ -71,7 +71,9 @@ class ImportMessage {
 		$imapMailbox = $this->mailbox->getImapMailbox();
 
 		if ( !$imapMailbox ) {
-			return false;
+			$this->errors[] = 'no imap mailbox';
+			echo '***skipped on error' . PHP_EOL;
+			return \ContactManager::SKIPPED_ON_ERROR;
 		}
 
 		$uid = $params['uid'];
@@ -175,12 +177,23 @@ class ImportMessage {
 			$obj[$value] = $formattedRecipients;
 		}
 
-		$attachments = $mail->getAttachments();
-		$attachments = json_decode( json_encode( $attachments ), true );
+		$attachmentsObj = $mail->getAttachments();
+
+		// all attachments
+		$attachments = json_decode( json_encode( $attachmentsObj ), true );
 
 		if ( count( $attachments ) ) {
+			echo count( $attachments ) . ' attachments' . PHP_EOL;
+
+			[ $regularAttachments, $inlineAttachments ] = $this->getAttachmentsType( $mail->textHtml, $attachmentsObj );
+
 			foreach ( $attachments as $k => $v ) {
 				$attachments[$k]['name'] = $imapMailbox->decodeMimeStr( $v['name'] );
+			}
+
+			$obj['regularAttachments'] = [];
+			foreach ( $regularAttachments as $v ) {
+				$obj['regularAttachments'][] = $imapMailbox->decodeMimeStr( $v->name );
 			}
 		}
 
@@ -255,7 +268,8 @@ class ImportMessage {
 			&& is_array( $params['categories'] ) ? $params['categories'] : [] );
 
 		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories ) ) {
-			return;
+			echo 'skipped by filter' . PHP_EOL;
+			return \ContactManager::SKIPPED_ON_FILTER;
 		}
 
 		$pagenameFormula = str_replace( '<folder_name>', $folder['folder_name'], $pagenameFormula );
@@ -269,18 +283,25 @@ class ImportMessage {
 		// echo 'pagenameFormula: ' . $pagenameFormula . "\n";
 
 		// mailbox article
-		$title_ = TitleClass::newFromID( $params['pageid'] );
+		$title = TitleClass::newFromID( $params['pageid'] );
 		$context = RequestContext::getMain();
-		$context->setTitle( $title_ );
+		$context->setTitle( $title );
 		$output = $context->getOutput();
-		$output->setTitle( $title_ );
+		$output->setTitle( $title );
 
 		$pagenameFormula = \ContactManager::parseWikitext( $output, $pagenameFormula );
 
 		if ( empty( $pagenameFormula ) ) {
-			$this->errors[] = 'empty pagename formula';
-			return;
 			// throw new MWException( 'invalid title' );
+			$this->errors[] = 'empty pagename formula';
+			echo '***skipped on error' . PHP_EOL;
+			return \ContactManager::SKIPPED_ON_ERROR;
+		}
+
+		$title_ = TitleClass::newFromText( $pagenameFormula_ );
+		if ( $title_ && $title_->isKnown() && !empty( $params['ignore_existing'] ) ) {
+			echo 'skipped as existing' . PHP_EOL;
+			return \ContactManager::SKIPPED_ON_EXISTING;
 		}
 
 		$schema = $GLOBALS['wgContactManagerSchemasIncomingMail'];
@@ -294,16 +315,15 @@ class ImportMessage {
 		$obj['categories'] = $categories;
 
 		$retMessage = $importer->importData( $pagenameFormula, $obj, $showMsg );
-		$title = TitleClass::newFromText( $pagenameFormula );
 
-		if ( !$title ) {
+		if ( !is_array( $retMessage ) || !count( $retMessage ) ) {
 			$this->errors[] = 'invalid title';
-			return;
-			// throw new MWException( 'invalid title' );
+			echo '***skipped on error' . PHP_EOL;
+			return \ContactManager::SKIPPED_ON_ERROR;
 		}
 
 		$attachmentsFolder = \ContactManager::getAttachmentsFolder();
-		$pathTarget = $attachmentsFolder . '/' . $title->getArticleID();
+		$pathTarget = $attachmentsFolder . '/' . $title_->getArticleID();
 
 		if ( $obj['hasAttachments'] ) {
 			echo 'attachment path ' . $pathTarget . PHP_EOL;
@@ -311,7 +331,7 @@ class ImportMessage {
 			if ( mkdir( $pathTarget, 0777, true ) ) {
 				foreach ( $obj['attachments'] as $value ) {
 					rename( $attachmentsFolder . '/' . $value['name'], $pathTarget . '/' . $value['name'] );
-					$this->handleUpload( $value );
+					echo 'saving attachment to ' . $pathTarget . '/' . $value['name'] . PHP_EOL;
 				}
 			}
 		}
@@ -335,7 +355,7 @@ class ImportMessage {
 				$deliveredTo, $conversationRecipients, $mailboxRelatedAddress, $obj['date'] );
 		}
 
-		return [ ( is_array( $retMessage ) ? $retMessage : [] ), $retContacts, ( is_array( $retConversation ) ? $retConversation : [] ) ];
+		return [ $retMessage, $retContacts, ( is_array( $retConversation ) ? $retConversation : [] ) ];
 	}
 
 	/**
@@ -687,23 +707,31 @@ class ImportMessage {
 	}
 
 	/**
-	 * @param array $value
+	 * @see PhpImap\IncomingMail
+	 * @param string $textHtml
+	 * @param \PhpImap\IncomingMailAttachment $attachments
+	 * @return array
 	 */
-	public function handleUpload( $value ) {
-		global $wgFileExtensions;
+	private function getAttachmentsType( $textHtml, $attachments ) {
+		\preg_match_all( '/\bcid:([^\s\'"<>]{1,256})/mi', $textHtml, $matches );
+		$cidList = isset( $matches[1] ) ? array_unique( $matches[1] ) : [];
 
-		// text/plain; charset=us-ascii
-		$mime = explode( ';', $value['mime'] );
-		$mime = $mime[0];
-
-		$ext = pathinfo( $value['name'], PATHINFO_EXTENSION );
-
-		if ( !in_array( $ext, $wgFileExtensions ) ) {
-			return;
+		$inline = [];
+		$retAttachments = [];
+		foreach ( $attachments as $attachment ) {
+			$disposition = \mb_strtolower( (string)$attachment->disposition );
+			// @see https://github.com/barbushin/php-imap/issues/569
+			if (
+				in_array( $attachment->contentId, $cidList, true ) ||
+				$disposition === 'inline'
+			) {
+				$inline[] = $attachment;
+			} else {
+				$retAttachments[] = $attachment;
+			}
 		}
 
-		// @TODO
-		// import file in the wiki
+		return [ $retAttachments, $inline ];
 	}
 
 }

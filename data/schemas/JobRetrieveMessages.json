@@ -7,15 +7,15 @@
 	"properties": {
 		"name": {
 			"wiki": {
-				"type": "property",
-				"uuid": "660830d33f16f",
 				"name": "name",
-				"visibility": "visible",
-				"label": "name",
+				"type": "property",
 				"multiple-items": false,
+				"required": true,
+				"label": "name",
+				"uuid": "660830d33f16f",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"required": true
+				"input-config": []
 			},
 			"type": "string",
 			"format": "text",
@@ -208,16 +208,16 @@
 					},
 					"fetch_message": {
 						"wiki": {
-							"type": "property",
-							"uuid": "675495e626d6d",
 							"name": "fetch_message",
-							"visibility": "visible",
-							"label": "fetch message",
+							"type": "property",
 							"multiple-items": false,
+							"label": "fetch message",
+							"default": "true",
+							"uuid": "675495e626d6d",
+							"visibility": "visible",
 							"preferred-input": "OO.ui.ToggleSwitchWidget",
 							"input-config": [],
-							"required": false,
-							"default": "true"
+							"required": false
 						},
 						"type": "boolean",
 						"title": "fetch message",
@@ -469,37 +469,52 @@
 		},
 		"save_contacts": {
 			"wiki": {
-				"type": "property",
-				"uuid": "660830d33f17f",
 				"name": "save_contacts",
-				"visibility": "visible",
-				"label": "save contacts",
+				"type": "property",
 				"multiple-items": false,
+				"label": "save contacts",
+				"default": "true",
+				"uuid": "660830d33f17f",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.ToggleSwitchWidget",
 				"input-config": [],
-				"required": false,
-				"default": "true"
+				"required": false
 			},
 			"type": "boolean",
 			"title": "save contacts",
 			"default": "true"
 		},
-		"download_attachments": {
+		"ignore_existing": {
 			"wiki": {
 				"type": "property",
-				"uuid": "675495e626d68",
-				"name": "download_attachments",
-				"visibility": "condition",
-				"showif-field": "name",
-				"showif-condition": "=",
-				"showif-value": "true",
-				"showif-value-wikitext": false,
-				"label": "download attachments",
+				"name": "ignore_existing",
+				"visibility": "visible",
+				"label": "ignore existing",
+				"help-message": "skip existing items",
 				"multiple-items": false,
 				"preferred-input": "OO.ui.ToggleSwitchWidget",
 				"input-config": [],
 				"required": false,
-				"default": "true"
+				"default": "true",
+				"uuid": "686c1fced4d4e"
+			},
+			"type": "boolean",
+			"title": "ignore existing",
+			"description": "skip existing items",
+			"default": "true"
+		},
+		"download_attachments": {
+			"wiki": {
+				"name": "download_attachments",
+				"type": "property",
+				"multiple-items": false,
+				"label": "download attachments",
+				"default": "true",
+				"uuid": "675495e626d68",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"input-config": [],
+				"required": false
 			},
 			"type": "boolean",
 			"title": "download attachments",
@@ -1356,4 +1371,3 @@
 	],
 	"type": "object"
 }
-

@@ -57,7 +57,7 @@ class RecordHeader {
 	}
 
 	/**
-	 * @return array|false
+	 * @return array|int
 	 */
 	public function doImport() {
 		$params = $this->params;
@@ -72,9 +72,9 @@ class RecordHeader {
 		$context->setTitle( $title );
 		$output = $context->getOutput();
 
-		$header = $params['obj'];
+		// header obj
+		$obj = $params['obj'];
 		$folder = $params['folder'];
-		$obj = $header;
 
 		// may be overridden by $this->applyFilters
 		$pagenameFormula_ = \ContactManager::replaceParameter( 'ContactManagerHeaderPagenameFormula',
@@ -85,7 +85,8 @@ class RecordHeader {
 
 		$categories_ = [];
 		if ( !$this->applyFilters( $obj, $pagenameFormula_, $categories_ ) ) {
-			return false;
+			echo 'skipped by filter' . PHP_EOL;
+			return \ContactManager::SKIPPED_ON_FILTER;
 		}
 
 		// only if provided from applyFilters
@@ -95,6 +96,12 @@ class RecordHeader {
 			$GLOBALS['wgContactManagerSchemasMessageHeader'] );
 
 		$pagenameFormula_ = \ContactManager::parseWikitext( $output, $pagenameFormula_ );
+
+		$title_ = TitleClass::newFromText( $pagenameFormula_ );
+		if ( $title_ && $title_->isKnown() && !empty( $params['ignore_existing'] ) ) {
+			echo 'skipped as existing' . PHP_EOL;
+			return \ContactManager::SKIPPED_ON_EXISTING;
+		}
 
 		$schema_ = $GLOBALS['wgContactManagerSchemasMessageHeader'];
 		$options_ = [
@@ -107,6 +114,12 @@ class RecordHeader {
 		$obj['categories'] = $categories_;
 
 		$retHeader = $importer->importData( $pagenameFormula_, $obj, $showMsg );
+
+		if ( !is_array( $retHeader ) || !count( $retHeader ) ) {
+			$this->errors[] = 'invalid title';
+			echo '***skipped on error' . PHP_EOL;
+			return \ContactManager::SKIPPED_ON_ERROR;
+		}
 
 		$retContacts = [];
 		if ( !empty( $params['save_contacts'] ) ) {
@@ -129,7 +142,7 @@ class RecordHeader {
 			}
 		}
 
-		return [ ( is_array( $retHeader ) ? $retHeader : [] ), $retContacts ];
+		return [ $retHeader, $retContacts ];
 	}
 
 	/**

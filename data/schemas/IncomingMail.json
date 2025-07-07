@@ -1310,6 +1310,34 @@
 			"title": "Attachments",
 			"uniqueItems": false
 		},
+		"regularAttachments": {
+			"wiki": {
+				"name": "regularAttachments",
+				"title": "regularAttachments",
+				"unique-items": true,
+				"type": "schema",
+				"uuid": "686c1be9493b1"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "regularAttachments",
+					"type": "property",
+					"uuid": "686c1bcdbbc9d",
+					"visibility": "visible",
+					"multiple-items": true,
+					"preferred-input": "OO.ui.TextInputWidget",
+					"input-config": [],
+					"required": false,
+					"default": []
+				},
+				"format": "text",
+				"default": []
+			},
+			"type": "array",
+			"title": "regularAttachments",
+			"uniqueItems": true
+		},
 		"to": {
 			"wiki": {
 				"name": "to",
@@ -1491,11 +1519,11 @@
 		},
 		"deliveredTo": {
 			"wiki": {
-				"type": "property",
 				"name": "deliveredTo",
-				"visibility": "visible",
-				"label": "deliveredTo",
+				"type": "property",
 				"multiple-items": false,
+				"label": "deliveredTo",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
 				"required": false,
@@ -1507,11 +1535,11 @@
 		},
 		"conversationHash": {
 			"wiki": {
-				"type": "property",
 				"name": "conversationHash",
-				"visibility": "visible",
-				"label": "conversationHash",
+				"type": "property",
 				"multiple-items": false,
+				"label": "conversationHash",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
 				"input-config": [],
 				"required": false,
@@ -1525,4 +1553,3 @@
 	"type": "object",
 	"title": "ContactManager/Incoming mail"
 }
-
