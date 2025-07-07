@@ -1,1 +1,6 @@
-{{{email|}}}:{{{name|}}}{{#if: {{{islast}}} |  | , }}
+{{#querylink:ContactManager:Conversation|{{#visualdataquery:[[conversations::{{{hash}}}]]
+  |schema=ContactManager/Contact 
+  |?full_name
+  |format=raw
+  |separator=,<nowiki> </nowiki>
+ }}|target=_blank|mailbox={{{mailbox}}}|hash={{{hash}}}|month={{#time:m| {{{date_last}}} }}|year={{#time:Y| {{{date_last}}} }} }}

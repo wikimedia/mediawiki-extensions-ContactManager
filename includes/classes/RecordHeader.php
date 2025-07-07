@@ -122,7 +122,7 @@ class RecordHeader {
 			}
 
 			foreach ( $allContacts as $email => $name ) {
-				$ret_ = \ContactManager::saveContact( $user, $context, $params, $obj, $name, $email );
+				$ret_ = \ContactManager::saveUpdateContact( $user, $context, $params, $obj, $name, $email );
 				if ( is_array( $ret_ ) ) {
 					$retContacts = array_merge( $retContacts, $ret_ );
 				}

@@ -1,16 +1,13 @@
 {{#visualdataquery: [[ContactManager:Mailboxes/{{{mailbox}}}/~]]
 |schema=ContactManager/Conversation
 |limit=40
-|?participants field=participants
-|?participants/email=
-|?participants/name=
+|?participants
 |?messages
-|?date_last=latest 
+|?date_last=latest
 |?hash=
 |?count=
 |?mailbox=
 |pagetitle=
-|template?participants field=ContactManager/Conversations table participants field
 |template?participants=ContactManager/Conversations table participants
 |template?messages=ContactManager/Conversations table messages field
 |template?date_last=ContactManager/Conversations table latest field

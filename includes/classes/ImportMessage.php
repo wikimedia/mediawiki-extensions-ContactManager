@@ -205,7 +205,11 @@ class ImportMessage {
 		$obj['deliveredTo'] = $deliveredTo;
 
 		$conversationRecipients = $allContacts;
-		$conversationHash = $this->getConversationHash( $params, $obj, $conversationRecipients );
+
+		// this will remove the mailbox related address from $conversationRecipients
+		// by reference
+		[ $conversationHash, $mailboxRelatedAddress ] = $this->getConversationHashAndRelatedAddress( $params, $obj, $conversationRecipients );
+
 		$obj['conversationHash'] = $conversationHash;
 
 		// update the delivered-to list
@@ -315,17 +319,21 @@ class ImportMessage {
 		$retContacts = [];
 		if ( !empty( $params['save_contacts'] ) ) {
 			foreach ( $allContacts as $email => $name ) {
-				$ret_ = \ContactManager::saveContact( $user, $context, $params, $obj, $name, $email, $conversationHash,
+				// do not include in the conversation's participants the mailbox related address
+				// it will be added separately
+				$conversationHash_ = ( array_key_exists( $email, $conversationRecipients ) ? $conversationHash : null );
+
+				$ret_ = \ContactManager::saveUpdateContact( $user, $context, $params, $obj, $name, $email, $conversationHash_,
 					( $email === $obj['fromAddress'] ? $detectedLanguage : null ) );
 
 				if ( is_array( $ret_ ) ) {
 					$retContacts = array_merge( $retContacts, $ret_ );
 				}
 			}
-		}
 
-		$retConversation = $this->saveConversation( $user, $context, $params, $conversationHash,
-			$deliveredTo, $conversationRecipients, $obj['date'] );
+			$retConversation = $this->saveConversation( $user, $context, $params, $conversationHash,
+				$deliveredTo, $conversationRecipients, $mailboxRelatedAddress, $obj['date'] );
+		}
 
 		return [ ( is_array( $retMessage ) ? $retMessage : [] ), $retContacts, ( is_array( $retConversation ) ? $retConversation : [] ) ];
 	}
@@ -389,12 +397,18 @@ class ImportMessage {
 	 * @param array &$conversationRecipients
 	 * @return string
 	 */
-	private function getConversationHash( $params, $obj, &$conversationRecipients ) {
+	private function getConversationHashAndRelatedAddress( $params, $obj, &$conversationRecipients ) {
 		ksort( $conversationRecipients );
 
+		// get the hash before removing the related mailbox address
+		// , is not supported in email address
+		$hash = dechex( crc32( implode( ',', array_keys( $conversationRecipients ) ) ) );
+
+		$relatedAddress = null;
 		switch ( strtolower( $params['folder']['folder_type'] ) ) {
 			case 'sent':
 			case 'draft':
+				$relatedAddress = $obj['fromAddress'];
 				unset( $conversationRecipients[$obj['fromAddress']] );
 				break;
 			case 'spam':
@@ -402,14 +416,12 @@ class ImportMessage {
 			case 'inbox':
 			case 'trash':
 			default:
+				$relatedAddress = $obj['deliveredTo'];
 				unset( $conversationRecipients[$obj['deliveredTo']] );
 				break;
 		}
 
-		$participantsEmail = array_keys( $conversationRecipients );
-
-		// , is not supported in email address
-		return dechex( crc32( implode( ',', $participantsEmail ) ) );
+		return [ $hash, $relatedAddress ];
 	}
 
 	/**
@@ -419,17 +431,13 @@ class ImportMessage {
 	 * @param string $hash
 	 * @param string $deliveredTo
 	 * @param array $conversationRecipients
+	 * @param string $relatedAddress
 	 * @param string $date
 	 * @return bool|void|array
 	 */
-	private function saveConversation( $user, $context, $params, $hash, $deliveredTo, $conversationRecipients, $date ) {
-		$participants = [];
-		foreach ( $conversationRecipients as $email => $name ) {
-			$participants[] = [ 'name' => $name, 'email' => $email ];
-		}
-
+	private function saveConversation( $user, $context, $params, $hash, $deliveredTo, $conversationRecipients, $relatedAddress, $date ) {
 		// sending to oneself
-		if ( !count( $participants ) ) {
+		if ( !count( $conversationRecipients ) ) {
 			return;
 		}
 
@@ -466,7 +474,8 @@ class ImportMessage {
 
 		$data = [
 			'mailbox' => $params['mailbox'],
-			'participants' => $participants,
+			'related_address' => $relatedAddress,
+			'addresses' => array_keys( $conversationRecipients ),
 			'hash' => $hash,
 			'date_last' => null,
 			'date_first' => null,

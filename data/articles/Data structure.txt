@@ -31,7 +31,6 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 **[[Template:ContactManager/Conversations table latest field]]
 **[[Template:ContactManager/Conversations table messages field]]
 **[[Template:ContactManager/Conversations table participants]]
-**[[Template:ContactManager/Conversations table participants field]]
 **[[Template:ContactManager/Create contact name field]]
 **[[Template:ContactManager/Email]]
 **[[Template:ContactManager/Format reply]]

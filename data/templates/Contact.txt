@@ -53,12 +53,10 @@
 
 ==Conversations==
 
-{{#if: {{{email|}}}|{{#visualdataquery: [[participants/email::{{#replace:{{{email|}}}|,|{{!}}{{!}} }}]]
+{{#if: {{{email|}}}|{{#visualdataquery: [[addresses::{{{email}}}]]
 |schema=ContactManager/Conversation
 |limit=40
-|?participants field=conversation
-|?participants/email=
-|?participants/name=
+|?participants
 |?messages
 |?latest
 |?hash=
@@ -66,7 +64,6 @@
 |?count=
 |?mailbox=
 |pagetitle=
-|template?participants field=ContactManager/Conversations table participants field
 |template?participants=ContactManager/Conversations table participants
 |template?messages=ContactManager/Conversations table messages field
 |template?latest=ContactManager/Conversations table latest field

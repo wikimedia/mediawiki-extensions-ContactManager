@@ -1,1 +1,0 @@
-{{#querylink:ContactManager:Conversation|target=_blank|{{#arraymap:{{#invoke:ContactManager/ReplacePipe|replacePipeArr|{{{participants|}}} }} | , | @ | {{#if:{{#explode:@|:|1}}|{{#explode:@|:|1}}|{{#explode:@|:|0}} }} | ,<nowiki> </nowiki>}}|mailbox={{{mailbox}}}|hash={{{hash}}}|month={{#time:m| {{{date_last}}} }}|year={{#time:Y| {{{date_last}}} }} }}

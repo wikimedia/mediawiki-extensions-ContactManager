@@ -25,7 +25,7 @@ __NOTOC__
 |preload=
 |preload-data?to={{#visualdataquery:[[hash::{{#urlget:hash}}]]
   |schema=ContactManager/Conversation
-  |?participants/email
+  |?addresses
   |limit=1
   |format=raw
   }}
@@ -93,7 +93,7 @@ __NOTOC__
     |offset = {{#if: {{#urlget:offset}} | {{#urlget:offset}} | 0 }}
   }}
 
-<big>{{#invoke:ContactManager/ConversationsNavigationBottom|fn
+<big>{{#invoke:NavPanel|fn
    | mailbox={{#urlget:mailbox}}
    | month={{#urlget:month}}
    | year={{#urlget:year}}
@@ -124,7 +124,7 @@ __NOTOC__
     |offset = {{#if: {{#urlget:offset}} | {{#urlget:offset}} | 0 }}
   }}
 
-<big>{{#invoke:ContactManager/ConversationsNavigationBottom|fn
+<big>{{#invoke:NavPanel|fn
    | mailbox={{#urlget:mailbox}}
    | month={{#urlget:month}}
    | year={{#urlget:year}}
@@ -139,4 +139,5 @@ __NOTOC__
   }}
   }}</big>
 }}
+
 

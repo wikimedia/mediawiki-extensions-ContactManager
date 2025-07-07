@@ -21,57 +21,53 @@
 			"format": "text",
 			"title": "mailbox"
 		},
-		"participants": {
+		"related_address": {
 			"wiki": {
-				"name": "participants",
+				"type": "property",
+				"uuid": "686b9f3cce3f2",
+				"name": "related_address",
+				"visibility": "hidden",
+				"label": "delivered_to",
+				"multiple-items": false,
+				"preferred-input": "OO.ui.TextInputWidget (email)",
+				"input-config": [],
+				"required": true
+			},
+			"options": {
+				"hidden": true
+			},
+			"type": "string",
+			"format": "email",
+			"title": "delivered_to"
+		},
+		"addresses": {
+			"wiki": {
+				"name": "addresses",
 				"min-items": 1,
 				"unique-items": false,
 				"type": "schema",
-				"uuid": "677586fa18387"
+				"uuid": "686bafbda69c6"
 			},
 			"items": {
-				"type": "object",
+				"type": "string",
 				"wiki": {
-					"name": "",
-					"type": "schema",
-					"layout": "section",
-					"visibility": "visible",
-					"uuid": "677586fa18388"
+					"name": "addresses",
+					"type": "property",
+					"uuid": "686baf9d02cef",
+					"visibility": "hidden",
+					"label": "addresses",
+					"multiple-items": true,
+					"preferred-input": "OO.ui.TextInputWidget (email)",
+					"input-config": [],
+					"required": false,
+					"default": []
 				},
-				"properties": {
-					"name": {
-						"wiki": {
-							"name": "name",
-							"type": "property",
-							"multiple-items": false,
-							"label": "name",
-							"visibility": "visible",
-							"preferred-input": "OO.ui.TextInputWidget",
-							"input-config": [],
-							"required": false,
-							"uuid": "677586fa18389"
-						},
-						"type": "string",
-						"format": "text",
-						"title": "name"
-					},
-					"email": {
-						"wiki": {
-							"name": "email",
-							"type": "property",
-							"multiple-items": false,
-							"label": "email",
-							"visibility": "visible",
-							"preferred-input": "OO.ui.TextInputWidget",
-							"input-config": [],
-							"required": false,
-							"uuid": "677586fa18398"
-						},
-						"type": "string",
-						"format": "text",
-						"title": "email"
-					}
-				}
+				"options": {
+					"hidden": true
+				},
+				"format": "email",
+				"title": "addresses",
+				"default": []
 			},
 			"type": "array",
 			"minItems": 1,
@@ -98,11 +94,11 @@
 		},
 		"date_first": {
 			"wiki": {
-				"type": "property",
 				"name": "date_first",
-				"visibility": "visible",
-				"label": "date first",
+				"type": "property",
 				"multiple-items": false,
+				"label": "date first",
+				"visibility": "visible",
 				"preferred-input": "mw.widgets.DateInputWidget",
 				"input-config": [],
 				"required": false,
@@ -114,11 +110,11 @@
 		},
 		"date_last": {
 			"wiki": {
-				"type": "property",
 				"name": "date_last",
-				"visibility": "visible",
-				"label": "date_last",
+				"type": "property",
 				"multiple-items": false,
+				"label": "date_last",
+				"visibility": "visible",
 				"preferred-input": "mw.widgets.DateInputWidget",
 				"input-config": [],
 				"required": false,
@@ -130,11 +126,11 @@
 		},
 		"count": {
 			"wiki": {
-				"type": "property",
 				"name": "count",
-				"visibility": "visible",
-				"label": "count",
+				"type": "property",
 				"multiple-items": false,
+				"label": "count",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.NumberInputWidget",
 				"input-config": [],
 				"required": false,
@@ -146,8 +142,8 @@
 	},
 	"required": [
 		"mailbox",
+		"related_address",
 		"hash"
 	],
 	"type": "object"
 }
-

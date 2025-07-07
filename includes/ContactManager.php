@@ -901,7 +901,7 @@ class ContactManager {
 	 * @param string|null $detectedLanguage
 	 * @return array|false|void
 	 */
-	public static function saveContact( $user, $context, $params, $obj, $name, $email,
+	public static function saveUpdateContact( $user, $context, $params, $obj, $name, $email,
 		$conversationHash = null, $detectedLanguage = null
 	) {
 		if ( empty( $email ) ) {
