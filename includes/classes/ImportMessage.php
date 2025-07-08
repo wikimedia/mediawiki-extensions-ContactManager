@@ -298,8 +298,15 @@ class ImportMessage {
 			return \ContactManager::SKIPPED_ON_ERROR;
 		}
 
-		$title_ = TitleClass::newFromText( $pagenameFormula_ );
-		if ( $title_ && $title_->isKnown() && !empty( $params['ignore_existing'] ) ) {
+		$title_ = TitleClass::newFromText( $pagenameFormula );
+
+		if ( !$title_ ) {
+			$this->errors[] = 'invalid title';
+			echo '***skipped on error' . PHP_EOL;
+			return \ContactManager::SKIPPED_ON_ERROR;
+		}
+
+		if ( $title_->isKnown() && !empty( $params['ignore_existing'] ) ) {
 			echo 'skipped as existing' . PHP_EOL;
 			return \ContactManager::SKIPPED_ON_EXISTING;
 		}
@@ -317,10 +324,13 @@ class ImportMessage {
 		$retMessage = $importer->importData( $pagenameFormula, $obj, $showMsg );
 
 		if ( !is_array( $retMessage ) || !count( $retMessage ) ) {
-			$this->errors[] = 'invalid title';
+			$this->errors[] = 'import failed';
 			echo '***skipped on error' . PHP_EOL;
 			return \ContactManager::SKIPPED_ON_ERROR;
 		}
+
+		// ***important, get title object again
+		$title_ = TitleClass::newFromText( $pagenameFormula );
 
 		$attachmentsFolder = \ContactManager::getAttachmentsFolder();
 		$pathTarget = $attachmentsFolder . '/' . $title_->getArticleID();

@@ -568,7 +568,8 @@ class ContactManager {
 			print_r( $folders[$key]['mailboxStatus'] );
 
 			$folders[$key]['fetchQuery'] = $determineFetchQuery( $folders[$key] );
-			echo 'fetchQuery: ' . $folders[$key]['fetchQuery'] . PHP_EOL;
+			echo 'fetchQuery headers: ' . $folders[$key]['fetchQuery'][0] . PHP_EOL;
+			echo 'fetchQuery messages: ' . $folders[$key]['fetchQuery'][1] . PHP_EOL;
 		}
 
 		echo 'retrieving headers' . PHP_EOL;

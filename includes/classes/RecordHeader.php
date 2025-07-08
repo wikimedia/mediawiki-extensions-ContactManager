@@ -77,28 +77,35 @@ class RecordHeader {
 		$folder = $params['folder'];
 
 		// may be overridden by $this->applyFilters
-		$pagenameFormula_ = \ContactManager::replaceParameter( 'ContactManagerHeaderPagenameFormula',
+		$pagenameFormula = \ContactManager::replaceParameter( 'ContactManagerHeaderPagenameFormula',
 			$params['mailbox'],
 			$folder['folder_name'],
 			'<ContactManager/Message header/uid>'
 		);
 
 		$categories_ = [];
-		if ( !$this->applyFilters( $obj, $pagenameFormula_, $categories_ ) ) {
+		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories_ ) ) {
 			echo 'skipped by filter' . PHP_EOL;
 			return \ContactManager::SKIPPED_ON_FILTER;
 		}
 
 		// only if provided from applyFilters
-		$pagenameFormula_ = str_replace( '<folder_name>', $folder['folder_name'], $pagenameFormula_ );
+		$pagenameFormula = str_replace( '<folder_name>', $folder['folder_name'], $pagenameFormula );
 
-		$pagenameFormula_ = \ContactManager::replaceFormula( $obj, $pagenameFormula_,
+		$pagenameFormula = \ContactManager::replaceFormula( $obj, $pagenameFormula,
 			$GLOBALS['wgContactManagerSchemasMessageHeader'] );
 
-		$pagenameFormula_ = \ContactManager::parseWikitext( $output, $pagenameFormula_ );
+		$pagenameFormula = \ContactManager::parseWikitext( $output, $pagenameFormula );
 
-		$title_ = TitleClass::newFromText( $pagenameFormula_ );
-		if ( $title_ && $title_->isKnown() && !empty( $params['ignore_existing'] ) ) {
+		$title_ = TitleClass::newFromText( $pagenameFormula );
+
+		if ( !$title_ ) {
+			$this->errors[] = 'invalid title';
+			echo '***skipped on error' . PHP_EOL;
+			return \ContactManager::SKIPPED_ON_ERROR;
+		}
+
+		if ( $title_->isKnown() && !empty( $params['ignore_existing'] ) ) {
 			echo 'skipped as existing' . PHP_EOL;
 			return \ContactManager::SKIPPED_ON_EXISTING;
 		}
@@ -113,13 +120,16 @@ class RecordHeader {
 
 		$obj['categories'] = $categories_;
 
-		$retHeader = $importer->importData( $pagenameFormula_, $obj, $showMsg );
+		$retHeader = $importer->importData( $pagenameFormula, $obj, $showMsg );
 
 		if ( !is_array( $retHeader ) || !count( $retHeader ) ) {
-			$this->errors[] = 'invalid title';
+			$this->errors[] = 'import failed';
 			echo '***skipped on error' . PHP_EOL;
 			return \ContactManager::SKIPPED_ON_ERROR;
 		}
+
+		// ***important, get title object again
+		$title_ = TitleClass::newFromText( $pagenameFormula );
 
 		$retContacts = [];
 		if ( !empty( $params['save_contacts'] ) ) {
