@@ -43,15 +43,20 @@ class RecordHeader {
 	private $params;
 
 	/** @var array */
+	private $mailboxData;
+
+	/** @var array */
 	private $errors;
 
 	/**
 	 * @param User $user
+	 * @param array $mailboxData
 	 * @param array $params
 	 * @param array &$errors []
 	 */
-	public function __construct( $user, $params, &$errors = [] ) {
+	public function __construct( $user, $mailboxData, $params, &$errors = [] ) {
 		$this->user = $user;
+		$this->mailboxData = $mailboxData;
 		$this->params = $params;
 		$this->errors = &$errors;
 	}
@@ -122,7 +127,7 @@ class RecordHeader {
 
 		$retHeader = $importer->importData( $pagenameFormula, $obj, $showMsg );
 
-		if ( !is_array( $retHeader ) || !count( $retHeader ) ) {
+		if ( !is_array( $retHeader ) ) {
 			$this->errors[] = 'import failed';
 			echo '***skipped on error' . PHP_EOL;
 			return \ContactManager::SKIPPED_ON_ERROR;
@@ -146,8 +151,8 @@ class RecordHeader {
 
 			foreach ( $allContacts as $email => $name ) {
 				$ret_ = \ContactManager::saveUpdateContact( $user, $context, $params, $obj, $name, $email );
-				if ( is_array( $ret_ ) ) {
-					$retContacts = array_merge( $retContacts, $ret_ );
+				if ( is_string( $ret_ ) && $ret_ ) {
+					$retContacts[] = $ret_;
 				}
 			}
 		}

@@ -362,15 +362,17 @@ class ContactManager {
 	 * @param int $seconds
 	 */
 	public static function countDown( $seconds ) {
+		$message = "Press Ctrl-C to cancel in the next $seconds seconds... ";
+		$width = strlen( $message ) + strlen( (string)$seconds );
+
+		echo $message;
 		for ( $i = $seconds; $i >= 0; $i-- ) {
-			if ( $i != $seconds ) {
-				echo str_repeat( "\x08", strlen( (string)( $i + 1 ) ) );
-			}
-			echo (string)$i;
-			if ( $i ) {
+			echo "\r" . str_pad( $message . $i, $width, ' ', STR_PAD_RIGHT );
+			if ( $i > 0 ) {
 				sleep( 1 );
 			}
 		}
+
 		echo PHP_EOL;
 	}
 
@@ -397,10 +399,27 @@ class ContactManager {
 			return false;
 		}
 
+		$mailboxData = self::getMailboxData( $params['mailbox'] );
+
+		if ( !$mailboxData ) {
+			$errors[] = 'cannot get mailbox data';
+			$mailbox->disconnect();
+			return false;
+		}
+
+		$mailboxData['all_addresses'] = self::allMailboxAddresses( $mailboxData['data'] );
+
 		$imapMailbox = $mailbox->getImapMailbox();
 		$imapMailbox->setAttachmentsIgnore( true );
 
 		$title = TitleClass::newFromID( $params['pageid'] );
+
+		if ( !$title ) {
+			$errors[] = 'title (#' . $params['pageid'] . ') is not valid';
+			$mailbox->disconnect();
+			return false;
+		}
+
 		$context = RequestContext::getMain();
 		$context->setTitle( $title );
 		$output = $context->getOutput();
@@ -587,8 +606,7 @@ class ContactManager {
 				echo '***attention, foder name/type mismatch, ensure folder type is correct for folder "' . $folders[$key]['shortpath'] . '"';
 				echo ' (current value: "' . $folder['folder_type'] . '")' . PHP_EOL;
 
-				echo 'Abort with control-c in the next five seconds... ';
-				self::countDown( 5 );
+				self::countDown( 10 );
 			}
 
 			$folders[$key]['mailboxStatus'] = (array)$imapMailbox->statusMailbox( $errors );
@@ -680,7 +698,7 @@ class ContactManager {
 					$header['to'] = '';
 				}
 
-				$recordHeader = new RecordHeader( $user, array_merge( $params, [
+				$recordHeader = new RecordHeader( $user, $mailboxData, array_merge( $params, [
 					'folder' => $folder,
 					'obj' => $header
 				] ), $errors );
@@ -747,7 +765,7 @@ class ContactManager {
 					continue;
 				}
 
-				$importMessage = new ImportMessage( $user, $mailbox, array_merge( $params, [
+				$importMessage = new ImportMessage( $user, $mailbox, $mailboxData, array_merge( $params, [
 					'folder' => $folder,
 					'uid' => $header['uid']
 				] ), $errors );
@@ -787,6 +805,31 @@ class ContactManager {
 
 		$mailbox->disconnect();
 		// self::pushJobs( $jobs );
+	}
+
+	/**
+	 * @param array $mailboxData
+	 * @return array
+	 */
+	public static function allMailboxAddresses( $mailboxData ) {
+		$ret = [];
+		if ( is_array( $mailboxData['from'] ) ) {
+			foreach ( $mailboxData['from'] as $value ) {
+				$ret_ = self::parseRecipient( $value );
+				if ( $ret_ ) {
+					[ $name, $address ] = $ret_;
+					$ret[] = $address;
+				}
+			}
+		}
+
+		if ( array_key_exists( 'delivered-to', $mailboxData ) && is_array( $mailboxData['delivered-to'] ) ) {
+			foreach ( $mailboxData['delivered-to'] as $address ) {
+				$ret[] = $address;
+			}
+		}
+
+		return array_values( array_unique( $ret ) );
 	}
 
 	/**
@@ -907,7 +950,7 @@ class ContactManager {
 	 * @param string $email
 	 * @param string|null $conversationHash
 	 * @param string|null $detectedLanguage
-	 * @return array|false|void
+	 * @return bool|null|string
 	 */
 	public static function saveUpdateContact( $user, $context, $params, $obj, $name, $email,
 		$conversationHash = null, $detectedLanguage = null
@@ -993,9 +1036,11 @@ class ContactManager {
 			]
 		];
 
+		$exists = false;
 		$dataOriginal = [];
 		// merge previous entries
 		if ( count( $results ) && !empty( $results[0]['data'] ) ) {
+			$exists = true;
 			$pagenameFormula = $results[0]['title'];
 			$dataOriginal = $results[0]['data'];
 			if ( !$fromUsername ) {
@@ -1034,7 +1079,13 @@ class ContactManager {
 			echo $msg . PHP_EOL;
 		};
 
-		return $importer->importData( $pagenameFormula, $data, $showMsg );
+		$ret = $importer->importData( $pagenameFormula, $data, $showMsg );
+
+		if ( !is_array( $ret ) || !count( $ret ) ) {
+			return false;
+		}
+
+		return ( !$exists ? $pagenameFormula : null );
 	}
 
 	/**
@@ -1054,6 +1105,27 @@ class ContactManager {
 	public static function retrieveContacts( $data, &$errors ) {
 		// @TODO
 		// retrieve only contacts
+	}
+
+	/**
+	 * @param string $mailboxName
+	 * @param array &$errors []
+	 * @return bool|array
+	 */
+	public static function getMailboxData( $mailboxName, &$errors = [] ) {
+		$schema = $GLOBALS['wgContactManagerSchemasMailbox'];
+		$query = '[[name::' . $mailboxName . ']]';
+		$results = \VisualData::getQueryResults( $schema, $query );
+
+		if ( self::queryError( $results, true ) ) {
+			return false;
+		}
+
+		if ( !count( $results ) || empty( $results[0]['data'] ) ) {
+			return false;
+		}
+
+		return $results[0];
 	}
 
 	/**

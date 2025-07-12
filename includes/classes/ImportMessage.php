@@ -44,6 +44,9 @@ class ImportMessage {
 	private $params;
 
 	/** @var array */
+	private $mailboxData;
+
+	/** @var array */
 	private $errors;
 
 	/** @var MediaWiki\Extension\ContactManager\Mailbox */
@@ -52,12 +55,14 @@ class ImportMessage {
 	/**
 	 * @param User $user
 	 * @param MediaWiki\Extension\ContactManager\Mailbox $mailbox
+	 * @param array $mailboxData
 	 * @param array $params
 	 * @param array &$errors []
 	 */
-	public function __construct( $user, $mailbox, $params, &$errors = [] ) {
+	public function __construct( $user, $mailbox, $mailboxData, $params, &$errors = [] ) {
 		$this->user = $user;
 		$this->mailbox = $mailbox;
+		$this->mailboxData = $mailboxData;
 		$this->params = $params;
 		$this->errors = &$errors;
 	}
@@ -202,12 +207,6 @@ class ImportMessage {
 		$obj['textPlain'] = $mail->textPlain;
 		$obj['textHtml'] = $mail->textHtml;
 
-		// language detect @see https://github.com/patrickschur/language-detection
-		$ld = new Language;
-		$ld->setMaxNgrams( 5000 );
-		$detectedLanguages = $ld->detect( $obj['textPlain'] )->close();
-		$detectedLanguage = ( count( $detectedLanguages ) ? array_key_first( $detectedLanguages ) : null );
-
 		// custom entries
 		$obj['visibleText'] = $parsedEmail->getVisibleText();
 		$obj['attachments'] = array_values( $attachments );
@@ -222,37 +221,7 @@ class ImportMessage {
 		// this will remove the mailbox related address from $conversationRecipients
 		// by reference
 		[ $conversationHash, $mailboxRelatedAddress ] = $this->getConversationHashAndRelatedAddress( $params, $obj, $conversationRecipients );
-
 		$obj['conversationHash'] = $conversationHash;
-
-		// update the delivered-to list
-		if ( !empty( $deliveredTo ) ) {
-			$schema_ = $GLOBALS['wgContactManagerSchemasMailbox'];
-			$query_ = '[[name::' . $params['mailbox'] . ']]';
-			$results_ = \VisualData::getQueryResults( $schema_, $query_ );
-
-			if ( \ContactManager::queryError( $results_, true ) ) {
-				echo 'error query' . PHP_EOL;
-				print_r( $results_ );
-			}
-
-			if ( count( $results_ ) && !empty( $results_[0]['data'] ) ) {
-				$mailboxData = $results_[0]['data'];
-				if ( !array_key_exists( 'delivered-to', $mailboxData )
-					|| !is_array( $mailboxData['delivered-to'] )
-				) {
-					$mailboxData['delivered-to'] = [];
-				}
-				if ( !in_array( $deliveredTo, $mailboxData['delivered-to'] ) ) {
-					$mailboxData['delivered-to'][] = $deliveredTo;
-					$jsonData_ = [
-						$GLOBALS['wgContactManagerSchemasMailbox'] => $mailboxData
-					];
-					$title_ = TitleClass::newFromText( $results_[0]['title'] );
-					\VisualData::updateCreateSchemas( $user, $title_, $jsonData_ );
-				}
-			}
-		}
 
 		$showMsg = static function ( $msg ) {
 			echo $msg . PHP_EOL;
@@ -266,6 +235,12 @@ class ImportMessage {
 
 		$categories = ( array_key_exists( 'categories', $params )
 			&& is_array( $params['categories'] ) ? $params['categories'] : [] );
+
+		if ( strtolower( $params['folder']['folder_type'] ) === 'inbox' &&
+			in_array( $obj['fromAddress'], $this->mailboxData['all_addresses'] )
+		) {
+			$categories[] = 'Messages in wrong folder';
+		}
 
 		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories ) ) {
 			echo 'skipped by filter' . PHP_EOL;
@@ -329,6 +304,26 @@ class ImportMessage {
 			return \ContactManager::SKIPPED_ON_ERROR;
 		}
 
+		// update the delivered-to list
+		if ( !empty( $deliveredTo ) ) {
+			$mailboxData = $this->mailboxData['data'];
+			if ( !array_key_exists( 'delivered-to', $mailboxData )
+				|| !is_array( $mailboxData['delivered-to'] )
+			) {
+				$mailboxData['delivered-to'] = [];
+			}
+			if ( !in_array( $deliveredTo, $mailboxData['delivered-to'] ) ) {
+				$schema_ = $GLOBALS['wgContactManagerSchemasMailbox'];
+				$query_ = '[[name::' . $params['mailbox'] . ']]';
+				$mailboxData['delivered-to'][] = $deliveredTo;
+				$jsonData_ = [
+					$GLOBALS['wgContactManagerSchemasMailbox'] => $mailboxData
+				];
+				$title_ = TitleClass::newFromText( $this->mailboxData['title'] );
+				\VisualData::updateCreateSchemas( $user, $title_, $jsonData_ );
+			}
+		}
+
 		// ***important, get title object again
 		$title_ = TitleClass::newFromText( $pagenameFormula );
 
@@ -338,15 +333,30 @@ class ImportMessage {
 		if ( $obj['hasAttachments'] ) {
 			echo 'attachment path ' . $pathTarget . PHP_EOL;
 
-			if ( mkdir( $pathTarget, 0777, true ) ) {
+			if ( !is_dir( $pathTarget ) ) {
+				mkdir( $pathTarget, 0777, true );
+			}
+
+			if ( file_exists( $pathTarget ) ) {
 				foreach ( $obj['attachments'] as $value ) {
 					rename( $attachmentsFolder . '/' . $value['name'], $pathTarget . '/' . $value['name'] );
 					echo 'saving attachment to ' . $pathTarget . '/' . $value['name'] . PHP_EOL;
 				}
+
+			} else {
+				echo "cannot create folder \"$pathTarget\"" . PHP_EOL;
+				$this->errors[] = "cannot create folder \"$pathTarget\"";
 			}
 		}
 
+		// language detect @see https://github.com/patrickschur/language-detection
+		$ld = new Language;
+		$ld->setMaxNgrams( 5000 );
+		$detectedLanguages = $ld->detect( $obj['textPlain'] )->close();
+		$detectedLanguage = ( count( $detectedLanguages ) ? array_key_first( $detectedLanguages ) : null );
+
 		$retContacts = [];
+		$retConversation = [];
 		if ( !empty( $params['save_contacts'] ) ) {
 			foreach ( $allContacts as $email => $name ) {
 				// do not include in the conversation's participants the mailbox related address
@@ -356,16 +366,20 @@ class ImportMessage {
 				$ret_ = \ContactManager::saveUpdateContact( $user, $context, $params, $obj, $name, $email, $conversationHash_,
 					( $email === $obj['fromAddress'] ? $detectedLanguage : null ) );
 
-				if ( is_array( $ret_ ) ) {
-					$retContacts = array_merge( $retContacts, $ret_ );
+				if ( is_string( $ret_ ) && $ret_ ) {
+					$retContacts[] = $ret_;
 				}
 			}
 
-			$retConversation = $this->saveConversation( $user, $context, $params, $conversationHash,
+			$ret_ = $this->saveConversation( $user, $context, $params, $conversationHash,
 				$deliveredTo, $conversationRecipients, $mailboxRelatedAddress, $obj['date'] );
+
+			if ( is_string( $ret_ ) && $ret_ ) {
+				$retConversation[] = $ret_;
+			}
 		}
 
-		return [ $retMessage, $retContacts, ( is_array( $retConversation ) ? $retConversation : [] ) ];
+		return [ $retMessage, $retContacts, $retConversation ];
 	}
 
 	/**
@@ -425,7 +439,7 @@ class ImportMessage {
 	 * @param array $params
 	 * @param array $obj
 	 * @param array &$conversationRecipients
-	 * @return string
+	 * @return array
 	 */
 	private function getConversationHashAndRelatedAddress( $params, $obj, &$conversationRecipients ) {
 		ksort( $conversationRecipients );
@@ -434,12 +448,17 @@ class ImportMessage {
 		// , is not supported in email address
 		$hash = dechex( crc32( implode( ',', array_keys( $conversationRecipients ) ) ) );
 
+		foreach ( $this->mailboxData['all_addresses'] as $address ) {
+			if ( array_key_exists( $address, $conversationRecipients ) ) {
+				unset( $conversationRecipients[$address] );
+			}
+		}
+
 		$relatedAddress = null;
 		switch ( strtolower( $params['folder']['folder_type'] ) ) {
 			case 'sent':
 			case 'draft':
 				$relatedAddress = $obj['fromAddress'];
-				unset( $conversationRecipients[$obj['fromAddress']] );
 				break;
 			case 'spam':
 			case 'other':
@@ -447,8 +466,11 @@ class ImportMessage {
 			case 'trash':
 			default:
 				$relatedAddress = $obj['deliveredTo'];
-				unset( $conversationRecipients[$obj['deliveredTo']] );
 				break;
+		}
+
+		if ( !$relatedAddress ) {
+			$relatedAddress = $this->mailboxData['all_addresses'][count( $this->mailboxData['all_addresses'] ) - 1];
 		}
 
 		return [ $hash, $relatedAddress ];
@@ -463,7 +485,7 @@ class ImportMessage {
 	 * @param array $conversationRecipients
 	 * @param string $relatedAddress
 	 * @param string $date
-	 * @return bool|void|array
+	 * @return bool|null|string
 	 */
 	private function saveConversation( $user, $context, $params, $hash, $deliveredTo, $conversationRecipients, $relatedAddress, $date ) {
 		// sending to oneself
@@ -512,10 +534,12 @@ class ImportMessage {
 			'count' => null,
 		];
 
+		$exists = false;
 		// merge previous entries
 		if ( count( $results ) && !empty( $results[0]['data'] ) ) {
 			$pagenameFormula = $results[0]['title'];
 			$data = \VisualData::array_merge_recursive( $data, $results[0]['data'] );
+			$exists = true;
 		}
 
 		$data = \VisualData::array_filter_recursive( $data, 'array_unique' );
@@ -563,7 +587,13 @@ class ImportMessage {
 			echo $msg . PHP_EOL;
 		};
 
-		return $importer->importData( $pagenameFormula, $data, $showMsg );
+		$ret = $importer->importData( $pagenameFormula, $data, $showMsg );
+
+		if ( !is_array( $ret ) || !count( $ret ) ) {
+			return false;
+		}
+
+		return ( !$exists ? $pagenameFormula : null );
 	}
 
 	/**
