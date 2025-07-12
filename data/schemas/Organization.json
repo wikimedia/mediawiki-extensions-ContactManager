@@ -23,47 +23,33 @@
 		},
 		"type": {
 			"wiki": {
-				"name": "type",
 				"type": "property",
-				"multiple-items": false,
-				"label": "organization type",
 				"uuid": "67c41811c3c44",
+				"name": "type",
 				"visibility": "visible",
+				"label": "organization type",
+				"help-message": "Edit [[Template:ContactManager/Organization_types|this list]] to add more items",
+				"multiple-items": false,
 				"preferred-input": "OO.ui.DropdownInputWidget",
 				"input-config": [],
 				"options-allow-null": true,
-				"options-wikilist": "ContactManager:Organization types",
-				"required": false,
-				"options-values-parsed": {
-					"": "",
-					"corporation": "corporation",
-					"governmental": "governmental",
-					"non-governmental": "non-governmental",
-					"political": "political",
-					"international": "international",
-					"religious": "religious",
-					"armed forces": "armed forces",
-					"Ltd (limited company)": "Ltd (limited company)",
-					"charity": "charity",
-					"not-for-profit corporation": "not-for-profit corporation",
-					"partnership": "partnership",
-					"cooperative": "cooperative",
-					"educational institution": "educational institution"
-				}
+				"options-wikilist": "Template:ContactManager/Organization types",
+				"required": false
 			},
 			"type": "string",
 			"format": "text",
 			"title": "organization type",
+			"description": "",
 			"enum": [
 				"",
 				"corporation",
 				"governmental",
 				"non-governmental",
+				"Non-profit/Non-Governmental Organisation",
 				"political",
 				"international",
 				"religious",
 				"armed forces",
-				"Ltd (limited company)",
 				"charity",
 				"not-for-profit corporation",
 				"partnership",
@@ -119,99 +105,35 @@
 			"format": "text",
 			"title": "contact person"
 		},
-		"country": {
-			"wiki": {
-				"name": "country",
-				"type": "property",
-				"multiple-items": false,
-				"label": "country",
-				"visibility": "visible",
-				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"required": false,
-				"uuid": "67c41811c3c24"
-			},
-			"type": "string",
-			"format": "text",
-			"title": "country"
-		},
-		"city": {
-			"wiki": {
-				"name": "city",
-				"type": "property",
-				"multiple-items": false,
-				"label": "city",
-				"visibility": "visible",
-				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"required": false,
-				"uuid": "67c41811c3c26"
-			},
-			"type": "string",
-			"format": "text",
-			"title": "city"
-		},
-		"address": {
-			"wiki": {
-				"name": "address",
-				"type": "property",
-				"multiple-items": false,
-				"label": "address",
-				"visibility": "visible",
-				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"required": false,
-				"uuid": "67c41811c3c29"
-			},
-			"type": "string",
-			"format": "text",
-			"title": "address"
-		},
-		"postal_code": {
-			"wiki": {
-				"name": "postal_code",
-				"type": "property",
-				"multiple-items": false,
-				"label": "postal code",
-				"visibility": "visible",
-				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"required": false,
-				"uuid": "67c41811c3c2b"
-			},
-			"type": "string",
-			"format": "text",
-			"title": "postal code"
-		},
 		"email": {
 			"wiki": {
 				"name": "email",
 				"title": "email addresses",
 				"unique-items": false,
 				"type": "schema",
-				"uuid": "67c42294cd11a"
+				"uuid": "686d4510dfd45"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "email",
 					"type": "schema",
-					"uuid": "67c41baf6daa4",
+					"uuid": "67c42294cd11a",
 					"layout": "section",
 					"visibility": "visible"
 				},
 				"properties": {
 					"address": {
 						"wiki": {
-							"type": "property",
-							"uuid": "67c41b53e7405",
 							"name": "address",
-							"visibility": "visible",
-							"label": "address",
+							"type": "property",
 							"multiple-items": false,
+							"required": true,
+							"label": "address",
+							"uuid": "67c41b53e7405",
+							"visibility": "visible",
 							"preferred-input": "OO.ui.TextInputWidget (email)",
-							"input-config": [],
-							"required": true
+							"input-config": []
 						},
 						"type": "string",
 						"format": "email",
@@ -262,15 +184,15 @@
 				"properties": {
 					"number": {
 						"wiki": {
-							"type": "property",
-							"uuid": "67c41b53e740c",
 							"name": "number",
-							"visibility": "visible",
-							"label": "number",
+							"type": "property",
 							"multiple-items": false,
+							"required": true,
+							"label": "number",
+							"uuid": "67c41b53e740c",
+							"visibility": "visible",
 							"preferred-input": "intl-tel-input",
-							"input-config": [],
-							"required": true
+							"input-config": []
 						},
 						"type": "string",
 						"format": "tel",
@@ -301,48 +223,515 @@
 			"title": "phone numbers",
 			"uniqueItems": false
 		},
+		"fax": {
+			"wiki": {
+				"name": "fax",
+				"title": "fax",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "686f76012e648"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "fax",
+					"type": "schema",
+					"layout": "section",
+					"visibility": "visible",
+					"uuid": "686f76012e64c"
+				},
+				"properties": {
+					"number": {
+						"wiki": {
+							"name": "number",
+							"type": "property",
+							"multiple-items": false,
+							"required": true,
+							"label": "number",
+							"visibility": "visible",
+							"preferred-input": "intl-tel-input",
+							"input-config": [],
+							"uuid": "686f76012e64e"
+						},
+						"type": "string",
+						"format": "tel",
+						"title": "number"
+					},
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false,
+							"uuid": "686f76012e652"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					}
+				},
+				"required": [
+					"number"
+				]
+			},
+			"type": "array",
+			"title": "fax",
+			"uniqueItems": false
+		},
+		"website": {
+			"wiki": {
+				"name": "website",
+				"type": "property",
+				"multiple-items": false,
+				"label": "website",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget (url)",
+				"input-config": [],
+				"required": false,
+				"uuid": "686d3bb106e27"
+			},
+			"type": "string",
+			"format": "url",
+			"title": "website"
+		},
 		"foundation_year": {
 			"wiki": {
 				"name": "foundation_year",
 				"type": "property",
 				"multiple-items": false,
+				"input-config": [],
 				"label": "foundation year",
+				"uuid": "67c418a264637",
 				"visibility": "visible",
 				"preferred-input": "OO.ui.NumberInputWidget",
-				"input-config": [],
-				"required": false,
-				"uuid": "67c418a264637"
+				"required": false
 			},
+			"minInclusive": 1900,
 			"type": "integer",
 			"title": "foundation year"
 		},
-		"links": {
+		"location": {
 			"wiki": {
-				"name": "links",
-				"title": "links",
+				"name": "location",
+				"min-items": 1,
 				"unique-items": false,
 				"type": "schema",
-				"uuid": "67c41be114dd7"
+				"uuid": "686d3e24da8c6"
 			},
 			"items": {
-				"type": "string",
+				"type": "object",
 				"wiki": {
-					"name": "links",
-					"type": "property",
-					"multiple-items": true,
-					"default": [],
-					"uuid": "67c41811c3c38",
-					"visibility": "visible",
-					"preferred-input": "OO.ui.TextInputWidget (url)",
-					"input-config": [],
-					"required": false,
-					"layout": "table"
+					"name": "location",
+					"type": "schema",
+					"uuid": "686d3df72bf55",
+					"title": "location",
+					"layout": "section",
+					"visibility": "visible"
 				},
-				"format": "url",
-				"default": []
+				"properties": {
+					"city": {
+						"wiki": {
+							"name": "city",
+							"type": "property",
+							"multiple-items": false,
+							"required": true,
+							"label": "city",
+							"uuid": "686d3d367f77c",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": []
+						},
+						"type": "string",
+						"format": "text",
+						"title": "city"
+					},
+					"country": {
+						"wiki": {
+							"name": "country",
+							"type": "property",
+							"multiple-items": false,
+							"required": true,
+							"label": "country",
+							"uuid": "686d3d367f77e",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.DropdownInputWidget",
+							"input-config": [],
+							"options-allow-null": true,
+							"options-wikilist": "Template:Countries",
+							"options-values-parsed": {}
+						},
+						"type": "string",
+						"format": "text",
+						"title": "country",
+						"enum": [
+							"",
+							"Afghanistan",
+							"Aland Islands",
+							"Albania",
+							"Algeria",
+							"American Samoa",
+							"Andorra",
+							"Angola",
+							"Anguilla",
+							"Antarctica",
+							"Antigua And Barbuda",
+							"Argentina",
+							"Armenia",
+							"Aruba",
+							"Australia",
+							"Austria",
+							"Azerbaijan",
+							"Bahrain",
+							"Bangladesh",
+							"Barbados",
+							"Belarus",
+							"Belgium",
+							"Belize",
+							"Benin",
+							"Bermuda",
+							"Bhutan",
+							"Bolivia",
+							"Bonaire, Sint Eustatius and Saba",
+							"Bosnia and Herzegovina",
+							"Botswana",
+							"Bouvet Island",
+							"Brazil",
+							"British Indian Ocean Territory",
+							"Brunei",
+							"Bulgaria",
+							"Burkina Faso",
+							"Burundi",
+							"Cambodia",
+							"Cameroon",
+							"Canada",
+							"Cape Verde",
+							"Cayman Islands",
+							"Central African Republic",
+							"Chad",
+							"Chile",
+							"China",
+							"Christmas Island",
+							"Cocos (Keeling) Islands",
+							"Colombia",
+							"Comoros",
+							"Congo",
+							"Cook Islands",
+							"Costa Rica",
+							"Cote D'Ivoire (Ivory Coast)",
+							"Croatia",
+							"Cuba",
+							"Curaçao",
+							"Cyprus",
+							"Czech Republic",
+							"Democratic Republic of the Congo",
+							"Denmark",
+							"Djibouti",
+							"Dominica",
+							"Dominican Republic",
+							"East Timor",
+							"Ecuador",
+							"Egypt",
+							"El Salvador",
+							"Equatorial Guinea",
+							"Eritrea",
+							"Estonia",
+							"Ethiopia",
+							"Falkland Islands",
+							"Faroe Islands",
+							"Fiji Islands",
+							"Finland",
+							"France",
+							"French Guiana",
+							"French Polynesia",
+							"French Southern Territories",
+							"Gabon",
+							"Gambia The",
+							"Georgia",
+							"Germany",
+							"Ghana",
+							"Gibraltar",
+							"Greece",
+							"Greenland",
+							"Grenada",
+							"Guadeloupe",
+							"Guam",
+							"Guatemala",
+							"Guernsey and Alderney",
+							"Guinea",
+							"Guinea-Bissau",
+							"Guyana",
+							"Haiti",
+							"Heard Island and McDonald Islands",
+							"Honduras",
+							"Hong Kong S.A.R.",
+							"Hungary",
+							"Iceland",
+							"India",
+							"Indonesia",
+							"Iran",
+							"Iraq",
+							"Ireland",
+							"Israel",
+							"Italy",
+							"Jamaica",
+							"Japan",
+							"Jersey",
+							"Jordan",
+							"Kazakhstan",
+							"Kenya",
+							"Kiribati",
+							"Kosovo",
+							"Kuwait",
+							"Kyrgyzstan",
+							"Laos",
+							"Latvia",
+							"Lebanon",
+							"Lesotho",
+							"Liberia",
+							"Libya",
+							"Liechtenstein",
+							"Lithuania",
+							"Luxembourg",
+							"Macau S.A.R.",
+							"Madagascar",
+							"Malawi",
+							"Malaysia",
+							"Maldives",
+							"Mali",
+							"Malta",
+							"Man (Isle of)",
+							"Marshall Islands",
+							"Martinique",
+							"Mauritania",
+							"Mauritius",
+							"Mayotte",
+							"Mexico",
+							"Micronesia",
+							"Moldova",
+							"Monaco",
+							"Mongolia",
+							"Montenegro",
+							"Montserrat",
+							"Morocco",
+							"Mozambique",
+							"Myanmar",
+							"Namibia",
+							"Nauru",
+							"Nepal",
+							"Netherlands",
+							"New Caledonia",
+							"New Zealand",
+							"Nicaragua",
+							"Niger",
+							"Nigeria",
+							"Niue",
+							"Norfolk Island",
+							"North Korea",
+							"North Macedonia",
+							"Northern Mariana Islands",
+							"Norway",
+							"Oman",
+							"Pakistan",
+							"Palau",
+							"Palestinian Territory Occupied",
+							"Panama",
+							"Papua new Guinea",
+							"Paraguay",
+							"Peru",
+							"Philippines",
+							"Pitcairn Island",
+							"Poland",
+							"Portugal",
+							"Puerto Rico",
+							"Qatar",
+							"Reunion",
+							"Romania",
+							"Russia",
+							"Rwanda",
+							"Saint Helena",
+							"Saint Kitts And Nevis",
+							"Saint Lucia",
+							"Saint Pierre and Miquelon",
+							"Saint Vincent And The Grenadines",
+							"Saint-Barthelemy",
+							"Saint-Martin (French part)",
+							"Samoa",
+							"San Marino",
+							"Sao Tome and Principe",
+							"Saudi Arabia",
+							"Senegal",
+							"Serbia",
+							"Seychelles",
+							"Sierra Leone",
+							"Singapore",
+							"Sint Maarten (Dutch part)",
+							"Slovakia",
+							"Slovenia",
+							"Solomon Islands",
+							"Somalia",
+							"South Africa",
+							"South Georgia",
+							"South Korea",
+							"South Sudan",
+							"Spain",
+							"Sri Lanka",
+							"Sudan",
+							"Suriname",
+							"Svalbard And Jan Mayen Islands",
+							"Swaziland",
+							"Sweden",
+							"Switzerland",
+							"Syria",
+							"Taiwan",
+							"Tajikistan",
+							"Tanzania",
+							"Thailand",
+							"The Bahamas",
+							"Togo",
+							"Tokelau",
+							"Tonga",
+							"Trinidad And Tobago",
+							"Tunisia",
+							"Turkey",
+							"Turkmenistan",
+							"Turks And Caicos Islands",
+							"Tuvalu",
+							"Uganda",
+							"Ukraine",
+							"United Arab Emirates",
+							"United Kingdom",
+							"United States",
+							"United States Minor Outlying Islands",
+							"Uruguay",
+							"Uzbekistan",
+							"Vanuatu",
+							"Vatican City State (Holy See)",
+							"Venezuela",
+							"Vietnam",
+							"Virgin Islands (British)",
+							"Virgin Islands (US)",
+							"Wallis And Futuna Islands",
+							"Western Sahara",
+							"Yemen",
+							"Zambia",
+							"Zimbabwe"
+						]
+					},
+					"address": {
+						"wiki": {
+							"name": "address",
+							"type": "property",
+							"multiple-items": false,
+							"label": "address",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false,
+							"uuid": "686d3d367f789"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "address"
+					},
+					"postal_code": {
+						"wiki": {
+							"name": "postal_code",
+							"type": "property",
+							"multiple-items": false,
+							"label": "postal code",
+							"uuid": "686d3d367f78b",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "text",
+						"title": "postal code"
+					},
+					"geolocation": {
+						"wiki": {
+							"name": "geolocation",
+							"title": "geolocation",
+							"type": "geolocation",
+							"label": "geolocation",
+							"coordinates": false,
+							"map": false,
+							"reverse-geocoding": false,
+							"maptiler-map-config": [],
+							"maptiler-geocoding-config": [],
+							"required": false,
+							"latitude-input-label": "latitude",
+							"longitude-input-label": "longitude",
+							"uuid": "686d3d367f78d"
+						},
+						"$id": "https://example.com/geographical-location.schema.json",
+						"$schema": "https://json-schema.org/draft/2020-12/schema",
+						"title": "geolocation",
+						"description": "",
+						"required": [],
+						"type": "object",
+						"properties": {
+							"latitude": {
+								"title": "latitude",
+								"description": "",
+								"type": "number",
+								"minimum": -90,
+								"maximum": 90,
+								"wiki": {
+									"uuid": "686d3d367f78d"
+								}
+							},
+							"longitude": {
+								"title": "longitude",
+								"description": "",
+								"type": "number",
+								"minimum": -180,
+								"maximum": 180,
+								"wiki": {
+									"uuid": "686d3d367f78d"
+								}
+							},
+							"zoom": {
+								"type": "number",
+								"minimum": 0,
+								"maximum": 24,
+								"wiki": {
+									"visibility": "hidden",
+									"uuid": "686d3d367f78d"
+								}
+							}
+						}
+					},
+					"notes": {
+						"wiki": {
+							"name": "notes",
+							"type": "property",
+							"multiple-items": false,
+							"label": "notes",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.MultilineTextInputWidget",
+							"input-config": [],
+							"required": false,
+							"uuid": "686d3e24da8ec"
+						},
+						"type": "string",
+						"format": "textarea",
+						"title": "notes"
+					}
+				},
+				"required": [
+					"city",
+					"country"
+				],
+				"title": "location"
 			},
 			"type": "array",
-			"title": "links",
+			"minItems": 1,
 			"uniqueItems": false
 		},
 		"logo": {
@@ -350,68 +739,33 @@
 				"name": "logo",
 				"type": "property",
 				"multiple-items": false,
+				"input-config": {
+					"accept": [
+						"image/svg+xml",
+						"image/png",
+						"image/gif",
+						"image/jpeg",
+						"image/pjpeg",
+						"image/jpeg",
+						"image/pjpeg",
+						"image/webp",
+						"application/pdf",
+						"image/tiff",
+						"image/x-tiff",
+						"image/bmp",
+						"image/x-windows-bmp"
+					]
+				},
 				"label": "logo",
+				"value-prefix": "File:",
 				"uuid": "67c41811c3c3c",
 				"visibility": "visible",
-				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
+				"preferred-input": "OO.ui.SelectFileWidget",
 				"required": false
 			},
 			"type": "string",
 			"format": "text",
 			"title": "logo"
-		},
-		"geolocation": {
-			"wiki": {
-				"name": "geolocation",
-				"title": "geolocation",
-				"type": "geolocation",
-				"uuid": "67c41ebcf315c",
-				"label": "geolocation",
-				"coordinates": true,
-				"map": false,
-				"reverse-geocoding": false,
-				"required": false,
-				"latitude-input-label": "latitude",
-				"longitude-input-label": "longitude"
-			},
-			"$id": "https://example.com/geographical-location.schema.json",
-			"$schema": "https://json-schema.org/draft/2020-12/schema",
-			"title": "geolocation",
-			"description": "",
-			"required": [],
-			"type": "object",
-			"properties": {
-				"latitude": {
-					"title": "latitude",
-					"description": "",
-					"type": "number",
-					"minimum": -90,
-					"maximum": 90,
-					"wiki": {
-						"uuid": "67c41ebcf315c"
-					}
-				},
-				"longitude": {
-					"title": "longitude",
-					"description": "",
-					"type": "number",
-					"minimum": -180,
-					"maximum": 180,
-					"wiki": {
-						"uuid": "67c41ebcf315c"
-					}
-				},
-				"zoom": {
-					"type": "number",
-					"minimum": 0,
-					"maximum": 24,
-					"wiki": {
-						"visibility": "hidden",
-						"uuid": "67c41ebcf315c"
-					}
-				}
-			}
 		},
 		"description": {
 			"wiki": {
@@ -428,6 +782,65 @@
 			"type": "string",
 			"format": "textarea",
 			"title": "description"
+		},
+		"links": {
+			"wiki": {
+				"name": "links",
+				"title": "links",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "686d4510dfd95"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "links",
+					"type": "schema",
+					"layout": "section",
+					"visibility": "visible",
+					"uuid": "686d4510dfd96"
+				},
+				"properties": {
+					"url": {
+						"wiki": {
+							"name": "url",
+							"type": "property",
+							"multiple-items": false,
+							"required": true,
+							"label": "url",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget (url)",
+							"input-config": [],
+							"uuid": "686d40d54bbe4"
+						},
+						"type": "string",
+						"format": "url",
+						"title": "url"
+					},
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"uuid": "686d40d54bbdd",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					}
+				},
+				"required": [
+					"url"
+				]
+			},
+			"type": "array",
+			"title": "links",
+			"uniqueItems": false
 		},
 		"notes": {
 			"wiki": {
@@ -451,4 +864,3 @@
 	],
 	"type": "object"
 }
-

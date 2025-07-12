@@ -116,7 +116,7 @@ class Tracking extends TablePager {
 				$schema = $GLOBALS['wgContactManagerSchemasMailer'];
 				$results = \VisualData::getQueryResults( $schema, $query );
 
-				if ( \ContactManager::queryError( $results, true ) ) {
+				if ( \ContactManager::queryError( $results, false ) ) {
 					throw new \MWException( 'error query: ' . print_r( $results, true ) );
 
 				} elseif ( count( $results ) && !empty( $results[0]['data'] ) ) {

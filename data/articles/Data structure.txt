@@ -46,6 +46,7 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 **[[Template:ContactManager/Main Page jobs buttons]]
 **[[Template:ContactManager/Messages read email field]]
 **[[Template:ContactManager/Messages table folder field]]
+**[[Template:ContactManager/Organization types]]
 **[[Template:ContactManager/Preload mailbox]]
 **[[Template:ContactManager/Preload messages Draft]]
 **[[Template:ContactManager/Preload messages Inbox]]
@@ -68,7 +69,6 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 **[[Module:ContactManager/ConversationsNavigation]]
 **[[Module:ContactManager/ConversationsNavigationBottom]]
 **[[Module:ContactManager/FormatReply]]
-**[[Module:ContactManager/ReplacePipe]]
 
 
 *schemas

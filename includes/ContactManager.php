@@ -636,7 +636,8 @@ class ContactManager {
 
 			// retrieve all headers in this folder
 			foreach ( $overviewHeaders[$key] as $header ) {
-				echo 'importing header ' . ( $n + 1 ) . '/' . $size_ . PHP_EOL;
+				$n++;
+				echo "importing header $n/{$size_}" . PHP_EOL;
 
 				$header = (array)$header;
 
@@ -666,7 +667,6 @@ class ContactManager {
 					$skippedByFilters[$shortpath][] = $header['uid'];
 				}
 
-				$n++;
 			}
 
 			echo 'recording job status' . PHP_EOL;
@@ -704,11 +704,13 @@ class ContactManager {
 			);
 
 			$n = 0;
+			$i = 0;
 			$size_ = count( $overviewMessages );
 			echo 'size ' . $size_ . PHP_EOL;
 
 			foreach ( $overviewMessages as $header ) {
-				echo 'importing message ' . ( $n + 1 ) . '/' . $size_ . PHP_EOL;
+				$n++;
+				echo "importing message $n/{$size_}" . PHP_EOL;
 
 				$header = (array)$header;
 
@@ -730,28 +732,12 @@ class ContactManager {
 					$newConversations += count( $newConversations_ );
 				}
 
-				if ( $n % 10 === 0 ) {
+				if ( $i % 10 === 0 ) {
 					echo 'recording job status' . PHP_EOL;
 					self::setRunningJob( $user, 'retrieve-messages', self::JOB_LAST_STATUS, $params['mailbox'] );
 				}
 
-				// *** alternatively use
-				// $jobs[] = new ContactManagerJob( $title, array_merge( $params, [
-				// 	'job' => 'retrieve-message',
-				// 	'folder' => $folder['folder'],
-				// 	'folder_name' => $folder['folder_name'],
-				// 	'uid' => $header['uid']
-				// ] ) );
-
-				// run synch
-				// $job_->run();
-
-				// *** this will run asynch, which is not
-				// what we want, since the $lastKnowMessageUid
-				// won't be reliable
-				// $jobs[] = $job_;
-
-				$n++;
+				$i++;
 			}
 		}
 

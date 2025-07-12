@@ -1,6 +1,7 @@
 * corporation
 * governmental
 * non-governmental
+* non-profit/non-governmental organisation
 * political
 * international
 * religious
