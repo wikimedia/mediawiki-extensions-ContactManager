@@ -357,6 +357,24 @@ class ContactManager {
 	}
 
 	/**
+	 * @see MediaWiki\Maintenance\Maintenance
+	 * @codeCoverageIgnore
+	 * @param int $seconds
+	 */
+	public static function countDown( $seconds ) {
+		for ( $i = $seconds; $i >= 0; $i-- ) {
+			if ( $i != $seconds ) {
+				echo str_repeat( "\x08", strlen( (string)( $i + 1 ) ) );
+			}
+			echo (string)$i;
+			if ( $i ) {
+				sleep( 1 );
+			}
+		}
+		echo PHP_EOL;
+	}
+
+	/**
 	 * @param User $user
 	 * @param array $params
 	 * @param array &$errors []
@@ -568,6 +586,9 @@ class ContactManager {
 			) {
 				echo '***attention, foder name/type mismatch, ensure folder type is correct for folder "' . $folders[$key]['shortpath'] . '"';
 				echo ' (current value: "' . $folder['folder_type'] . '")' . PHP_EOL;
+
+				echo 'Abort with control-c in the next five seconds... ';
+				self::countDown( 5 );
 			}
 
 			$folders[$key]['mailboxStatus'] = (array)$imapMailbox->statusMailbox( $errors );
