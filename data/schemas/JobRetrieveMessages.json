@@ -45,14 +45,14 @@
 				"min-items": 1,
 				"unique-items": false,
 				"type": "schema",
-				"uuid": "686bb2f1b6994"
+				"uuid": "687233e6a5d04"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
-					"uuid": "680619715ec45",
+					"uuid": "686bb2f1b6994",
 					"layout": "section",
 					"visibility": "visible"
 				},
@@ -105,32 +105,25 @@
 					},
 					"folder_type": {
 						"wiki": {
-							"name": "folder_type",
 							"type": "property",
-							"multiple-items": false,
-							"required": true,
+							"uuid": "67b0b23b36910",
+							"name": "folder_type",
+							"visibility": "visible",
 							"label": "folder type",
 							"help-message": "the folder type, it is used to preload the correct datatable",
-							"uuid": "67b0b23b36910",
-							"visibility": "visible",
+							"multiple-items": false,
 							"preferred-input": "OO.ui.DropdownInputWidget",
 							"input-config": [],
-							"options-allow-null": false,
+							"options-allow-null": true,
 							"options-wikilist": "ContactManager:Folder types",
-							"options-values-parsed": {
-								"Inbox": "Inbox",
-								"Sent": "Sent",
-								"Draft": "Draft",
-								"Trash": "Trash",
-								"Spam": "Spam",
-								"Other (Promotions/Newsletters/Social/Forums/Updates/etc.)": "Other (Promotions/Newsletters/Social/Forums/Updates/etc.)"
-							}
+							"required": true
 						},
 						"type": "string",
 						"format": "text",
 						"title": "folder type",
 						"description": "the folder type, it is used to preload the correct datatable",
 						"enum": [
+							"",
 							"Inbox",
 							"Sent",
 							"Draft",
@@ -486,16 +479,16 @@
 		},
 		"ignore_existing": {
 			"wiki": {
-				"type": "property",
 				"name": "ignore_existing",
-				"visibility": "visible",
+				"type": "property",
+				"multiple-items": false,
 				"label": "ignore existing",
 				"help-message": "skip existing items",
-				"multiple-items": false,
+				"default": "true",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.ToggleSwitchWidget",
 				"input-config": [],
 				"required": false,
-				"default": "true",
 				"uuid": "686c1fced4d4e"
 			},
 			"type": "boolean",

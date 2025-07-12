@@ -563,6 +563,13 @@ class ContactManager {
 			$folders[$key]['shortpath'] = $switchMailbox( $folder );
 			echo 'shortpath: ' . $folders[$key]['shortpath'] . PHP_EOL;
 
+			if ( strtolower( $folder['folder_type'] ) !== 'other' &&
+				strpos( mb_strtolower( $folders[$key]['shortpath'] ), strtolower( $folder['folder_type'] ) ) === false
+			) {
+				echo '***attention, foder name/type mismatch, ensure folder type is correct for folder "' . $folders[$key]['shortpath'] . '"';
+				echo ' (current value: "' . $folder['folder_type'] . '")' . PHP_EOL;
+			}
+
 			$folders[$key]['mailboxStatus'] = (array)$imapMailbox->statusMailbox( $errors );
 			echo 'mailboxStatus' . PHP_EOL;
 			print_r( $folders[$key]['mailboxStatus'] );
