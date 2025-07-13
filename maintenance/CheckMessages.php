@@ -108,7 +108,13 @@ class CheckMessages extends Maintenance {
 	public function retrieveMessages( $context, $user, &$jobs ) {
 		$schema = $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];
 		$query = '[[name::retrieve-messages]]';
+
+		// required by \ContactManager::isRunning
 		$printouts = [
+			'is_running',
+			'start_date',
+			'end_date',
+			'last_status',
 			'check_email_interval',
 		];
 		$params = [
@@ -186,7 +192,13 @@ class CheckMessages extends Maintenance {
 		// is not running
 		$schema = $GLOBALS['wgContactManagerSchemasJobRetrieveMessages'];
 		$query = '[[name::retrieve-messages]]';
+
+		// required by \ContactManager::isRunning
 		$printouts = [
+			'is_running',
+			'start_date',
+			'end_date',
+			'last_status',
 			'check_email_interval',
 		];
 		$params = [
@@ -199,17 +211,20 @@ class CheckMessages extends Maintenance {
 			return false;
 		}
 
-		if ( count( $results ) &&
-			!empty( $results[0]['data'] ) &&
-			\ContactManager::isRunning( $results[0]['data'] )
-		) {
-			return;
+		if ( count( $results ) ) {
+			foreach ( $results as $value_ ) {
+				if ( \ContactManager::isRunning( $value_['data'] ) ) {
+					return;
+				}
+			}
 		}
 
 		$schema = $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'];
 		$query = '[[name::delete-old-revisions]]';
 		$printouts = [
-			'start_date'
+			'is_running',
+			'start_date',
+			'end_date',
 		];
 		$params_ = [
 		];

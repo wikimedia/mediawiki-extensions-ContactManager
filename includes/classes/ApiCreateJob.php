@@ -66,8 +66,13 @@ class ApiCreateJob extends ApiBase {
 		$query = '[[name::' . $data['name'] . ']]';
 		$query .= ( array_key_exists( 'mailbox', $data ) ? '[[mailbox::' . $data['mailbox'] . ']]' : '' );
 
+		// required by \ContactManager::isRunning
 		$printouts = [
-			'name'
+			'is_running',
+			'start_date',
+			'end_date',
+			'last_status',
+			'check_email_interval',
 		];
 		$params_ = [
 		];
@@ -80,7 +85,7 @@ class ApiCreateJob extends ApiBase {
 
 		if ( count( $results ) &&
 			!empty( $results[0]['data'] ) &&
-			\ContactManager::isRunning( $results[0]['data'] )
+			\ContactManager::isRunning( $results[0]['data'], false )
 		) {
 			$this->dieWithError( 'apierror-contactmanager-running-job' );
 		}

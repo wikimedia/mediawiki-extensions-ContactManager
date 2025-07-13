@@ -30,6 +30,7 @@ use MediaWiki\Extension\ContactManager\Mailbox;
 use MediaWiki\Extension\ContactManager\Mailer;
 use MediaWiki\Extension\ContactManager\RecordHeader;
 use MediaWiki\Extension\VisualData\Importer as VisualDataImporter;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use TheIconic\NameParser\Parser as IconicParser;
 
@@ -177,16 +178,44 @@ class ContactManager {
 	}
 
 	/**
-	 * @param array $data
 	 * @return bool
 	 */
-	public static function isRunning( $data ) {
+	public static function isCommandLineInterface() {
+		return ( defined( 'MW_ENTRY_POINT' ) && MW_ENTRY_POINT === 'cli' );
+	}
+
+	/**
+	 * @param array $data
+	 * @param bool $throw true
+	 * @return bool
+	 */
+	public static function isRunning( $data, $throw = true ) {
+		$logger = LoggerFactory::getInstance( 'ContactManager' );
+
+		if ( !array_key_exists( 'is_running', $data ) ) {
+			$message = 'isRunning missing data';
+			$logger->error( $message, [ 'data' => $data ] );
+			if ( $throw ) {
+				throw new \Exception( $message );
+			}
+			return false;
+		}
+
 		if ( empty( $data['is_running'] ) ) {
 			return false;
 		}
 
-		$refDate = array_key_exists( 'last_status', $data ) ? $data['last_status'] : $data['start_date'];
+		$refDate = $data['last_status'] ?? $data['start_date'] ?? null;
 		$refTime = strtotime( $refDate );
+
+		if ( !$refTime ) {
+			$message = 'isRunning error parsing date';
+			$logger->error( $message, [ 'refDate' => $refDate ] );
+			if ( $throw ) {
+				throw new \Exception( $message );
+			}
+			return false;
+		}
 
 		if (
 			!empty( $data['check_email_interval'] ) &&
@@ -196,7 +225,7 @@ class ContactManager {
 		}
 
 		$minutes = is_numeric( $GLOBALS['wgContactManangerConsiderJobDeadMinutes'] )
-			? $GLOBALS['wgContactManangerConsiderJobDeadMinutes']
+			? (int)$GLOBALS['wgContactManangerConsiderJobDeadMinutes']
 			: 10;
 
 		return ( time() - $refTime ) <= ( $minutes * 60 );

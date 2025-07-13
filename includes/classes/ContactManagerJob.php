@@ -72,7 +72,8 @@ class ContactManagerJob extends Job {
 
 		echo 'recording job status (start)' . PHP_EOL;
 
-		\ContactManager::setRunningJob( $user, $this->params['name'], \ContactManager::JOB_START, ( array_key_exists( 'mailbox', $this->params ) ? $this->params['mailbox'] : null ) );
+		\ContactManager::setRunningJob( $user, $this->params['name'], \ContactManager::JOB_START,
+			( array_key_exists( 'mailbox', $this->params ) ? $this->params['mailbox'] : null ) );
 
 		$title = TitleClass::newFromID( $this->params['pageid'] );
 		$context->setTitle( $title );
@@ -105,8 +106,15 @@ class ContactManagerJob extends Job {
 						break;
 					}
 				}
-				$importMessage = new ImportMessage( $user, $this->params, $errors );
-				$importMessage->doImport();
+				$mailbox = new Mailbox( $mailboxName, $errors );
+				if ( $mailbox ) {
+					$mailboxData = \ContactManager::getMailboxData( $params['mailbox'] );
+					$importMessage = new ImportMessage( $user, $mailbox, $mailboxData, $this->params, $errors );
+					$res_ = $importMessage->doImport();
+					if ( !is_array( $res_ ) ) {
+						$this->error = 'ContactManager: error retrieving message';
+					}
+				}
 				break;
 			// case 'record-header':
 			// 	$recordHeader = new RecordHeader( $user, $this->params, $errors );
@@ -120,7 +128,8 @@ class ContactManagerJob extends Job {
 
 		echo 'recording job status (end)' . PHP_EOL;
 
-		\ContactManager::setRunningJob( $user, $this->params['name'], \ContactManager::JOB_END, ( array_key_exists( 'mailbox', $this->params ) ? $this->params['mailbox'] : null ) );
+		\ContactManager::setRunningJob( $user, $this->params['name'], \ContactManager::JOB_END,
+			( array_key_exists( 'mailbox', $this->params ) ? $this->params['mailbox'] : null ) );
 
 		// set rc_bot to 1 to avoid polluting Special:RecentChanges
 		\ContactManager::updateRecentChangesTable();
