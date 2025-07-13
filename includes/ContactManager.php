@@ -425,6 +425,12 @@ class ContactManager {
 		$output = $context->getOutput();
 		$output->setTitle( $title );
 
+		if ( !array_key_exists( 'folders', $params ) ) {
+			$errors[] = 'undefined folders';
+			$mailbox->disconnect();
+			return false;
+		}
+
 		$folders = $params['folders'];
 		$jobs = [];
 
@@ -792,7 +798,7 @@ class ContactManager {
 		echo "$newContacts new contacts" . PHP_EOL;
 		echo "$newConversations new conversations" . PHP_EOL;
 
-		if ( !empty( $params['fetch_folder_status'] ) || $folder['fetch'] === 'UIDs incremental' ) {
+		if ( !empty( $foldersData ) ) {
 			echo 'saving folders status' . PHP_EOL;
 
 			$jsonData_ = [

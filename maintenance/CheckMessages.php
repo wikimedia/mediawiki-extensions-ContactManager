@@ -45,14 +45,14 @@ class CheckMessages extends Maintenance {
 
 		// name,  description, required = false,
 		//	withArg = false, shortName = false, multiOccurrence = false
-		$this->addOption( 'delete', 'force delete', false, false );
+		$this->addOption( 'force', 'delete existing ContactManager jobs', false, false );
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function execute() {
-		$delete = $this->getOption( 'delete' ) ?? false;
+		$force = $this->getOption( 'force' ) ?? false;
 		$user = User::newSystemUser( 'Maintenance script', [ 'steal' => true ] );
 		$services = MediaWikiServices::getInstance();
 		$services->getUserGroupManager()->addUserToGroup( $user, 'bureaucrat' );
@@ -65,15 +65,16 @@ class CheckMessages extends Maintenance {
 		}
 
 		// @see JobQueue
-		// $queueJobs = $jobQueueGroup->get( 'ContactManagerJob' )->getAllQueuedJobs();
 		$count = $jobQueueGroup->get( 'ContactManagerJob' )->getSize();
-		// while ( $queueJobs->valid() ) {
-		// 	print_r($queueJobs->current());
-		// 	$queueJobs->next();
-		// }
+		$countAcquired = $jobQueueGroup->get( 'ContactManagerJob' )->getAcquiredCount();
+		$countDelayed = $jobQueueGroup->get( 'ContactManagerJob' )->getDelayedCount();
 
-		if ( $count ) {
-			if ( $delete ) {
+		if ( $count || $countAcquired || $countDelayed ) {
+			echo "count $count" . PHP_EOL;
+			echo "countAcquired $countAcquired" . PHP_EOL;
+			echo "countDelayed $countDelayed" . PHP_EOL;
+
+			if ( $force ) {
 				$jobQueueGroup->get( 'ContactManagerJob' )->delete();
 			} else {
 				echo 'Queued jobs (ContactManagerJob). Wait until they end or run with --delete parameter';
