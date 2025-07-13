@@ -708,10 +708,10 @@ class ContactManager {
 			$overviewHeaders[$key] = $imapMailbox->fetch_overview( $headersQuery );
 
 			echo 'recording job status' . PHP_EOL;
-
 			self::setRunningJob( $user, 'retrieve-messages', self::JOB_LAST_STATUS, $params['mailbox'] );
 
 			$n = 0;
+			$i = 0;
 			$size_ = count( $overviewHeaders[$key] );
 			echo 'size ' . $size_ . PHP_EOL;
 
@@ -748,10 +748,19 @@ class ContactManager {
 					$skippedByFilters[$shortpath][] = $header['uid'];
 				}
 
+				if ( !is_array( $res_ ) ) {
+					continue;
+				}
+
+				if ( $i % 100 === 0 ) {
+					echo 'recording job status' . PHP_EOL;
+					self::setRunningJob( $user, 'retrieve-messages', self::JOB_LAST_STATUS, $params['mailbox'] );
+				}
+
+				$i++;
 			}
 
 			echo 'recording job status' . PHP_EOL;
-
 			self::setRunningJob( $user, 'retrieve-messages', self::JOB_LAST_STATUS, $params['mailbox'] );
 		}
 
