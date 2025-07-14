@@ -80,8 +80,9 @@ class ContactManagerJob extends Job {
 		try {
 			if ( \ContactManager::jobIsRunning( $this->params['name'], $this->params['mailbox'] ?? null ) ) {
 				\ContactManager::logError( 'debug', 'ContactManagerJob isRunning true' );
-				\ContactManager::logError( 'debug', 'params', $params );
+				\ContactManager::logError( 'debug', 'params', $this->params );
 				echo 'ContactManagerJob isRunning true';
+				return false;
 			}
 
 		} catch ( \Exception $e ) {
