@@ -24,7 +24,6 @@
 
 use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Extension\ContactManager\ContactManagerJob;
-use MediaWiki\MediaWikiServices;
 
 $IP = getenv( 'MW_INSTALL_PATH' );
 if ( $IP === false ) {
@@ -54,36 +53,31 @@ class CheckMessages extends Maintenance {
 	public function execute() {
 		$force = $this->getOption( 'force' ) ?? false;
 		$user = User::newSystemUser( 'Maintenance script', [ 'steal' => true ] );
-		$services = MediaWikiServices::getInstance();
-		$services->getUserGroupManager()->addUserToGroup( $user, 'bureaucrat' );
 
-		if ( method_exists( $services, 'getJobQueueGroup' ) ) {
-			// MW 1.37+
-			$jobQueueGroup = $services->getJobQueueGroup();
-		} else {
-			$jobQueueGroup = JobQueueGroup::singleton();
-		}
+		\ContactManager::logError( 'debug', 'CheckMessages start ' . date( 'Y-m-d H:i:s' ) );
 
-		// @see JobQueue
-		$count = $jobQueueGroup->get( 'ContactManagerJob' )->getSize();
-		$countAcquired = $jobQueueGroup->get( 'ContactManagerJob' )->getAcquiredCount();
-		$countDelayed = $jobQueueGroup->get( 'ContactManagerJob' )->getDelayedCount();
+		[ $count, $countAcquired, $countDelayed ] = \ContactManager::getJobGroupCount( $user );
+
+		echo "count $count" . PHP_EOL;
+		echo "countAcquired $countAcquired" . PHP_EOL;
+		echo "countDelayed $countDelayed" . PHP_EOL;
+
+		\ContactManager::logError( 'debug', 'count ' . $count );
+		\ContactManager::logError( 'debug', 'countAcquired ' . $countAcquired );
+		\ContactManager::logError( 'debug', 'countDelayed ' . $countDelayed );
 
 		if ( $count || $countAcquired || $countDelayed ) {
-			echo "count $count" . PHP_EOL;
-			echo "countAcquired $countAcquired" . PHP_EOL;
-			echo "countDelayed $countDelayed" . PHP_EOL;
-
 			if ( $force ) {
 				$jobQueueGroup->get( 'ContactManagerJob' )->delete();
 			} else {
-				echo 'Queued jobs (ContactManagerJob). Wait until they end or run with --delete parameter';
+				echo 'Queued jobs (ContactManagerJob). Wait until they end or run with --force parameter';
+				\ContactManager::logError( 'debug', 'Queued jobs (ContactManagerJob). Wait until they end or run with --force parameter' );
 				return;
 			}
 		}
 
-		$title = SpecialPage::getTitleFor( 'Badtitle' );
-		$context = RequestContext::getMain();
+		$title = \SpecialPage::getTitleFor( 'Badtitle' );
+		$context = \RequestContext::getMain();
 		$context->setTitle( $title );
 		$context->setUser( $user );
 
@@ -98,6 +92,8 @@ class CheckMessages extends Maintenance {
 		foreach ( $jobs as $value ) {
 			echo $value->params['name'] . PHP_EOL;
 		}
+
+		\ContactManager::logError( 'debug', 'created jobs', $jobs );
 	}
 
 	/**
@@ -124,12 +120,12 @@ class CheckMessages extends Maintenance {
 		if ( \ContactManager::queryError( $results, true ) ) {
 			echo 'error query' . PHP_EOL;
 			print_r( $results );
+			\ContactManager::logError( 'error', 'error query', $results );
 			return;
 		}
 
 		$data = [];
 		$data['session'] = $context->exportSession();
-		$data['jobSchema'] = $schema;
 
 		foreach ( $results as $value ) {
 			// add session parameter
@@ -142,6 +138,8 @@ class CheckMessages extends Maintenance {
 			if ( \ContactManager::isRunning( $data_ ) ) {
 				continue;
 			}
+
+			\ContactManager::logError( 'debug', 'retrieveMessages -allows', $data_ );
 
 			$exp = '*/' . $data_['check_email_interval'] . ' * * * *';
 			try {
@@ -162,6 +160,7 @@ class CheckMessages extends Maintenance {
 				if ( \ContactManager::queryError( $value, true ) ) {
 					echo 'error query' . PHP_EOL;
 					print_r( $value );
+					\ContactManager::logError( 'error', 'error query', $value );
 					continue;
 				}
 
@@ -170,8 +169,13 @@ class CheckMessages extends Maintenance {
 				// must be a valid title, otherwise if an "inner"
 				// job is created, will trigger the error
 				// $params must be an array in $IP/includes/jobqueue/Job.php on line 101
-				$title_ = TitleClass::newFromText( $value['title'] );
-				$data_['pageid'] = $title_->getArticleID();
+				$title_ = TitleClass::newFromID( $value['pageid'] );
+				$data_['pageid'] = $value['pageid'];
+
+				if ( !$title_ ) {
+					\ContactManager::logError( 'error', 'error creating title: ' . $value['pageid'] );
+					continue;
+				}
 
 				$job = new ContactManagerJob( $title_, $data_ );
 				if ( $job ) {
@@ -208,12 +212,14 @@ class CheckMessages extends Maintenance {
 		if ( \ContactManager::queryError( $results, false ) ) {
 			echo 'error query' . PHP_EOL;
 			print_r( $results );
+			\ContactManager::logError( 'error', 'error query', $results );
 			return false;
 		}
 
 		if ( count( $results ) ) {
 			foreach ( $results as $value_ ) {
 				if ( \ContactManager::isRunning( $value_['data'] ) ) {
+					\ContactManager::logError( 'debug', 'delete-old-revisions skip' );
 					return;
 				}
 			}
@@ -230,9 +236,12 @@ class CheckMessages extends Maintenance {
 		];
 		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params_ );
 
+		\ContactManager::logError( 'debug', 'delete-old-revisions results', $results );
+
 		if ( \ContactManager::queryError( $results, false ) ) {
 			echo 'error query' . PHP_EOL;
 			print_r( $results );
+			\ContactManager::logError( 'error', 'error query', $results );
 			return false;
 		}
 
@@ -249,9 +258,10 @@ class CheckMessages extends Maintenance {
 			}
 		}
 
+		\ContactManager::logError( 'debug', 'delete-old-revisions run' );
+
 		$data = [];
 		$data['session'] = $context->exportSession();
-		$data['jobSchema'] = $GLOBALS['wgContactManagerSchemasJobDeleteOldRevisions'];
 
 		$data_ = array_merge( [ 'name' => 'delete-old-revisions' ], $data );
 		$title_ = TitleClass::newFromText( $GLOBALS['wgContactManagerMainJobsArticle'] );

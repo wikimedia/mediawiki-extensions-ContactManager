@@ -27,6 +27,7 @@ use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 define( 'CONTENT_MODEL_CONTACTMANAGER_TWIG', 'twig' );
 
 class ContactManagerHooks {
+
 	/**
 	 * @var array
 	 */
@@ -37,6 +38,8 @@ class ContactManagerHooks {
 	 * @return void
 	 */
 	public static function initExtension( $credits = [] ) {
+		$GLOBALS['wgDebugLogGroups']['ContactManager'] = $GLOBALS['IP'] . '/'
+			. $GLOBALS['wgContactManagerDebugPath'];
 	}
 
 	/**

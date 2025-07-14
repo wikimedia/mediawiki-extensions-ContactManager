@@ -136,6 +136,7 @@
 		}
 	},
 	"config": {
+		"ContactManagerDebugPath": "ContactManagerDebug.log",
 		"ContactManagerSchemasMailbox": "ContactManager/Mailbox",
 		"ContactManagerSchemasMailboxInfo": "ContactManager/Mailbox info",
 		"ContactManagerSchemasMailboxFolders": "ContactManager/Mailbox folders",

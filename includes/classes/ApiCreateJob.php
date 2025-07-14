@@ -26,7 +26,6 @@ namespace MediaWiki\Extension\ContactManager;
 
 use ApiBase;
 use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
-use RequestContext;
 
 class ApiCreateJob extends ApiBase {
 
@@ -53,9 +52,30 @@ class ApiCreateJob extends ApiBase {
 			$this->dieWithError( 'apierror-contactmanager-permissions-error' );
 		}
 
+		\ContactManager::logError( 'debug', 'ApiCreateJob start ' . date( 'Y-m-d H:i:s' ) );
+
+		[ $count, $countAcquired, $countDelayed ] = \ContactManager::getJobGroupCount( $user );
+
+		\ContactManager::logError( 'debug', 'count ' . $count );
+		\ContactManager::logError( 'debug', 'countAcquired ' . $countAcquired );
+		\ContactManager::logError( 'debug', 'countDelayed ' . $countDelayed );
+
+		if ( $count || $countAcquired || $countDelayed ) {
+			$this->dieWithError( 'apierror-contactmanager-job-queued' );
+		}
+
 		$result = $this->getResult();
 		$params = $this->extractRequestParams();
 		$data = json_decode( $params['data'], true );
+
+		$title = ( !empty( $params['pageid'] ) ? TitleClass::newFromID( $params['pageid'] ) :
+			\SpecialPage::getTitleFor( 'Badtitle' ) );
+
+		$context = \RequestContext::getMain();
+		$context->setTitle( $title );
+
+		$data['pageid'] = $params['pageid'];
+		$data['session'] = $context->exportSession();
 
 		$schema = \ContactManager::jobNameToSchema( $data['name'] );
 
@@ -63,50 +83,32 @@ class ApiCreateJob extends ApiBase {
 			$this->dieWithError( 'apierror-contactmanager-unknown-job-schema' );
 		}
 
-		$query = '[[name::' . $data['name'] . ']]';
-		$query .= ( array_key_exists( 'mailbox', $data ) ? '[[mailbox::' . $data['mailbox'] . ']]' : '' );
+		try {
+			if ( \ContactManager::jobIsRunning( $data['name'], $data['mailbox'] ?? null ) ) {
+				\ContactManager::logError( 'debug', 'ApiCreateJob isRunning true' );
+				\ContactManager::logError( 'debug', 'data', $data );
 
-		// required by \ContactManager::isRunning
-		$printouts = [
-			'is_running',
-			'start_date',
-			'end_date',
-			'last_status',
-			'check_email_interval',
-		];
-		$params_ = [
-		];
-		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params_ );
+				$this->dieWithError( 'apierror-contactmanager-running-job' );
+			}
 
-		if ( \ContactManager::queryError( $results, false ) ) {
-			$result->addValue( [ $this->getModuleName() ], 'error', $results );
-			return;
+			\ContactManager::logError( 'debug', 'ApiCreateJob isRunning false' );
+
+			\ContactManager::logError( 'debug', 'ApiCreateJob data', $data );
+
+			$job = new ContactManagerJob( $title, $data );
+
+			if ( !$job ) {
+				$this->dieWithError( 'apierror-contactmanager-unknown-job' );
+			}
+
+			\ContactManager::pushJobs( [ $job ] );
+
+			$result->addValue( [ $this->getModuleName() ], 'data', true );
+
+		} catch ( \Exception $e ) {
+			\ContactManager::logError( 'error', 'ApiCreateJob error: ' . $e->getMessage() );
+			$result->addValue( [ $this->getModuleName() ], 'error', $e->getMessage() );
 		}
-
-		if ( count( $results ) &&
-			!empty( $results[0]['data'] ) &&
-			\ContactManager::isRunning( $results[0]['data'], false )
-		) {
-			$this->dieWithError( 'apierror-contactmanager-running-job' );
-		}
-
-		$title = TitleClass::newFromID( $params['pageid'] );
-		$context = RequestContext::getMain();
-		$context->setTitle( $title );
-		$data['pageid'] = $params['pageid'];
-		$data['session'] = $context->exportSession();
-		$data['jobSchema'] = $schema;
-
-		$job = new ContactManagerJob( $title, $data );
-
-		if ( !$job ) {
-			$this->dieWithError( 'apierror-contactmanager-unknown-job' );
-			return;
-		}
-
-		\ContactManager::pushJobs( [ $job ] );
-
-		$result->addValue( [ $this->getModuleName() ], 'data', true );
 	}
 
 	/**

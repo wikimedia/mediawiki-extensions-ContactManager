@@ -39,6 +39,10 @@ if ( is_readable( __DIR__ . '/../vendor/autoload.php' ) ) {
 }
 
 class ContactManager {
+
+	/** @var LoggerFactory */
+	public static $Logger;
+
 	// @see Symfony\Component\Mime\Address
 	private const FROM_STRING_PATTERN = '~(?<displayName>[^<]*)<(?<addrSpec>.*)>[^>]*~';
 
@@ -54,6 +58,7 @@ class ContactManager {
 	public static $UserAuthCache = [];
 
 	public static function initialize() {
+		self::$Logger = LoggerFactory::getInstance( 'ContactManager' );
 	}
 
 	/**
@@ -90,7 +95,7 @@ class ContactManager {
 	}
 
 	/**
-	 * @param User $user
+	 * @param \User $user
 	 * @param Title|Mediawiki\Title\Title $targetTitle
 	 * @param array $jsonData
 	 * @param string $freetext
@@ -138,7 +143,7 @@ class ContactManager {
 	}
 
 	/**
-	 * @param User $user
+	 * @param \User $user
 	 * @param string $mailboxName
 	 * @param array &$errors []
 	 * @return bool|array
@@ -178,10 +183,99 @@ class ContactManager {
 	}
 
 	/**
+	 * @param \User $user
+	 * @return array
+	 */
+	public static function getJobGroupCount( $user ) {
+		$services = MediaWikiServices::getInstance();
+		$services->getUserGroupManager()->addUserToGroup( $user, 'bureaucrat' );
+
+		if ( method_exists( $services, 'getJobQueueGroup' ) ) {
+			// MW 1.37+
+			$jobQueueGroup = $services->getJobQueueGroup();
+		} else {
+			$jobQueueGroup = JobQueueGroup::singleton();
+		}
+
+		$jobGroup = $jobQueueGroup->get( 'ContactManagerJob' );
+
+		$jobGroup->flushCaches();
+
+		// @see JobQueue
+		return [
+				$jobGroup->getSize(),
+				$jobGroup->getAcquiredCount(),
+				$jobGroup->getDelayedCount()
+		];
+	}
+
+	/**
 	 * @return bool
 	 */
 	public static function isCommandLineInterface() {
 		return ( defined( 'MW_ENTRY_POINT' ) && MW_ENTRY_POINT === 'cli' );
+	}
+
+	/**
+	 * @param string $method
+	 * @param string $message
+	 * @param array $arr []
+	 */
+	public static function logError( $method, $message, $arr = [] ) {
+		$logger = self::$Logger ?? LoggerFactory::getInstance( 'ContactManager' );
+		$logger->$method( $message . ( $arr ? ' ' . print_r( $arr, true ) : '' ) );
+	}
+
+	/**
+	 * @param string $name
+	 * @param string|null $mailboxName null
+	 * @return bool
+	 */
+	public static function jobIsRunning( $name, $mailboxName = null ) {
+		self::logError( 'debug', 'jobIsRunning start ' . date( 'Y-m-d H:i:s' ) );
+
+		$schema = self::jobNameToSchema( $name );
+		$query = '[[name::' . $name . ']]';
+		$query .= ( $mailboxName ? '[[mailbox::' . $mailboxName . ']]' : '' );
+
+		self::logError( 'debug', 'schema', $schema );
+		self::logError( 'debug', 'query ' . $query );
+
+		// required by self::isRunning
+		$printouts = [
+			'is_running',
+			'start_date',
+			'end_date',
+			'last_status',
+			'check_email_interval',
+		];
+		$params_ = [
+		];
+		$results = \VisualData::getQueryResults( $schema, $query, $printouts, $params_ );
+
+		self::logError( 'debug', 'results', $results );
+
+		if ( self::queryError( $results, false ) ) {
+			self::logError( 'error', 'jobIsRunning query error' );
+			self::logError( 'debug', name, $name );
+			self::logError( 'debug', mailboxName, $mailboxName );
+			self::logError( 'debug', results, $results );
+
+			throw new \Exception( 'query error' );
+		}
+
+		if ( !count( $results ) ) {
+			return false;
+		}
+
+		if ( empty( $results[0]['data'] ) ) {
+			return false;
+		}
+
+		$ret = self::isRunning( $results[0]['data'] );
+		self::logError( 'debug', 'jobIsRunning return ' . $ret );
+
+		return $ret;
 	}
 
 	/**
@@ -190,11 +284,11 @@ class ContactManager {
 	 * @return bool
 	 */
 	public static function isRunning( $data, $throw = true ) {
-		$logger = LoggerFactory::getInstance( 'ContactManager' );
-
 		if ( !array_key_exists( 'is_running', $data ) ) {
 			$message = 'isRunning missing data';
-			$logger->error( $message, [ 'data' => $data ] );
+			self::logError( 'error', 'isRunning missing data' );
+			self::logError( 'debug', 'data', $data );
+
 			if ( $throw ) {
 				throw new \Exception( $message );
 			}
@@ -210,7 +304,9 @@ class ContactManager {
 
 		if ( !$refTime ) {
 			$message = 'isRunning error parsing date';
-			$logger->error( $message, [ 'refDate' => $refDate ] );
+			self::logError( 'error', 'isRunning error parsing date' );
+			self::logError( 'debug', 'refDate', $refDate );
+
 			if ( $throw ) {
 				throw new \Exception( $message );
 			}
@@ -259,7 +355,7 @@ class ContactManager {
 	}
 
 	/**
-	 * @param User $user
+	 * @param \User $user
 	 * @param string $jobName
 	 * @param int $status
 	 * @param string|null $mailbox null
@@ -351,7 +447,7 @@ class ContactManager {
 	}
 
 	/**
-	 * @param User $user
+	 * @param \User $user
 	 * @param string $mailboxName
 	 * @param array &$errors []
 	 * @return array
@@ -406,12 +502,19 @@ class ContactManager {
 	}
 
 	/**
-	 * @param User $user
+	 * @param \User $user
 	 * @param array $params
 	 * @param array &$errors []
-	 * @return array
+	 * @return bool|null
 	 */
 	public static function getMessages( $user, $params, &$errors ) {
+		echo 'getMessages start ' . date( 'Y-m-d H:i:s' ) . PHP_EOL;
+
+		if ( self::jobIsRunning( 'get-messages', $params['mailbox'] ) ) {
+			echo '***exit, job running' . PHP_EOL;
+			return;
+		}
+
 		$memoryLimit = ini_get( 'memory_limit' );
 		echo 'memory_limit: ' . $memoryLimit . PHP_EOL;
 
@@ -848,7 +951,8 @@ class ContactManager {
 		echo 'disconnecting' . PHP_EOL;
 
 		$mailbox->disconnect();
-		// self::pushJobs( $jobs );
+
+		return true;
 	}
 
 	/**
@@ -986,7 +1090,7 @@ class ContactManager {
 	}
 
 	/**
-	 * @param User $user
+	 * @param \User $user
 	 * @param Context $context
 	 * @param array $params
 	 * @param array $obj
@@ -1201,11 +1305,11 @@ class ContactManager {
 	}
 
 	/**
-	 * @param array $results
+	 * @param array &$results
 	 * @param bool $mustExist
 	 * @return bool
 	 */
-	public static function queryError( $results, $mustExist ) {
+	public static function queryError( &$results, $mustExist ) {
 		if ( !array_key_exists( 'errors', $results ) ) {
 			return false;
 		}
@@ -1213,6 +1317,7 @@ class ContactManager {
 		if ( !$mustExist && count( $results['errors'] ) === 1 &&
 			$results['errors'][0] === 'schema has no data'
 		) {
+			unset( $results['errors'] );
 			return false;
 		}
 
@@ -1220,7 +1325,7 @@ class ContactManager {
 	}
 
 	/**
-	 * @param User $user
+	 * @param \User $user
 	 * @return bool
 	 */
 	public static function isAuthorizedGroup( $user ) {
@@ -1241,7 +1346,7 @@ class ContactManager {
 	}
 
 	/**
-	 * @param User $user
+	 * @param \User $user
 	 * @param array &$output
 	 * @param bool $delete false
 	 * @return bool

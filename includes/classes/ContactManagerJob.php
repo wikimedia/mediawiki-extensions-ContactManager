@@ -26,7 +26,6 @@ namespace MediaWiki\Extension\ContactManager;
 use Job;
 use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Session\SessionManager;
-use RequestContext;
 use Wikimedia\ScopedCallback;
 
 class ContactManagerJob extends Job {
@@ -45,11 +44,13 @@ class ContactManagerJob extends Job {
 	public function run() {
 		// T279090
 		// $user = User::newFromId( $this->params['user_id'] );
+		\ContactManager::logError( 'debug', 'ContactManagerJob start ' . date( 'Y-m-d H:i:s' ) );
 
 		$requiredParameters = [ 'session', 'name' ];
 		foreach ( $requiredParameters as $value ) {
 			if ( !isset( $this->params[$value] ) ) {
 				$this->error = "ContactManager: $value parameter not set";
+				\ContactManager::logError( 'error', "ContactManager: $value parameter not set" );
 				return false;
 			}
 		}
@@ -57,26 +58,44 @@ class ContactManagerJob extends Job {
 		// use 'session' => $this->getContext()->exportSession()
 		// if ( isset( $this->params['session'] ) ) {
 		if ( !SessionManager::getGlobalSession()->isPersistent() ) {
-			$callback = RequestContext::importScopedSession( $this->params['session'] );
+			$callback = \RequestContext::importScopedSession( $this->params['session'] );
 			$this->addTeardownCallback( static function () use ( &$callback ) {
 				ScopedCallback::consume( $callback );
 			} );
 		}
-		$context = RequestContext::getMain();
+		$context = \RequestContext::getMain();
 		$user = $context->getUser();
+
+		$title = ( !empty( $this->params['pageid'] ) ? TitleClass::newFromID( $this->params['pageid'] ) :
+			\SpecialPage::getTitleFor( 'Badtitle' ) );
+
+		$context->setTitle( $title );
 
 		if ( !$user->isAllowed( 'contactmanager-can-manage-mailboxes' ) ) {
 			$this->error = 'ContactManager: Permission error';
+			\ContactManager::logError( 'error', 'ContactManager: Permission error' );
+			return false;
+		}
+
+		try {
+			if ( \ContactManager::jobIsRunning( $this->params['name'], $this->params['mailbox'] ?? null ) ) {
+				\ContactManager::logError( 'debug', 'ContactManagerJob isRunning true' );
+				\ContactManager::logError( 'debug', 'params', $params );
+				echo 'ContactManagerJob isRunning true';
+			}
+
+		} catch ( \Exception $e ) {
+			$this->error = 'ContactManager: Permission error';
+			\ContactManager::logError( 'error', 'ContactManagerJob error: ' . $e->getMessage() );
 			return false;
 		}
 
 		echo 'recording job status (start)' . PHP_EOL;
+		\ContactManager::logError( 'debug', 'ContactManagerJob job start' );
+		\ContactManager::logError( 'debug', 'params', $this->params );
 
 		\ContactManager::setRunningJob( $user, $this->params['name'], \ContactManager::JOB_START,
 			( array_key_exists( 'mailbox', $this->params ) ? $this->params['mailbox'] : null ) );
-
-		$title = TitleClass::newFromID( $this->params['pageid'] );
-		$context->setTitle( $title );
 
 		$errors = [];
 		switch ( $this->params['name'] ) {
@@ -128,6 +147,8 @@ class ContactManagerJob extends Job {
 
 		echo 'recording job status (end)' . PHP_EOL;
 
+		\ContactManager::logError( 'debug', 'ContactManagerJob job end' );
+
 		\ContactManager::setRunningJob( $user, $this->params['name'], \ContactManager::JOB_END,
 			( array_key_exists( 'mailbox', $this->params ) ? $this->params['mailbox'] : null ) );
 
@@ -136,6 +157,7 @@ class ContactManagerJob extends Job {
 
 		if ( count( $errors ) ) {
 			$this->error = array_pop( $errors );
+			\ContactManager::logError( 'error', 'errors', $errors );
 			return false;
 		}
 
