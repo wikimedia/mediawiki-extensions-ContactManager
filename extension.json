@@ -37,6 +37,7 @@
 		"ParserFirstCallInit": "ContactManagerHooks::onParserFirstCallInit",
 		"BeforePageDisplay": "ContactManagerHooks::onBeforePageDisplay",
 		"BeforeCreateEchoEvent": "MediaWiki\\Extension\\ContactManager\\EchoInterface::onBeforeCreateEchoEvent",
+		"EchoGetBundleRules": "MediaWiki\\Extension\\ContactManager\\EchoInterface::onEchoGetBundleRules",
 		"SkinBuildSidebar": "ContactManagerHooks::onSkinBuildSidebar",
 		"VisualData::OnFormSubmit": "ContactManagerHooks::VisualDataOnFormSubmit"
 	},
@@ -62,6 +63,9 @@
 		"MediaWiki\\Extension\\ContactManager\\Pagers\\": "includes/specials/pagers/",
 		"MediaWiki\\Extension\\ContactManager\\Transport\\": "includes/classes/transports/"
 	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
 	"GroupPermissions": {
 		"sysop": {
 			"contactmanager-can-manage-mailboxes": true,

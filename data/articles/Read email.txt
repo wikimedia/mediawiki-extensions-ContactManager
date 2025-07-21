@@ -16,6 +16,7 @@
     |?textHtml=
     |?visibleText=
     |?headersRaw=
+    |?conversationHash=
     |?regularAttachments
     |values-separator=@@
     |format=template
@@ -37,6 +38,7 @@
       |?textHtml=
       |?visibleText=
       |?headersRaw=
+      |?conversationHash=
       |?regularAttachments
       |values-separator=@@
       |format=template

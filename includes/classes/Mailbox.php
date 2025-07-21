@@ -37,8 +37,13 @@ class Mailbox {
 	 * @param string $mailboxName
 	 * @param array &$errors []
 	 * @return false|ContactManagerMailbox
+	 * @throws \MWException
 	 */
 	public function __construct( $mailboxName, &$errors = [] ) {
+		if ( !extension_loaded( 'imap' ) ) {
+			throw new \MWException( 'PHP IMAP extension not installed' );
+		}
+
 		$data = \ContactManager::getMailboxes( $mailboxName );
 		if ( empty( $data ) ) {
 			$errors[] = 'mailbox not found';
@@ -123,11 +128,8 @@ class Mailbox {
 	 * @return ContactManagerMailbox
 	 */
 	private function connectMailbox( $server, $username, $password, $mailbox = "", $port = 993 ) {
+		// can be null, check in conjunction with setAttachmentsIgnore
 		$attachmentsFolder = \ContactManager::getAttachmentsFolder();
-
-		if ( !file_exists( $attachmentsFolder ) ) {
-			mkdir( $attachmentsFolder, 0777, true );
-		}
 
 		return new PHPImapMailbox(
 			'{' . $server . ':' . $port . '/imap/ssl}' . $mailbox,

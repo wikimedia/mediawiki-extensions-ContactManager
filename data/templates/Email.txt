@@ -11,6 +11,14 @@
 ! subject
 | {{{subject}}}
 |-
+! conversation
+| {{#querylink:ContactManager:Conversation|{{#visualdataquery:[[conversations::{{{conversationHash}}}]]
+  |schema=ContactManager/Contact 
+  |?full_name
+  |format=raw
+  |separator=,<nowiki> </nowiki>
+ }}|target=_blank|mailbox={{#urldecode:{{#urlget:mailbox}}}}|hash={{{conversationHash}}} }}
+|-
 ! attachments
 | {{#arraymap:{{{regularAttachments|}}} | @@ | @@ | [[Special:ContactManagerGetResource/{{{pageid}}}/@@|@@]] | ,\s | ,\s  }}
 |-
@@ -59,3 +67,4 @@
 <tab name="html">{{#shadowroot:{{#base64encode:{{{textHtml|}}}}}|host}}</tab>
 <tab name="headers">{{#shadowroot:{{#base64encode:{{{headersRaw|}}}}}|host}}</tab>
 </tabs>
+

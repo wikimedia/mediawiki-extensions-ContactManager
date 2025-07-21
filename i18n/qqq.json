@@ -53,5 +53,13 @@
 	"apihelp-contactmanager-createjob-param-data": "A label message",
 	"apierror-contactmanager-unknown-job": "A label message",
 	"apierror-contactmanager-permissions-error": "A label message",
-	"apierror-contactmanager-running-job": "A label message"
+	"apierror-contactmanager-running-job": "A label message",
+
+	"contactmanager-echo-get-messages-updates-category": "A label message",
+	"contactmanager-echo-get-messages-updates-category-tooltip": "A label message",
+	"contactmanager-echo-get-messages-updates-header": "A label message",
+	"contactmanager-echo-get-messages-body-message": "A label message",
+	"contactmanager-echo-get-messages-new-messages": "A label message",
+	"contactmanager-echo-get-messages-new-contacts": "A label message",
+	"contactmanager-echo-get-messages-new-conversations": "A label message"
 }

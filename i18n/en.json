@@ -56,5 +56,13 @@
 
 	"apierror-contactmanager-unknown-job": "unknown job",
 	"apierror-contactmanager-permissions-error": "contactmanager permissions error",
-	"apierror-contactmanager-running-job": "Job is running. Wait that is completed or set to false if it isn't actually running"
+	"apierror-contactmanager-running-job": "Job is running. Wait that is completed or set to false if it isn't actually running",
+
+	"contactmanager-echo-get-messages-updates-category": "Contact manager mailbox updates",
+	"contactmanager-echo-get-messages-updates-category-tooltip": "Notify me when a mailbox has updates",
+	"contactmanager-echo-get-messages-updates-header": "There are updates for mailbox $1",
+	"contactmanager-echo-get-messages-body-message": "",
+	"contactmanager-echo-get-messages-new-messages": "$1 new messages",
+	"contactmanager-echo-get-messages-new-contacts": "$1 new contacts",
+	"contactmanager-echo-get-messages-new-conversations": "$1 new conversations"
 }

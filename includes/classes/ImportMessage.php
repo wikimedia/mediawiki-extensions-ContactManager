@@ -97,7 +97,17 @@ class ImportMessage {
 
 		$this->createFolderArticle( $user, $params );
 
-		$imapMailbox->setAttachmentsIgnore( !( (bool)$params['download_attachments'] ) );
+		$imapMailbox->setAttachmentsIgnore( empty( $params['download_attachments'] ) );
+
+		if ( !empty( $params['download_attachments'] ) ) {
+			$attachmentsFolder = \ContactManager::getAttachmentsFolder();
+
+			if ( !file_exists( $attachmentsFolder ) ) {
+				if ( !mkdir( $attachmentsFolder, 0777, true ) ) {
+					echo '***error cannot create attachments folder ' . $attachmentsFolder . PHP_EOL;
+				}
+			}
+		}
 
 		// *** optioanlly save the email as eml format
 		// $imapMailbox->getRawMail( $uid, false );
@@ -327,25 +337,28 @@ class ImportMessage {
 		// ***important, get title object again
 		$title_ = TitleClass::newFromText( $pagenameFormula );
 
-		$attachmentsFolder = \ContactManager::getAttachmentsFolder();
-		$pathTarget = $attachmentsFolder . '/' . $title_->getArticleID();
-
 		if ( $obj['hasAttachments'] ) {
+			$pathTarget = $attachmentsFolder . '/' . $title_->getArticleID();
 			echo 'attachment path ' . $pathTarget . PHP_EOL;
 
 			if ( !is_dir( $pathTarget ) ) {
-				mkdir( $pathTarget, 0777, true );
+				if ( !mkdir( $pathTarget, 0777, true ) ) {
+					echo '***error cannot create folder ' . $pathTarget . PHP_EOL;
+				}
 			}
 
 			if ( file_exists( $pathTarget ) ) {
 				foreach ( $obj['attachments'] as $value ) {
-					rename( $attachmentsFolder . '/' . $value['name'], $pathTarget . '/' . $value['name'] );
-					echo 'saving attachment to ' . $pathTarget . '/' . $value['name'] . PHP_EOL;
+					if ( rename( $attachmentsFolder . '/' . $value['name'], $pathTarget . '/' . $value['name'] ) ) {
+						echo 'saving attachment to ' . $pathTarget . '/' . $value['name'] . PHP_EOL;
+					} else {
+						echo '***error saving attachment to ' . $pathTarget . '/' . $value['name'] . PHP_EOL;
+					}
 				}
 
 			} else {
-				echo "cannot create folder \"$pathTarget\"" . PHP_EOL;
-				$this->errors[] = "cannot create folder \"$pathTarget\"";
+				echo "cannot access folder \"$pathTarget\"" . PHP_EOL;
+				$this->errors[] = "cannot access folder \"$pathTarget\"";
 			}
 		}
 
@@ -446,7 +459,9 @@ class ImportMessage {
 
 		// get the hash before removing the related mailbox address
 		// , is not supported in email address
-		$hash = dechex( crc32( implode( ',', array_keys( $conversationRecipients ) ) ) );
+		// use the mailbox as prefix to distinguish hashes
+		// when more than 1 mailbox address appears among recipients
+		$hash = dechex( crc32( $params['mailbox'] . implode( ',', array_keys( $conversationRecipients ) ) ) );
 
 		foreach ( $this->mailboxData['all_addresses'] as $address ) {
 			if ( array_key_exists( $address, $conversationRecipients ) ) {

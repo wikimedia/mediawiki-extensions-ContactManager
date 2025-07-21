@@ -18,19 +18,14 @@
  * @file
  * @ingroup extensions
  * @author thomas-topway-it <support@topway.it>
- * @copyright Copyright ©2023, https://wikisphere.org
+ * @copyright Copyright ©2025, https://wikisphere.org
  */
-
-// @credits: CommentStreams/EchoInterface
 
 namespace MediaWiki\Extension\ContactManager;
 
-// use EchoEvent;
-use ExtensionRegistry;
-use MWException;
-use User;
-use WikiPage;
+use MediaWiki\MediaWikiServices;
 
+// @see https://www.mediawiki.org/wiki/Extension:Echo/Creating_a_new_notification_type_(1.43)
 class EchoInterface {
 	/**
 	 * @var bool
@@ -38,11 +33,9 @@ class EchoInterface {
 	private $isLoaded;
 
 	/**
-	 * @param ExtensionRegistry $extensionRegistry
+	 * @param \ExtensionRegistry $extensionRegistry
 	 */
-	public function __construct(
-		ExtensionRegistry $extensionRegistry
-	) {
+	public function __construct( \ExtensionRegistry $extensionRegistry ) {
 		$this->isLoaded = $extensionRegistry->isLoaded( 'Echo' );
 	}
 
@@ -54,30 +47,49 @@ class EchoInterface {
 	}
 
 	/**
-	 * @param Reply $reply the comment to send notifications for
-	 * @param WikiPage $associatedPage the associated page for the comment
-	 * @param User $user
-	 * @param Comment $parentComment
-	 * @throws MWException
+	 * @param \User $user
+	 * @param Title|Mediawiki\Title\Title $mailboxTitle
+	 * @param string $mailbox
+	 * @param array $updates
+	 * @return array
 	 */
-	public function sendNotifications(
-		Reply $reply,
-		WikiPage $associatedPage,
-		User $user,
-		Comment $parentComment
-	) {
+	public function sendNotifications( $user, $mailboxTitle, $mailbox, $updates ) {
 		if ( !$this->isLoaded ) {
 			return;
 		}
 
-		// @TODO see commentstreams
+		$extra = [
+			'user' => $user,
+			'mailbox' => $mailbox,
+			'uid' => uniqid(),
 
-		// EchoEvent::create( [
-		// 	'type' => 'commentstreams-reply-to-watched-comment',
-		// 	'title' => $associatedPage->getTitle(),
+			// *** important !!!
+			'notifyAgent' => true,
+		];
+
+		// @see https://www.mediawiki.org/wiki/Extension:Echo/Creating_a_new_notification_type
+		// $ret = \EchoEvent::create( [
+		// 	'type' => 'contactmanager-get-messages-complete',
+		// 	'title' => $mailboxTitle,
 		// 	'extra' => $extra,
 		// 	'agent' => $user
 		// ] );
+
+		$ret = [];
+		foreach ( $updates as $name => $count ) {
+			if ( !$count ) {
+				continue;
+			}
+
+			$ret[] = \EchoEvent::create( [
+				'type' => 'contactmanager-get-messages-new-' . $name,
+				'title' => $mailboxTitle,
+				'extra' => [ ...$extra, 'name' => $name, 'count' => $count ],
+				'agent' => $user
+			] );
+		}
+
+		return $ret;
 	}
 
 	/**
@@ -91,6 +103,102 @@ class EchoInterface {
 		array &$notificationCategories,
 		array &$icons
 	) {
-		// @TODO see commentstreams
+		// @see https://www.mediawiki.org/wiki/Extension:Echo/Creating_a_new_notification_type
+		$notificationCategories['contactmanager-get-messages-complete-category'] = [
+			'priority' => 3,
+			'title' => 'contactmanager-echo-get-messages-updates-category',
+			'tooltip' => 'contactmanager-echo-get-messages-updates-category-tooltip'
+		];
+
+		foreach ( [ 'messages', 'contacts', 'conversations' ] as $value ) {
+			$notifications['contactmanager-get-messages-new-' . $value] = [
+				'category' => 'contactmanager-get-messages-complete-category',
+				'group' => 'positive',
+				'section' => 'alert',
+				'presentation-model' => EchoCMPresentationModel::class,
+				'bundle' => [
+					'web' => true,
+					'email' => true,
+					'expandable' => true,
+				],
+				'immediate' => true,
+				'user-locators' => [ self::class . '::locateUsers' ],
+				// 'user-filters' =>
+				// 	[ self::class . '::locateUsersWatchingComment' ]
+			];
+		}
 	}
+
+	/**
+	 * @param Event $event
+	 * @param string &$bundleKey
+	 * @return bool|void True or no return value to continue or false to abort
+	 */
+	public static function onEchoGetBundleRules( $event, &$bundleKey ) {
+		switch ( $event->getType() ) {
+			case 'contactmanager-get-messages-new-messages':
+			case 'contactmanager-get-messages-new-contacts':
+			case 'contactmanager-get-messages-new-conversations':
+				$bundleKey = 'contactmanager-echo-get-messages-updates-'
+					. $event->getExtraParam( 'uid' );
+				break;
+		}
+		return true;
+	}
+
+	/**
+	 * @param \EchoEvent $event
+	 * @return array
+	 */
+	public static function locateUsers( $event ) {
+		$services = MediaWikiServices::getInstance();
+		$userFactory = $services->getUserFactory();
+		$user = $event->getExtraParam( 'user' );
+		$title = $event->getTitle();
+
+		$errors = [];
+		$userIDs = \ContactManager::usersInGroups( $user, [ 'contactmanager-admin' ], $errors );
+
+		$ret = [];
+		foreach ( $userIDs as $value ) {
+			$user_ = $userFactory->newFromName( $value );
+			if ( $user_ ) {
+				$ret[$user_->getId()] = $user_;
+			}
+		}
+
+		$ret = array_merge( $ret, \ContactManager::getArticleEditors( $user, $title ) );
+
+		if ( class_exists( 'PageOwnership' ) ) {
+			$usernames = null;
+			$pageids = [ $title->getArticleID() ];
+			$namespaces = null;
+			$created_by = null;
+			$id = null;
+
+			$results = \PageOwnership::getPermissions(
+				$usernames,
+				$pageids,
+				$namespaces,
+				$created_by,
+				$id,
+				$errors
+			);
+
+			foreach ( $results as $row ) {
+				if ( !empty( $row['permissions_by_type'] ) && !empty( $row['usernames'] ) ) {
+					$usernames = explode( ',', $row['usernames'] );
+					foreach ( $usernames as $value ) {
+						$user_ = $userFactory->newFromName( $value );
+						if ( $user ) {
+							$ret[$user_->getId()] = $user_;
+						}
+					}
+				}
+			}
+		}
+
+		return $ret;
+	}
+
 }

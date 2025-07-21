@@ -24,6 +24,7 @@
 
 use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\RFCValidation;
+use MediaWiki\Extension\ContactManager\Aliases\DerivativeRequest as DerivativeRequestClass;
 use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Extension\ContactManager\ImportMessage;
 use MediaWiki\Extension\ContactManager\Mailbox;
@@ -510,6 +511,7 @@ class ContactManager {
 	public static function getMessages( $user, $params, &$errors ) {
 		echo 'getMessages start ' . date( 'Y-m-d H:i:s' ) . PHP_EOL;
 
+		// this is redundant when called from ContactManagerJob
 		if ( self::jobIsRunning( 'get-messages', $params['mailbox'] ) ) {
 			echo '***exit, job running' . PHP_EOL;
 			return;
@@ -721,10 +723,12 @@ class ContactManager {
 								$results_[0]['data']['id'] : 0 );
 						}
 
+						// @TODO set to -1 if the previous job didn't finish
 						$UIDsMessageSequence = ( $lastKnowMessageUid + 1 ) . ':' . $folder['mailboxStatus']['uidnext'];
 					}
 
 					return [
+						// @TODO set to -1 if the previous job didn't finish
 						( $lastKnowHeaderUid + 1 ) . ':' . $folder['mailboxStatus']['uidnext'],
 						$UIDsMessageSequence
 					];
@@ -934,10 +938,26 @@ class ContactManager {
 			}
 		}
 
-		// @TODO show Echo notification
 		echo "$newMessages new messages" . PHP_EOL;
 		echo "$newContacts new contacts" . PHP_EOL;
 		echo "$newConversations new conversations" . PHP_EOL;
+
+		// send Echo notification
+		if ( $newMessages || $newContacts || $newConversations ) {
+			$services = MediaWikiServices::getInstance();
+			$contactManagerEchoInterface = $services->getService( 'ContactManagerEchoInterface' );
+			$title_ = TitleClass::newFromText( $mailboxData['title'] );
+			$contactManagerEchoInterface->sendNotifications(
+				$user,
+				$title_,
+				$params['mailbox'],
+				[
+					'messages' => $newMessages,
+					'contacts' => $newContacts,
+					'conversations' => $newConversations
+				]
+			);
+		}
 
 		if ( !empty( $foldersData ) ) {
 			echo 'saving folders status' . PHP_EOL;
@@ -1326,6 +1346,53 @@ class ContactManager {
 
 	/**
 	 * @param \User $user
+	 * @param array $groups
+	 * @param array &$errors
+	 * @return array|bool
+	 */
+	public static function usersInGroups( $user, $groups, &$errors = [] ) {
+		$context = RequestContext::getMain();
+		$context->setUser( $user );
+
+		// @see https://www.mediawiki.org/wiki/API:Allusers
+		$row = [
+			'action' => 'query',
+			'list' => 'allusers',
+			'augroup' => implode( '|', $groups ),
+			'aulimit' => 500,
+		];
+
+		$req = new DerivativeRequestClass(
+			$context->getRequest(),
+			$row,
+			true
+		);
+
+		try {
+			$api = new \ApiMain( $req, true );
+			$api->getContext()->setUser( $user );
+			$api->execute();
+
+		} catch ( \Exception $e ) {
+			$errors[] = 'api error ' . $e->getMessage();
+			self::$Logger->error( current( $errors ) );
+			return false;
+		}
+
+		$res = $api->getResult()->getResultData();
+		$ret = [];
+		if ( !empty( $res['query']['allusers'] ) ) {
+			foreach ( $res['query']['allusers'] as $value ) {
+				if ( is_array( $value ) ) {
+					$ret[] = $value['userid'];
+				}
+			}
+		}
+		return $ret;
+	}
+
+	/**
+	 * @param \User $user
 	 * @return bool
 	 */
 	public static function isAuthorizedGroup( $user ) {
@@ -1333,7 +1400,9 @@ class ContactManager {
 		if ( array_key_exists( $cacheKey, self::$UserAuthCache ) ) {
 			return self::$UserAuthCache[$cacheKey];
 		}
-		$userGroupManager = MediaWikiServices::getInstance()->getUserGroupManager();
+
+		$services = MediaWikiServices::getInstance();
+		$userGroupManager = $services->getUserGroupManager();
 		$userGroups = $userGroupManager->getUserEffectiveGroups( $user );
 		$authorizedGroups = [
 			'sysop',
@@ -1343,6 +1412,66 @@ class ContactManager {
 		];
 		self::$UserAuthCache[$cacheKey] = count( array_intersect( $authorizedGroups, $userGroups ) );
 		return self::$UserAuthCache[$cacheKey];
+	}
+
+	/**
+	 * @param \User $user
+	 * @param Title|Mediawiki\Title\Title $title
+	 * @return array
+	 */
+	public static function getArticleEditors( $user, $title ) {
+		$context = RequestContext::getMain();
+		$context->setUser( $user );
+
+		// @see https://www.mediawiki.org/wiki/API:Contributors
+		$row = [
+			'action' => 'query',
+			'prop' => 'contributors',
+			'titles' => $title->getFullText(),
+			'pclimit' => 500,
+		];
+
+		$req = new DerivativeRequestClass(
+			$context->getRequest(),
+			$row,
+			true
+		);
+
+		try {
+			$api = new ApiMain( $req, true );
+			$api->getContext()->setUser( $user );
+			$api->execute();
+
+		} catch ( \Exception $e ) {
+			$errors[] = 'api error ' . $e->getMessage();
+			self::$Logger->error( current( $errors ) );
+			return false;
+		}
+
+		$res = $api->getResult()->getResultData();
+
+		if ( empty( $res['query']['pages'] ) ) {
+			return [];
+		}
+
+		$services = MediaWikiServices::getInstance();
+		$userFactory = $services->getUserFactory();
+		$ret = [];
+
+		foreach ( $res['query']['pages'] as $page ) {
+			if ( is_array( $page ) && isset( $page['contributors'] ) ) {
+				foreach ( $page['contributors'] as $value ) {
+					if ( is_array( $value ) ) {
+						$user_ = $userFactory->newFromId( $value['userid'] );
+						if ( $user_ ) {
+							$ret[$user_->getId()] = $user_;
+						}
+					}
+				}
+			}
+		}
+
+		return $ret;
 	}
 
 	/**

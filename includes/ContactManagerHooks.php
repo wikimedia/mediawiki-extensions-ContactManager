@@ -85,9 +85,7 @@ class ContactManagerHooks {
 	 * @return void
 	 */
 	public static function onBeforePageDisplay( OutputPage $outputPage, Skin $skin ) {
-		$title = $outputPage->getTitle();
 		$outputPage->addModules( 'ext.ContactManager' );
-		// $outputPage->addModuleStyles( 'ext.ContactManager.styles' );
 	}
 
 	/**
