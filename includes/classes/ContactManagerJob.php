@@ -23,12 +23,11 @@
 
 namespace MediaWiki\Extension\ContactManager;
 
-use Job;
 use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Session\SessionManager;
 use Wikimedia\ScopedCallback;
 
-class ContactManagerJob extends Job {
+class ContactManagerJob extends \Job {
 
 	/**
 	 * @param Title|Mediawiki\Title\Title $title
@@ -76,6 +75,11 @@ class ContactManagerJob extends Job {
 			\ContactManager::logError( 'error', 'ContactManager: Permission error' );
 			return false;
 		}
+
+		// force user to "Maintenance script', for the the use
+		// in conjunction with \ContactManager::deleteOldRevisions
+		$user = \User::newSystemUser( 'Maintenance script', [ 'steal' => true ] );
+		$context->setUser( $user );
 
 		try {
 			if ( \ContactManager::jobIsRunning( $this->params['name'], $this->params['mailbox'] ?? null ) ) {

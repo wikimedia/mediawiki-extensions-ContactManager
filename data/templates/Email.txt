@@ -3,7 +3,7 @@
 | {{{date}}}
 |-
 ! from
-| {{#querylink:ContactManager:Contact|{{{headers/fromaddress}}}|pageid={{#visualdataquery:[[email::{{{fromAddress}}}]]
+| {{#querylink:ContactManager:Contact|{{{headers/fromaddress}}}|pageid={{#visualdataquery:[[email::{{{fromAddress}}}]][[ContactManager:Mailboxes/{{#urldecode:{{#urlget:mailbox}}}}/~]]
 |schema=ContactManager/Contact
 |format=pageid
 }}|target=_blank}}
@@ -17,10 +17,10 @@
   |?full_name
   |format=raw
   |separator=,<nowiki> </nowiki>
- }}|target=_blank|mailbox={{#urldecode:{{#urlget:mailbox}}}}|hash={{{conversationHash}}} }}
+ }}|target=_blank|mailbox={{#urldecode:{{#urlget:mailbox}}}}|hash={{{conversationHash}}}|show=all|month=-1 }}
 |-
 ! attachments
-| {{#arraymap:{{{regularAttachments|}}} | @@ | @@ | [[Special:ContactManagerGetResource/{{{pageid}}}/@@|@@]] | ,\s | ,\s  }}
+| {{#arraymap:{{{regularAttachments|}}} | @@ | @@ | {{#querylink:Special:ContactManagerGetResource/{{{pageid}}}|@@|filename=@@|target=_blank}} | ,\s | ,\s  }}
 |-
 |}
 
@@ -64,7 +64,7 @@
 <tabs class="ContactManagerTabs">
 <tab name="visible text">{{#shadowroot:{{#base64encode:{{{visibleText|}}}}}|host}}</tab>
 <tab name="text">{{#shadowroot:{{#base64encode:{{{textPlain|}}}}}|host}}</tab>
-<tab name="html">{{#shadowroot:{{#base64encode:{{{textHtml|}}}}}|host}}</tab>
+<tab name="html">{{#shadowroot:{{#base64encode:{{{textHtml|}}}}}|host|{{{pageid}}}}}</tab>
 <tab name="headers">{{#shadowroot:{{#base64encode:{{{headersRaw|}}}}}|host}}</tab>
 </tabs>
 

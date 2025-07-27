@@ -631,6 +631,10 @@ class Mailer {
 
 					$params = [ 'format' => 'count' ];
 					$allPrintouts_ = array_merge( $emailPrintouts_, $requiredPrintouts_ );
+					if ( !in_array( 'full_name', $allPrintouts_ ) ) {
+						$allPrintouts_[] = 'full_name';
+					}
+
 					$count_ = \VisualData::getQueryResults( $schemaName, $query, $allPrintouts_, $params );
 
 					if ( $count_ === -1 ) {
@@ -701,11 +705,10 @@ class Mailer {
 							continue;
 						}
 
-						$namePrintouts = [ 'full_name', 'name', 'contact_person' ];
 						$name = '';
-						foreach ( $namePrintouts as $printout_ ) {
-							if ( array_key_exists( $printout_, $dataMap ) ) {
-								$name = $dataMap[$printout_];
+						foreach ( [ 'full_name', 'name', 'contact_person' ] as $printout_ ) {
+							if ( array_key_exists( $printout_, $v['data'] ) ) {
+								$name = $v['data'][$printout_];
 								break;
 							}
 						}
@@ -764,17 +767,15 @@ class Mailer {
 
 		$rows = [];
 		$count = 0;
-		foreach ( $this->personalizations as $field ) {
-			foreach ( $field as $values ) {
-				foreach ( $values as $value ) {
-					$count++;
-					$rows[] = [
-						'page_id' => $this->title->getArticleID(),
-						'email' => $value['email'],
-						'name' => $value['name'],
-						'created_at' => $dateTime
-					];
-				}
+		foreach ( $this->personalizations as $values ) {
+			foreach ( $values['to'] as $recipient ) {
+				$count++;
+				$rows[] = [
+					'page_id' => $this->title->getArticleID(),
+					'email' => $recipient['email'],
+					'name' => $recipient['name'],
+					'created_at' => $dateTime
+				];
 			}
 		}
 

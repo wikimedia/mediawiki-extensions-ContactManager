@@ -10,7 +10,7 @@
 '''Subject:''' {{{subject|}}}
 
 <div style="background:#f5f5f5;padding:12px;margin-top:6px">{{#shadowroot: {{#base64encode:{{{visibleText|}}} }}|host}}</div>
-{{#if:{{{regularAttachments|}}}|'''attachments:''' {{#arraymap:{{{regularAttachments}}} | @@ | @@ | [[Special:ContactManagerGetResource/{{{pageid}}}/@@|@@]] | ,\s | ,\s  }} }}
+{{#if:{{{regularAttachments|}}}|'''attachments:''' {{#arraymap:{{{regularAttachments}}} | @@ | @@ | {{#querylink:Special:ContactManagerGetResource/{{{pageid}}}|@@|filename=@@|target=_blank}} | ,\s | ,\s  }} }}
 
 '''{{#querylink:Special:Redirect/page/{{{pageid}}}|source|target=_blank}}'''
 </div>

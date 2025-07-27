@@ -94,7 +94,7 @@ __NOTOC__
     |offset = {{#if: {{#urlget:offset}} | {{#urlget:offset}} | 0 }}
   }}
 
-<big>{{#invoke:NavPanel|fn
+<big>{{#invoke:ContactManager/ConversationsNavigationBottom|fn
    | mailbox={{#urlget:mailbox}}
    | month={{#urlget:month}}
    | year={{#urlget:year}}
@@ -126,7 +126,7 @@ __NOTOC__
     |offset = {{#if: {{#urlget:offset}} | {{#urlget:offset}} | 0 }}
   }}
 
-<big>{{#invoke:NavPanel|fn
+<big>{{#invoke:ContactManager/ConversationsNavigationBottom|fn
    | mailbox={{#urlget:mailbox}}
    | month={{#urlget:month}}
    | year={{#urlget:year}}

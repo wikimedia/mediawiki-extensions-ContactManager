@@ -33,6 +33,9 @@ class Mailbox {
 	/** @var string */
 	private $mailbox = null;
 
+	/** @var string */
+	private $username;
+
 	/**
 	 * @param string $mailboxName
 	 * @param array &$errors []
@@ -58,6 +61,8 @@ class Mailbox {
 		$credentials = $GLOBALS['wgContactManagerIMAP'][$data['name']];
 		$credentials = array_change_key_case( $credentials, CASE_LOWER );
 
+		$this->username = $credentials['username'];
+
 		$this->mailbox = self::connectMailbox(
 			$credentials['server'],
 			$credentials['username'],
@@ -72,6 +77,13 @@ class Mailbox {
 	 */
 	public function getImapMailbox() {
 		return $this->mailbox;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getUsername() {
+		return $this->username;
 	}
 
 	public function disconnect() {
@@ -142,7 +154,7 @@ class Mailbox {
 			// Trim leading/ending whitespaces of IMAP path (optional)
 			true,
 			// Attachment filename mode (optional; false = random filename; true = original filename)
-			true
+			false
 		);
 	}
 }

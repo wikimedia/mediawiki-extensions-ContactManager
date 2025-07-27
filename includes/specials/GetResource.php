@@ -59,9 +59,13 @@ class GetResource extends \SpecialPage {
 		// $this->setHeaders();
 		// $this->outputHeader();
 
-		[ $pageid, $filename ] = explode( '/', (string)$par, 2 ) + [ null, null ];
+		$request = $this->getRequest();
 
-		if ( !$pageid || !$filename ) {
+		$pageid = $par;
+		$filename = $request->getVal( 'filename' );
+		$cid = $request->getVal( 'cid' );
+
+		if ( !$pageid || ( !$filename && !$cid ) ) {
 			echo 'missing data';
 			exit();
 		}
@@ -88,11 +92,21 @@ class GetResource extends \SpecialPage {
 			exit();
 		}
 		$attachments = $jsonData['schemas'][$schema_]['attachments'];
+		$basePath = \ContactManager::getAttachmentsFolder() . '/' . $pageid;
 
 		$attachment = null;
 		foreach ( (array)$attachments as $value ) {
-			if ( str_replace( '_', ' ', $value['name'] ) === str_replace( '_', ' ', $filename ) ) {
+			if ( $value['name'] === $filename ) {
 				$attachment = $value;
+				$path = $basePath . '/' . $value['name'];
+				break;
+			}
+		}
+
+		foreach ( (array)$attachments as $value ) {
+			if ( $value['contentId'] === $cid ) {
+				$attachment = $value;
+				$path = $basePath . '/' . $cid;
 				break;
 			}
 		}
@@ -102,12 +116,11 @@ class GetResource extends \SpecialPage {
 			exit();
 		}
 
-		$path = \ContactManager::getAttachmentsFolder() . '/' . $pageid . '/' . $attachment['name'];
-
 		if ( !file_exists( $path ) ) {
 			echo 'file does not exist';
 			exit();
 		}
+
 		$contents = file_get_contents( $path );
 
 		$mediawikiResponse = $out->getContext()->getRequest()->response();

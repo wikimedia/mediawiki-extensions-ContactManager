@@ -70,6 +70,7 @@ class ContactManager {
 	public static function parserFunctionShadowRoot( Parser $parser, ...$argv ) {
 		$parserOutput = $parser->getOutput();
 		$str = base64_decode( $argv[0], true );
+		$pageId = ( $argv[2] ?? null );
 
 		if ( $str === false ) {
 			$errorMessage = 'must be base64 encoded';
@@ -80,6 +81,8 @@ class ContactManager {
 				'isHTML' => true
 			];
 		}
+
+		$str = ( !$pageId ? $str : ImportMessage::replaceCidUrls( $str, $pageId ) );
 
 		$ret = '<div id="' . $argv[1] . '"><template shadowrootmode="open">'
 			. $str . '</template></div>';
@@ -303,6 +306,8 @@ class ContactManager {
 		$refDate = $data['last_status'] ?? $data['start_date'] ?? null;
 		$refTime = strtotime( $refDate );
 
+		self::logError( 'debug', 'refTime ' . $refTime );
+
 		if ( !$refTime ) {
 			$message = 'isRunning error parsing date';
 			self::logError( 'error', 'isRunning error parsing date' );
@@ -318,6 +323,7 @@ class ContactManager {
 			!empty( $data['check_email_interval'] ) &&
 			( time() - $refTime ) <= ( (int)$data['check_email_interval'] * 60 )
 		) {
+			self::logError( 'debug', 'cond 1' );
 			return true;
 		}
 
@@ -325,6 +331,7 @@ class ContactManager {
 			? (int)$GLOBALS['wgContactManangerConsiderJobDeadMinutes']
 			: 10;
 
+		self::logError( 'debug', 'cond 2' );
 		return ( time() - $refTime ) <= ( $minutes * 60 );
 	}
 
@@ -526,6 +533,11 @@ class ContactManager {
 		}
 
 		echo 'connecting to mailbox ' . $params['mailbox'] . PHP_EOL;
+
+		// @TODO maybe use instead this ?
+		// https://github.com/ddeboer/imap
+		// or:
+		// https://github.com/Webklex/php-imap
 
 		$mailbox = new Mailbox( $params['mailbox'], $errors );
 

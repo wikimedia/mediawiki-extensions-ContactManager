@@ -28,7 +28,6 @@ use EmailReplyParser\Parser\EmailParser;
 use LanguageDetection\Language;
 use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Extension\VisualData\Importer as VisualDataImporter;
-// use MWException;
 use RequestContext;
 
 if ( is_readable( __DIR__ . '/../../vendor/autoload.php' ) ) {
@@ -111,6 +110,15 @@ class ImportMessage {
 
 		// *** optioanlly save the email as eml format
 		// $imapMailbox->getRawMail( $uid, false );
+		// and parse using mail-mime-parser
+
+		// alternative libraries:
+		// IMAP:
+		// https://github.com/ddeboer/imap
+		// https://github.com/Webklex/php-imap
+		// MIME parser:
+		// https://github.com/zbateson/mail-mime-parser
+		// https://github.com/php-mime-mail-parser/php-mime-mail-parser
 
 		$mail = $imapMailbox->getMail( $uid, false );
 
@@ -277,7 +285,7 @@ class ImportMessage {
 		$pagenameFormula = \ContactManager::parseWikitext( $output, $pagenameFormula );
 
 		if ( empty( $pagenameFormula ) ) {
-			// throw new MWException( 'invalid title' );
+			// throw new \MWException( 'invalid title' );
 			$this->errors[] = 'empty pagename formula';
 			echo '***skipped on error' . PHP_EOL;
 			return \ContactManager::SKIPPED_ON_ERROR;
@@ -348,11 +356,21 @@ class ImportMessage {
 			}
 
 			if ( file_exists( $pathTarget ) ) {
-				foreach ( $obj['attachments'] as $value ) {
-					if ( rename( $attachmentsFolder . '/' . $value['name'], $pathTarget . '/' . $value['name'] ) ) {
-						echo 'saving attachment to ' . $pathTarget . '/' . $value['name'] . PHP_EOL;
+				foreach ( $regularAttachments as $value ) {
+					$dest_ = $pathTarget . '/' . $value->name;
+					if ( rename( $value->__get( 'filePath' ), $dest_ ) ) {
+						echo 'saving attachment to ' . $dest_ . PHP_EOL;
 					} else {
-						echo '***error saving attachment to ' . $pathTarget . '/' . $value['name'] . PHP_EOL;
+						echo '***error saving attachment to ' . $dest_ . PHP_EOL;
+					}
+				}
+
+				foreach ( $inlineAttachments as $value ) {
+					$dest_ = $pathTarget . '/' . ( !empty( $value->contentId ) ? $value->contentId : $value->name );
+					if ( rename( $value->__get( 'filePath' ), $dest_ ) ) {
+						echo 'saving inline attachment to ' . $dest_ . PHP_EOL;
+					} else {
+						echo '***error saving inline attachment to ' . $dest_ . PHP_EOL;
 					}
 				}
 
@@ -458,10 +476,10 @@ class ImportMessage {
 		ksort( $conversationRecipients );
 
 		// get the hash before removing the related mailbox address
-		// , is not supported in email address
+		// : and , are not supported in email address
 		// use the mailbox as prefix to distinguish hashes
 		// when more than 1 mailbox address appears among recipients
-		$hash = dechex( crc32( $params['mailbox'] . implode( ',', array_keys( $conversationRecipients ) ) ) );
+		$hash = dechex( crc32( $this->mailbox->getUsername() . ':' . implode( ',', array_keys( $conversationRecipients ) ) ) );
 
 		foreach ( $this->mailboxData['all_addresses'] as $address ) {
 			if ( array_key_exists( $address, $conversationRecipients ) ) {
@@ -762,31 +780,48 @@ class ImportMessage {
 	}
 
 	/**
+	 * @param string $textHtml
+	 * @param int $pageId
+	 * @return string
+	 */
+	public static function replaceCidUrls( $textHtml, $pageId ) {
+		$pattern = '/(<img[^>]+src=["\'])cid:([^\s\'"<>]{1,256})(["\'][^>]*>)/mi';
+		$specialTitle = \SpecialPage::getTitleFor( 'ContactManagerGetResource', $pageId );
+
+		return preg_replace_callback( $pattern, static function ( $matches ) use ( $specialTitle ) {
+			$cid = $matches[2];
+			$url = wfAppendQuery( $specialTitle->getLocalURL(),
+				[ 'cid' => $cid ] );
+			return $matches[1] . $url . $matches[3];
+		}, $textHtml );
+	}
+
+	/**
 	 * @see PhpImap\IncomingMail
 	 * @param string $textHtml
 	 * @param \PhpImap\IncomingMailAttachment $attachments
 	 * @return array
 	 */
 	private function getAttachmentsType( $textHtml, $attachments ) {
-		\preg_match_all( '/\bcid:([^\s\'"<>]{1,256})/mi', $textHtml, $matches );
+		preg_match_all( '/\bcid:([^\s\'"<>]{1,256})/mi', $textHtml, $matches );
 		$cidList = isset( $matches[1] ) ? array_unique( $matches[1] ) : [];
 
+		$regular = [];
 		$inline = [];
-		$retAttachments = [];
 		foreach ( $attachments as $attachment ) {
 			$disposition = \mb_strtolower( (string)$attachment->disposition );
 			// @see https://github.com/barbushin/php-imap/issues/569
 			if (
 				in_array( $attachment->contentId, $cidList, true ) ||
-				$disposition === 'inline'
+				strtolower( $disposition ) === 'inline'
 			) {
 				$inline[] = $attachment;
 			} else {
-				$retAttachments[] = $attachment;
+				$regular[] = $attachment;
 			}
 		}
 
-		return [ $retAttachments, $inline ];
+		return [ $regular, $inline ];
 	}
 
 }
