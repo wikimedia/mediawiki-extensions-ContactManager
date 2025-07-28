@@ -55,13 +55,18 @@ class PHPImapMailbox extends \PhpImap\Mailbox {
 	}
 
 	/**
-	 * some of the credits: OpenAI & the unaware unknown contributors
-	 * @param stdClass $partStructure
-	 * @return array
+	 * @inheritDoc
 	 */
-	protected function extractParamsFromPart( $partStructure ) {
-		$params = [];
+	protected function initMailPart(
+		IncomingMail $mail,
+		object $partStructure,
+		$partNum,
+		bool $markAsSeen = true,
+		bool $emlParse = false
+	): void {
+		parent::initMailPart( $mail, $partStructure, $partNum, $markAsSeen, $emlParse );
 
+		$params = [];
 		foreach ( [ 'parameters', 'dparameters' ] as $key ) {
 			if ( !empty( $partStructure->$key ) ) {
 				foreach ( $partStructure->$key as $param ) {
@@ -74,53 +79,58 @@ class PHPImapMailbox extends \PhpImap\Mailbox {
 			}
 		}
 
-		// @see here https://github.com/barbushin/php-imap/issues/569
-		// both name and filename can be missing
-		if (
-			( !isset( $params['filename'] ) || empty( trim( $params['filename'] ) ) ) &&
-			( !isset( $params['name'] ) || empty( trim( $params['name'] ) ) )
-		) {
-			$contentId = isset( $partStructure->id ) ? trim( $partStructure->id, ' <>' ) : '';
-			if ( !empty( $contentId ) ) {
-				$ext = !empty( $partStructure->subtype ) ? '.' . strtolower( $partStructure->subtype ) : '';
-				$params['filename'] = $contentId . $ext;
-			} elseif ( !empty( $partStructure->subtype ) ) {
-				$params['filename'] = strtolower( $partStructure->subtype );
-			} else {
-				$params['filename'] = 'unknown';
-			}
-		}
+		// @see PhpImap\Mailbox -> downloadAttachment
+		$partStructure_id = ( $partStructure->ifid && isset( $partStructure->id ) ) ? trim( $partStructure->id ) : null;
 
-		return $params;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	protected function initMailPart( IncomingMail $mail, object $partStructure, $partNum, bool $markAsSeen = true, bool $emlParse = false ): void {
-		parent::initMailPart( $mail, $partStructure, $partNum, $markAsSeen, $emlParse );
-
-		// ***some of the credits: OpenAI & the unaware unknown contributors
-		foreach ( $mail->getAttachments() as $attachment ) {
-			$params = $this->extractParamsFromPart( $partStructure );
-
-			$rawName = $params['name'] ?? '';
-			$rawFilename = $params['filename'] ?? '';
-			$decoded = null;
-
-			if ( $this->brokenEncoding( $attachment->name ) ) {
-				if ( !empty( trim( $rawName ) ) && !$this->brokenEncoding( $rawName ) ) {
-					$decoded = $this->decodeRFC2231( $this->decodeMimeStr( $rawName ) );
-				} elseif ( !empty( trim( $rawFilename ) ) && !$this->brokenEncoding( $rawFilename ) ) {
-					$decoded = $this->decodeRFC2231( $this->decodeMimeStr( $rawFilename ) );
+		$getAttachment = static function () use ( $mail, $partStructure_id, $params ) {
+			foreach ( $mail->getAttachments() as $attachment ) {
+				if (
+					$partStructure_id !== null &&
+					$partStructure_id === $attachment->contentId
+				) {
+					return $attachment;
+				}
+				if (
+					$partStructure_id === null &&
+					isset( $params['filename'] ) &&
+					$attachment->name === $params['filename']
+				) {
+					return $attachment;
 				}
 			}
+			return null;
+		};
 
-			if ( !empty( $decoded ) ) {
-				$attachment->name = $decoded;
+		$attachment = $getAttachment();
+		if ( !$attachment ) {
+			return;
+		}
 
-			} elseif ( empty( $attachment->name ) && !empty( $rawFilename ) ) {
-				$attachment->name = $rawFilename;
+		// @see here https://github.com/barbushin/php-imap/issues/569
+		// both name and filename could be empty
+		if ( empty( $params['filename'] ) && empty( $params['name'] ) ) {
+			$ext = !empty( $partStructure->subtype ) ? '.' . strtolower( $partStructure->subtype ) : '';
+			$params['filename'] = $partStructure_id . $ext;
+		}
+
+		// use name if filename is corrupted
+		if (
+			isset( $params['name'] ) &&
+			isset( $params['filename'] ) &&
+			substr_count( $attachment->name, '?' ) > substr_count( $params['name'], '?' )
+		) {
+			$attachment->name = $params['name'];
+		}
+
+		// ***some of the credits: OpenAI & the unaware unknown contributors
+		if ( $this->brokenEncoding( $attachment->name ) ) {
+			$rawName = $params['name'] ?? '';
+			$rawFilename = $params['filename'] ?? '';
+
+			if ( !empty( trim( $rawName ) ) && !$this->brokenEncoding( $rawName ) ) {
+				$attachment->name = $this->decodeRFC2231( $this->decodeMimeStr( $rawName ) );
+			} elseif ( !empty( trim( $rawFilename ) ) && !$this->brokenEncoding( $rawFilename ) ) {
+				$attachment->name = $this->decodeRFC2231( $this->decodeMimeStr( $rawFilename ) );
 			}
 		}
 	}

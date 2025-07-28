@@ -138,10 +138,15 @@ class Mailbox {
 	 * @param string|null $mailbox
 	 * @param int|null $port
 	 * @return ContactManagerMailbox
+	 * @throws \MWException
 	 */
 	private function connectMailbox( $server, $username, $password, $mailbox = "", $port = 993 ) {
 		// can be null, check in conjunction with setAttachmentsIgnore
 		$attachmentsFolder = \ContactManager::getAttachmentsFolder();
+
+		if ( !class_exists( 'PhpImap\Mailbox' ) ) {
+			throw new \MWException( 'PhpImap not installed, run "composer install --no-dev" in the extension folder' );
+		}
 
 		return new PHPImapMailbox(
 			'{' . $server . ':' . $port . '/imap/ssl}' . $mailbox,

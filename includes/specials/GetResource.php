@@ -126,7 +126,7 @@ class GetResource extends \SpecialPage {
 		$mediawikiResponse = $out->getContext()->getRequest()->response();
 		$mediawikiResponse->statusHeader( 200 );
 		$mediawikiResponse->header( 'Content-Type: ' . $attachment['mimeType'] );
-		$mediawikiResponse->header( 'Content-Disposition: inline' );
+		$mediawikiResponse->header( 'Content-Disposition: inline; filename="' . addslashes( $attachment['name'] ) . '"' );
 		header( 'Access-Control-Allow-Credentials: true' );
 		header( 'Access-Control-Allow-Origin: *' );
 		header( 'Access-Control-Allow-Headers: *' );

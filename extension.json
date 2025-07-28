@@ -1,7 +1,7 @@
 {
 	"name": "ContactManager",
 	"author": "thomas-topway-it",
-	"version": "1.2.7",
+	"version": "1.2.8",
 	"url": "https://www.mediawiki.org/wiki/Extension:ContactManager",
 	"descriptionmsg": "contactcmanager-extension-desc",
 	"license-name": "GPL-2.0-or-later",
