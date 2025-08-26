@@ -131,12 +131,24 @@ class ContactManagerJob extends \Job {
 					}
 				}
 				$mailbox = new Mailbox( $mailboxName, $errors );
-				if ( $mailbox ) {
-					$mailboxData = \ContactManager::getMailboxData( $params['mailbox'] );
-					$importMessage = new ImportMessage( $user, $mailbox, $mailboxData, $this->params, $errors );
-					$res_ = $importMessage->doImport();
-					if ( !is_array( $res_ ) ) {
-						$this->error = 'ContactManager: error retrieving message';
+				if ( count( $errors ) ) {
+					throw new \MWException( $errors[count( $errors ) - 1] );
+				}
+
+				$mailboxData = \ContactManager::getMailboxData( $params['mailbox'] );
+				$importMessage = new ImportMessage( $user, $mailbox, $mailboxData, $this->params, $errors );
+				$res_ = $importMessage->doImport();
+				if ( !is_array( $res_ ) ) {
+					switch ( $res_ ) {
+						case \ContactManager::SKIPPED_ON_ERROR:
+							$this->error = 'ContactManager: error retrieving message';
+							break;
+						case \ContactManager::SKIPPED_ON_FILTER:
+							$this->error = 'ContactManager: skipped on filter';
+							break;
+						case \ContactManager::SKIPPED_ON_EXISTING:
+							$this->error = 'ContactManager: skipped on existing';
+							break;
 					}
 				}
 				break;

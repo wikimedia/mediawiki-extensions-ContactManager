@@ -29,6 +29,8 @@ use LanguageDetection\Language;
 use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Extension\VisualData\Importer as VisualDataImporter;
 use RequestContext;
+use ZBateson\MailMimeParser\Header\HeaderConsts;
+use ZBateson\MailMimeParser\MailMimeParser;
 
 if ( is_readable( __DIR__ . '/../../vendor/autoload.php' ) ) {
 	include_once __DIR__ . '/../../vendor/autoload.php';
@@ -50,6 +52,125 @@ class ImportMessage {
 
 	/** @var MediaWiki\Extension\ContactManager\Mailbox */
 	private $mailbox;
+
+	/** @var array */
+	public static $languageMap = [
+		'ab' => 'Abkhaz',
+		'af' => 'Afrikaans',
+		'am' => 'Amharic',
+		'ar' => 'Arabic',
+		'ay' => 'Aymara',
+		'az-Cyrl' => 'Azerbaijani, North (Cyrillic)',
+		'az-Latn' => 'Azerbaijani, North (Latin)',
+		'be' => 'Belarusan',
+		'bg' => 'Bulgarian',
+		'bi' => 'Bislama',
+		'bn' => 'Bengali',
+		'bo' => 'Tibetan',
+		'br' => 'Breton',
+		'bs-Cyrl' => 'Bosnian (Cyrillic)',
+		'bs-Latn' => 'Bosnian (Latin)',
+		'ca' => 'Catalan',
+		'ch' => 'Chamorro',
+		'co' => 'Corsican',
+		'cr' => 'Cree',
+		'cs' => 'Czech',
+		'cy' => 'Welsh',
+		'da' => 'Danish',
+		'de' => 'German',
+		'dz' => 'Dzongkha',
+		'el-monoton' => 'Greek (monotonic)',
+		'el-polyton' => 'Greek (polytonic)',
+		'en' => 'English',
+		'eo' => 'Esperanto',
+		'es' => 'Spanish',
+		'et' => 'Estonian',
+		'eu' => 'Basque',
+		'fa' => 'Persian',
+		'fi' => 'Finnish',
+		'fj' => 'Fijian',
+		'fo' => 'Faroese',
+		'fr' => 'French',
+		'fy' => 'Frisian',
+		'ga' => 'Gaelic, Irish',
+		'gd' => 'Gaelic, Scottish',
+		'gl' => 'Galician',
+		'gn' => 'Guarani',
+		'gu' => 'Gujarati',
+		'ha' => 'Hausa',
+		'he' => 'Hebrew',
+		'hi' => 'Hindi',
+		'hr' => 'Croatian',
+		'hu' => 'Hungarian',
+		'hy' => 'Armenian',
+		'ia' => 'Interlingua',
+		'id' => 'Indonesian',
+		'ig' => 'Igbo',
+		'io' => 'Ido',
+		'is' => 'Icelandic',
+		'it' => 'Italian',
+		'iu' => 'Inuktitut',
+		'ja' => 'Japanese',
+		'jv' => 'Javanese',
+		'ka' => 'Georgian',
+		'km' => 'Khmer',
+		'ko' => 'Korean',
+		'kr' => 'Kanuri',
+		'ku' => 'Kurdish',
+		'la' => 'Latin',
+		'lg' => 'Ganda',
+		'ln' => 'Lingala',
+		'lo' => 'Lao',
+		'lt' => 'Lithuanian',
+		'lv' => 'Latvian',
+		'mh' => 'Marshallese',
+		'mn-Cyrl' => 'Mongolian, Halh (Cyrillic)',
+		'ml' => 'Malayalam',
+		'ms-Arab' => 'Malay (Arabic)',
+		'ms-Latn' => 'Malay (Latin)',
+		'mt' => 'Maltese',
+		'nb' => 'Norwegian, Bokmål',
+		'ng' => 'Ndonga',
+		'nl' => 'Dutch',
+		'nn' => 'Norwegian, Nynorsk',
+		'nv' => 'Navajo',
+		'oc' => 'Occitan',
+		'om' => 'Afaan Oromo',
+		'pl' => 'Polish',
+		'pt-BR' => 'Portuguese (Brazil)',
+		'pt-PT' => 'Portuguese (Portugal)',
+		'ro' => 'Romanian',
+		'ru' => 'Russian',
+		'sa' => 'Sanskrit',
+		'sk' => 'Slovak',
+		'sl' => 'Slovene',
+		'so' => 'Somali',
+		'sq' => 'Albanian',
+		'ss' => 'Swati',
+		'sv' => 'Swedish',
+		'sw' => 'Swahili/Kiswahili',
+		'ta' => 'Tamil',
+		'te' => 'Telugu',
+		'th' => 'Thai',
+		'tl' => 'Tagalog',
+		'to' => 'Tonga',
+		'tr' => 'Turkish',
+		'tt' => 'Tatar',
+		'ty' => 'Tahitian',
+		'ug-Arab' => 'Uyghur (Arabic)',
+		'ug-Latn' => 'Uyghur (Latin)',
+		'uk' => 'Ukrainian',
+		'ur' => 'Urdu',
+		'uz' => 'Uzbek',
+		've' => 'Venda',
+		'vi' => 'Vietnamese',
+		'wa' => 'Walloon',
+		'wo' => 'Wolof',
+		'xh' => 'Xhosa',
+		'yo' => 'Yoruba',
+		'zh-Hans' => 'Chinese, Mandarin (Simplified)',
+		'zh-Hant' => 'Chinese, Mandarin (Traditional)',
+	];
 
 	/**
 	 * @param User $user
@@ -80,8 +201,8 @@ class ImportMessage {
 			return \ContactManager::SKIPPED_ON_ERROR;
 		}
 
-		$uid = $params['uid'];
 		$folder = $params['folder'];
+		$mailId = $params['uid'];
 
 		// *** not necessary, but ensure doImport is called from
 		// the right folder
@@ -109,137 +230,295 @@ class ImportMessage {
 		}
 
 		// *** optioanlly save the email as eml format
-		// $imapMailbox->getRawMail( $uid, false );
 		// and parse using mail-mime-parser
 
 		// alternative libraries:
 		// IMAP:
-		// https://github.com/ddeboer/imap
-		// https://github.com/Webklex/php-imap
+		// https://github.com/ddeboer/imap	-- depends on phpimap
+		// https://github.com/Webklex/php-imap	-- <<<< MIGRATE TO
+		// https://github.com/DirectoryTree/ImapEngine	-- <<<< OR THIS !!
 		// MIME parser:
-		// https://github.com/zbateson/mail-mime-parser
-		// https://github.com/php-mime-mail-parser/php-mime-mail-parser
+		// https://github.com/zbateson/mail-mime-parser -- removes double quotes from filenames
+		// https://github.com/php-mime-mail-parser/php-mime-mail-parser -- sanitizes/removes spaces after double quotes in filenames -- requires php-mailparse
 
-		$mail = $imapMailbox->getMail( $uid, false );
+		// $mail = $imapMailbox->getMail( $mailId, false );
+		$rawEmail = $imapMailbox->getRawMail( $mailId, false );
 
-		$obj = json_decode( json_encode( $mail ), true );
+		$mailMimeParser = new MailMimeParser();
+		$message = $mailMimeParser->parse( $rawEmail, false );
 
-		// remove $obj['*dataInfo'], ...
-		foreach ( $obj as $key => $value ) {
-			if ( $key[0] === '*' ) {
-				unset( $obj[$key] );
-			}
-		}
+		$headers = [
+			'returnPath'			=> $message->getHeaderValue( HeaderConsts::RETURN_PATH ),
+			'received'				=> $message->getHeaderValue( HeaderConsts::RECEIVED ),
+			'resentDate'			=> $message->getHeaderValue( HeaderConsts::RESENT_DATE ),
+			'resentFrom'			=> $message->getHeaderValue( HeaderConsts::RESENT_FROM ),
+			'resentSender'			=> $message->getHeaderValue( HeaderConsts::RESENT_SENDER ),
+			'resentTo'				=> $message->getHeaderValue( HeaderConsts::RESENT_TO ),
+			'resentCc'				=> $message->getHeaderValue( HeaderConsts::RESENT_CC ),
+			'resentBcc'				=> $message->getHeaderValue( HeaderConsts::RESENT_BCC ),
+			'resentMessageId'		=> $message->getHeaderValue( HeaderConsts::RESENT_MESSAGE_ID ),
+			'date'					=> $message->getHeaderValue( HeaderConsts::DATE ),
+			'from'					=> $message->getHeaderValue( HeaderConsts::FROM ),
+			'sender'				=> $message->getHeaderValue( HeaderConsts::SENDER ),
+			'replyTo'				=> $message->getHeaderValue( HeaderConsts::REPLY_TO ),
+			'to'					=> $message->getHeaderValue( HeaderConsts::TO ),
+			'cc'					=> $message->getHeaderValue( HeaderConsts::CC ),
+			'bcc'					=> $message->getHeaderValue( HeaderConsts::BCC ),
+			'messageId'				=> $message->getHeaderValue( HeaderConsts::MESSAGE_ID ),
+			'inReplyTo'				=> $message->getHeaderValue( HeaderConsts::IN_REPLY_TO ),
+			'references'			=> $message->getHeaderValue( HeaderConsts::REFERENCES ),
+			'subject'				=> $message->getHeaderValue( HeaderConsts::SUBJECT ),
 
-		$decode = [
-			'headers' => [
-				'subject',
-				'Subject',
-				'toaddress',
-				'to' => [
-					'x' => [ 'personal' ]
-				],
-				'fromaddress',
-				'from' => [
-					'x' => [ 'personal' ]
-				],
-				'reply_toaddress',
-				'reply_to' => [
-					'x' => [ 'personal' ]
-				],
-				'senderaddress',
-				'sender' => [
-					'x' => [ 'personal' ]
-				],
-			]
+			// or $message->getHeader( HeaderConsts::COMMENTS)->getComments()
+			'comments'				=> $message->getHeaderValue( HeaderConsts::COMMENTS ),
+			'keywords'				=> $message->getHeaderValue( HeaderConsts::KEYWORDS ),
+			'mimeVersion'			=> $message->getHeaderValue( HeaderConsts::MIME_VERSION ),
+			'contentType'			=> $message->getHeaderValue( HeaderConsts::CONTENT_TYPE ),
+			'contentTransferEncoding' => $message->getHeaderValue( HeaderConsts::CONTENT_TRANSFER_ENCODING ),
+			'contentId'				=> $message->getHeaderValue( HeaderConsts::CONTENT_ID ),
+			'contentDescription'	=> $message->getHeaderValue( HeaderConsts::CONTENT_DESCRIPTION ),
+			'contentDisposition'	=> $message->getHeaderValue( HeaderConsts::CONTENT_DISPOSITION ),
+			'contentLanguage'		=> $message->getHeaderValue( HeaderConsts::CONTENT_LANGUAGE ),
+			'contentBase'			=> $message->getHeaderValue( HeaderConsts::CONTENT_BASE ),
+			'contentLocation'		=> $message->getHeaderValue( HeaderConsts::CONTENT_LOCATION ),
+			'contentFeatures'		=> $message->getHeaderValue( HeaderConsts::CONTENT_FEATURES ),
+			'contentAlternative'	=> $message->getHeaderValue( HeaderConsts::CONTENT_ALTERNATIVE ),
+			'contentMd5'			=> $message->getHeaderValue( HeaderConsts::CONTENT_MD5 ),
+			'contentDuration'		=> $message->getHeaderValue( HeaderConsts::CONTENT_DURATION ),
+			'autoSubmitted'			=> $message->getHeaderValue( HeaderConsts::AUTO_SUBMITTED ),
 		];
 
-		// decodeMimeStr of the items above
-		$recIterator = static function ( &$arr1, $arr2 ) use ( &$recIterator, &$imapMailbox ) {
-			foreach ( $arr1 as $key => $value ) {
-				if ( is_array( $value ) ) {
-					$key_ = ( is_int( $key ) && array_key_exists( 'x', $arr2 ) ?
-						'x' : $key );
-					if ( array_key_exists( $key_, $arr2 ) ) {
-						$recIterator( $arr1[$key], $arr2[$key_] );
-					}
-				} elseif ( !empty( $value ) && in_array( $key, $arr2 ) ) {
-					$arr1[$key] = $imapMailbox->decodeMimeStr( $value );
-				}
+/*
+id
+headersRaw
+headers
+imapPath
+mailboxFolder
+isSeen
+isAnswered
+isRecent
+isFlagged
+isDeleted
+isDraft
+parsedDate
+sender				-- object { name, address }
+from				-- array of strings [ 'name <email>', 'name <email>', ... ]
+fromParsed			-- array of objects [ { name, address }, ... ]
+to					-- array of strings [ 'name <email>', 'name <email>', ... ]
+toParsed			-- array of objects [ { name, address }, ... ]
+cc					-- array of strings [ 'name <email>', 'name <email>', ... ]
+ccParsed			-- array of objects [ { name, address }, ... ]
+bcc					-- array of strings [ 'name <email>', 'name <email>', ... ]
+bccParsed			-- array of objects [ { name, address }, ... ]
+replyTo				-- array of strings [ 'name <email>', 'name <email>', ... ]
+replyToParsed		-- array of objects [ { name, address }, ... ]
+resentFrom			-- object { name, address }
+resentTo			-- array of strings [ 'name <email>', 'name <email>', ... ]
+resentToParsed		-- array of objects [ { name, address }, ... ]
+resentCc			-- array of strings [ 'name <email>', 'name <email>', ... ]
+resentCcParsed		-- array of objects [ { name, address }, ... ]
+resentBcc			-- array of strings [ 'name <email>', 'name <email>', ... ]
+resentBcParsed		-- array of objects [ { name, address }, ... ]
+deliveredTo
+textPlain
+textHtml
+visibleText
+detectedLanguage
+hasAttachments
+attachments
+				-- contentId,
+				-- encoding,
+				-- description,
+				-- contentType,
+				-- name,
+				-- sizeInBytes,
+				-- sizeInMB,
+				-- disposition,
+				-- fileinfo,
+				-- mime,
+				-- mimeType,
+				-- mimeEncoding,
+				-- fileExtension
+
+regularAttachments
+conversationHash
+*/
+
+		$obj = [];
+
+		// @see PhpImap/Mailbox
+		$obj['headersRaw'] = $imapMailbox->getMailHeaderRaw( $mailId );
+		$obj['headers'] = $headers;
+		$obj['id'] = $mailId;
+		$obj['imapPath'] = $imapMailbox->getImapPath();
+		$obj['mailboxFolder'] = $imapMailbox->getMailboxFolder();
+		$obj['isSeen'] = ( $imapMailbox->flagIsSet( $mailId, '\Seen' ) ) ? true : false;
+		$obj['isAnswered'] = ( $imapMailbox->flagIsSet( $mailId, '\Answered' ) ) ? true : false;
+		$obj['isRecent'] = ( $imapMailbox->flagIsSet( $mailId, '\Recent' ) ) ? true : false;
+		$obj['isFlagged'] = ( $imapMailbox->flagIsSet( $mailId, '\Flagged' ) ) ? true : false;
+		$obj['isDeleted'] = ( $imapMailbox->flagIsSet( $mailId, '\Deleted' ) ) ? true : false;
+		$obj['isDraft'] = ( $imapMailbox->flagIsSet( $mailId, '\Draft' ) ) ? true : false;
+
+		$obj['parsedDate'] = $imapMailbox->parseDateTime( $obj['headers']['date'] );
+
+		// @see https://datatracker.ietf.org/doc/html/rfc5322#section-3.6.2
+		$headersToExtract = [
+			'from' => HeaderConsts::FROM,
+			// multiple
+			'to' => HeaderConsts::TO,
+			'cc' => HeaderConsts::CC,
+			'bcc' => HeaderConsts::BCC,
+			// multiple
+			'replyTo' => HeaderConsts::REPLY_TO,
+			// single
+			'sender' => HeaderConsts::SENDER,
+			// single
+			'resentFrom' => HeaderConsts::RESENT_FROM,
+			// multiple
+			'resentTo' => HeaderConsts::RESENT_TO,
+			'resentCc' => HeaderConsts::RESENT_CC,
+			'resentBcc' => HeaderConsts::RESENT_BCC,
+		];
+
+		$allRecipients = [];
+		foreach ( $headersToExtract as $key => $headerName ) {
+			$header = $message->getHeader( $headerName );
+			if ( $header && method_exists( $header, 'getAddresses' ) ) {
+				$allRecipients[$key] = array_map( static function ( $addr ) {
+					return [
+						'name' => ( method_exists( $addr, 'getPersonName' ) ? $addr->getPersonName() : '' ),
+						'address' => ( method_exists( $addr, 'getEmail' ) ? $addr->getEmail() : '' ),
+					];
+				}, $header->getAddresses() );
+			} else {
+				$allRecipients[$key] = [];
 			}
+		}
+
+		$senderAddresses = [];
+		foreach ( $allRecipients['from'] as $value ) {
+			$senderAddresses[] = $value['address'];
+		}
+
+		$formatRecipient = static function ( &$address, &$name ) {
+			$name = trim( $name );
+			if ( $name && strpos( $name, ',' ) !== false ) {
+				$name = '"' . $name . '"';
+			}
+			// @see https://datatracker.ietf.org/doc/html/rfc5321#section-2.4
+			$address = strtolower( $address );
+			return ( $name ? "$name <$address>" : $address );
 		};
-		$recIterator( $obj, $decode );
+
+		// @see here https://datatracker.ietf.org/doc/html/rfc5322#section-3.6.2
+		if ( $message->getHeader( HeaderConsts::SENDER ) ) {
+			$obj['sender'] = [
+				'name' => $message->getHeader( HeaderConsts::SENDER )->getPersonName(),
+				'address' => $message->getHeader( HeaderConsts::SENDER )->getEmail(),
+			];
+			$senderAddresses[] = $message->getHeader( HeaderConsts::SENDER )->getEmail();
+		}
+
+		if ( $message->getHeader( HeaderConsts::RESENT_FROM ) ) {
+			$obj['resentFrom'] = [
+				'name' => $message->getHeader( HeaderConsts::RESENT_FROM )->getPersonName(),
+				'address' => $message->getHeader( HeaderConsts::RESENT_FROM )->getEmail(),
+			];
+		}
 
 		$allContacts = [];
-		$obj['fromAddress'] = strtolower( $obj['fromAddress'] );
-		$allContacts[$obj['fromAddress']] = $obj['fromName'];
-
-		// replace the unwanted format
-		// email => name with "name <email>"
-		foreach ( [ 'to', 'cc', 'bcc', 'replyTo' ] as $value ) {
-			$formattedRecipients = [];
-			foreach ( $obj[$value] as $addresss_ => $name_ ) {
-				if ( empty( $addresss_ ) ) {
-					echo '*** warning, address is empty' . PHP_EOL;
-					print_r( $obj[$value] );
-					continue;
-				}
-
-				// @see https://datatracker.ietf.org/doc/html/rfc5321#section-2.4
-				$addresss_ = strtolower( $addresss_ );
-
-				if ( !empty( $name_ ) ) {
-					$name_ = trim( $name_, '"' );
-				}
-				$formattedRecipients[] = ( $name_ ? "$name_ <$addresss_>" : $addresss_ );
-
-				if ( !array_key_exists( $addresss_, $allContacts ) || !empty( $name_ ) ) {
-					$allContacts[$addresss_] = $name_;
-				}
-			}
-			$obj[$value] = $formattedRecipients;
-		}
-
-		$attachmentsObj = $mail->getAttachments();
-
-		// all attachments
-		$attachments = json_decode( json_encode( $attachmentsObj ), true );
-
-		if ( count( $attachments ) ) {
-			echo count( $attachments ) . ' attachments' . PHP_EOL;
-
-			[ $regularAttachments, $inlineAttachments ] = $this->getAttachmentsType( $mail->textHtml, $attachmentsObj );
-
-			foreach ( $attachments as $k => $v ) {
-				$attachments[$k]['name'] = $imapMailbox->decodeMimeStr( $v['name'] );
-			}
-
-			$obj['regularAttachments'] = [];
-			foreach ( $regularAttachments as $v ) {
-				$obj['regularAttachments'][] = $imapMailbox->decodeMimeStr( $v->name );
+		foreach ( $allRecipients as $key => $value ) {
+			foreach ( $value as $k => $v ) {
+				$obj[$key][] = $formatRecipient( $v['address'], $v['name'] );
+				$obj[$key . 'Parsed'][] = [
+					'address' => $v['address'],
+					'name' => $v['name'],
+				];
+				$allContacts[$v['address']] = $v['name'];
 			}
 		}
 
-		$parsedEmail = ( new EmailParser() )->parse( $mail->textPlain );
+		$deliveredTo = $message->getHeaderValue( 'Delivered-To' );
 
-		$obj['textPlain'] = $mail->textPlain;
-		$obj['textHtml'] = $mail->textHtml;
+		if ( !empty( $deliveredTo ) ) {
+			$obj['deliveredTo'] = $deliveredTo;
+			$this->mailboxData['all_addresses'][] = $deliveredTo;
+			$this->mailboxData['all_addresses'] = array_filter( array_unique( $this->mailboxData['all_addresses'] ) );
+		}
+
+		$obj['subject'] = $message->getSubject();
+		$obj['textPlain'] = $message->getTextContent();
+		$obj['textHtml'] = $message->getHtmlContent();
+
+		$parsedEmail = ( new EmailParser() )->parse( $obj['textPlain'] );
 
 		// custom entries
 		$obj['visibleText'] = $parsedEmail->getVisibleText();
-		$obj['attachments'] = array_values( $attachments );
-		$obj['hasAttachments'] = count( $obj['attachments'] ) ? true : false;
 
-		// get Delivered-To (only for inbox)
-		$deliveredTo = $imapMailbox->getMailHeaderFieldValue( $mail->headersRaw, 'Delivered-To' );
-		$obj['deliveredTo'] = $deliveredTo;
+		// language detect @see https://github.com/patrickschur/language-detection
+		$detectedLanguage = null;
+		if ( strlen( $obj['textPlain'] ) >= 200 ) {
+			$ld = new Language;
+			$ld->setMaxNgrams( 5000 );
+			$detectedLanguages = $ld->detect( $obj['textPlain'] )->close();
+			$detectedLanguageCode = ( count( $detectedLanguages ) ? array_key_first( $detectedLanguages ) : null );
 
-		$conversationRecipients = $allContacts;
+			$detectedLanguage = ( array_key_exists( $detectedLanguageCode, self::$languageMap )
+				? self::$languageMap[$detectedLanguageCode]
+				: $detectedLanguageCode
+			);
 
-		// this will remove the mailbox related address from $conversationRecipients
-		// by reference
-		[ $conversationHash, $mailboxRelatedAddress ] = $this->getConversationHashAndRelatedAddress( $params, $obj, $conversationRecipients );
-		$obj['conversationHash'] = $conversationHash;
+			$obj['detectedLanguage'] = $detectedLanguage;
+		}
+
+		$obj['hasAttachments'] = ( $message->getAttachmentCount() > 0 );
+
+		$attachments = $message->getAllAttachmentParts();
+
+		$getFileInfo = static function ( $flag, $contents ) {
+			$finfo = new \finfo( $flag );
+			return $finfo->buffer( $contents );
+		};
+
+		$obj['regularAttachments'] = [];
+		$attachmentPaths = [];
+		foreach ( $attachments as $part ) {
+			// @see PhpImap/Mailbox
+			$fileSysName = bin2hex( random_bytes( 16 ) ) . '.bin';
+			$dest_ = $attachmentsFolder . '/' . $fileSysName;
+			$part->saveContent( $dest_ );
+			$attachmentPaths[] = $dest_;
+
+			$contents_ = file_get_contents( $dest_ );
+			$obj['attachments'][] = [
+				'contentId'      => $part->getContentId(),
+				'encoding'       => $part->getContentTransferEncoding(),
+				'description'    => $part->getHeaderValue( 'Content-Description' ),
+				'contentType'    => $part->getContentType(),
+				'name'           => $part->getFilename(),
+				'sizeInBytes'    => strlen( $contents_ ),
+				'sizeInMB'       => round( strlen( $contents_ ) / 1048576, 2 ),
+				'disposition'    => $part->getContentDisposition(),
+				'charset'        => $part->getCharset(),
+				'fileInfo'       => $getFileInfo( \FILEINFO_NONE, $contents_ ),
+				// 'fileInfoRaw'  => $getFileInfo( \FILEINFO_RAW, $contents_ ),
+				'mime'           => $getFileInfo( \FILEINFO_MIME, $contents_ ),
+				'mimeType'       => $getFileInfo( \FILEINFO_MIME_TYPE, $contents_ ),
+				'mimeEncoding'   => $getFileInfo( \FILEINFO_MIME_ENCODING, $contents_ ),
+				'fileExtension'  => $getFileInfo( \FILEINFO_EXTENSION, $contents_ ),
+			];
+
+			if ( $part->getContentDisposition() === 'attachment' ) {
+				$obj['regularAttachments'][count( $obj['attachments'] ) - 1] = $part->getFilename();
+			}
+		}
+
+		$deleteAttachments = static function () use ( $attachmentPaths ) {
+			echo 'deleting attachments' . PHP_EOL;
+			foreach ( $attachmentPaths as $path ) {
+				unlink( $path );
+			}
+		};
 
 		$showMsg = static function ( $msg ) {
 			echo $msg . PHP_EOL;
@@ -248,30 +527,31 @@ class ImportMessage {
 		$pagenameFormula = \ContactManager::replaceParameter( 'ContactManagerMessagePagenameFormula',
 			$params['mailbox'],
 			$folder['folder_name'],
-			'<ContactManager/Incoming mail/id>'
+			'<ContactManager/Message/id>'
 		);
 
 		$categories = ( array_key_exists( 'categories', $params )
 			&& is_array( $params['categories'] ) ? $params['categories'] : [] );
 
 		if ( strtolower( $params['folder']['folder_type'] ) === 'inbox' &&
-			in_array( $obj['fromAddress'], $this->mailboxData['all_addresses'] )
+			count( array_intersect( $senderAddresses, $this->mailboxData['all_addresses'] ) )
 		) {
 			$categories[] = 'Messages in wrong folder';
 		}
 
 		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories ) ) {
 			echo 'skipped by filter' . PHP_EOL;
+			$deleteAttachments();
 			return \ContactManager::SKIPPED_ON_FILTER;
 		}
 
 		$pagenameFormula = str_replace( '<folder_name>', $folder['folder_name'], $pagenameFormula );
 
 		$pagenameFormula = \ContactManager::replaceFormula( $obj, $pagenameFormula,
-			$GLOBALS['wgContactManagerSchemasIncomingMail'] );
+			$GLOBALS['wgContactManagerSchemasMessage'] );
 
 		$pagenameFormula = \ContactManager::replaceFormula( $obj['headers'], $pagenameFormula,
-			$GLOBALS['wgContactManagerSchemasIncomingMail'] . '/headers' );
+			$GLOBALS['wgContactManagerSchemasMessage'] . '/headers' );
 
 		// echo 'pagenameFormula: ' . $pagenameFormula . "\n";
 
@@ -288,6 +568,7 @@ class ImportMessage {
 			// throw new \MWException( 'invalid title' );
 			$this->errors[] = 'empty pagename formula';
 			echo '***skipped on error' . PHP_EOL;
+			$deleteAttachments();
 			return \ContactManager::SKIPPED_ON_ERROR;
 		}
 
@@ -296,15 +577,23 @@ class ImportMessage {
 		if ( !$title_ ) {
 			$this->errors[] = 'invalid title';
 			echo '***skipped on error' . PHP_EOL;
+			$deleteAttachments();
 			return \ContactManager::SKIPPED_ON_ERROR;
 		}
 
 		if ( $title_->isKnown() && !empty( $params['ignore_existing'] ) ) {
 			echo 'skipped as existing' . PHP_EOL;
+			$deleteAttachments();
 			return \ContactManager::SKIPPED_ON_EXISTING;
 		}
 
-		$schema = $GLOBALS['wgContactManagerSchemasIncomingMail'];
+		// this will remove the mailbox related address from $conversationRecipients
+		// by reference
+		$conversationRecipients = $allContacts;
+		[ $conversationHash, $mailboxRelatedAddresses ] = $this->getConversationHashAndRelatedAddresses( $params, $obj, $conversationRecipients );
+		$obj['conversationHash'] = $conversationHash;
+
+		$schema = $GLOBALS['wgContactManagerSchemasMessage'];
 		$options = [
 			'main-slot' => true,
 			'limit' => INF,
@@ -319,8 +608,12 @@ class ImportMessage {
 		if ( !is_array( $retMessage ) || !count( $retMessage ) ) {
 			$this->errors[] = 'import failed';
 			echo '***skipped on error' . PHP_EOL;
+			$deleteAttachments();
 			return \ContactManager::SKIPPED_ON_ERROR;
 		}
+
+		// ***important, get title object again
+		$title_ = TitleClass::newFromText( $pagenameFormula );
 
 		// update the delivered-to list
 		if ( !empty( $deliveredTo ) ) {
@@ -342,9 +635,6 @@ class ImportMessage {
 			}
 		}
 
-		// ***important, get title object again
-		$title_ = TitleClass::newFromText( $pagenameFormula );
-
 		if ( $obj['hasAttachments'] ) {
 			$pathTarget = $attachmentsFolder . '/' . $title_->getArticleID();
 			echo 'attachment path ' . $pathTarget . PHP_EOL;
@@ -356,21 +646,18 @@ class ImportMessage {
 			}
 
 			if ( file_exists( $pathTarget ) ) {
-				foreach ( $regularAttachments as $value ) {
-					$dest_ = $pathTarget . '/' . $value->name;
-					if ( rename( $value->__get( 'filePath' ), $dest_ ) ) {
+				foreach ( $obj['attachments'] as $value ) {
+					$dest_ = $pathTarget . '/' . (
+						$value['disposition'] === 'attachment' || empty( $value['contentId'] )
+							? $value['name']
+							: $value['contentId']
+					);
+
+					$filePath_ = array_shift( $attachmentPaths );
+					if ( rename( $filePath_, $dest_ ) ) {
 						echo 'saving attachment to ' . $dest_ . PHP_EOL;
 					} else {
 						echo '***error saving attachment to ' . $dest_ . PHP_EOL;
-					}
-				}
-
-				foreach ( $inlineAttachments as $value ) {
-					$dest_ = $pathTarget . '/' . ( !empty( $value->contentId ) ? $value->contentId : $value->name );
-					if ( rename( $value->__get( 'filePath' ), $dest_ ) ) {
-						echo 'saving inline attachment to ' . $dest_ . PHP_EOL;
-					} else {
-						echo '***error saving inline attachment to ' . $dest_ . PHP_EOL;
 					}
 				}
 
@@ -379,12 +666,6 @@ class ImportMessage {
 				$this->errors[] = "cannot access folder \"$pathTarget\"";
 			}
 		}
-
-		// language detect @see https://github.com/patrickschur/language-detection
-		$ld = new Language;
-		$ld->setMaxNgrams( 5000 );
-		$detectedLanguages = $ld->detect( $obj['textPlain'] )->close();
-		$detectedLanguage = ( count( $detectedLanguages ) ? array_key_first( $detectedLanguages ) : null );
 
 		$retContacts = [];
 		$retConversation = [];
@@ -395,7 +676,7 @@ class ImportMessage {
 				$conversationHash_ = ( array_key_exists( $email, $conversationRecipients ) ? $conversationHash : null );
 
 				$ret_ = \ContactManager::saveUpdateContact( $user, $context, $params, $obj, $name, $email, $conversationHash_,
-					( $email === $obj['fromAddress'] ? $detectedLanguage : null ) );
+					( in_array( $email, $senderAddresses ) ? $detectedLanguage : null ) );
 
 				if ( is_string( $ret_ ) && $ret_ ) {
 					$retContacts[] = $ret_;
@@ -403,7 +684,7 @@ class ImportMessage {
 			}
 
 			$ret_ = $this->saveConversation( $user, $context, $params, $conversationHash,
-				$deliveredTo, $conversationRecipients, $mailboxRelatedAddress, $obj['date'] );
+				$deliveredTo, $conversationRecipients, $mailboxRelatedAddresses, $obj['parsedDate'] );
 
 			if ( is_string( $ret_ ) && $ret_ ) {
 				$retConversation[] = $ret_;
@@ -472,7 +753,7 @@ class ImportMessage {
 	 * @param array &$conversationRecipients
 	 * @return array
 	 */
-	private function getConversationHashAndRelatedAddress( $params, $obj, &$conversationRecipients ) {
+	private function getConversationHashAndRelatedAddresses( $params, $obj, &$conversationRecipients ) {
 		ksort( $conversationRecipients );
 
 		// get the hash before removing the related mailbox address
@@ -487,26 +768,44 @@ class ImportMessage {
 			}
 		}
 
-		$relatedAddress = null;
+		$relatedAddresses = [];
 		switch ( strtolower( $params['folder']['folder_type'] ) ) {
 			case 'sent':
 			case 'draft':
-				$relatedAddress = $obj['fromAddress'];
+				if ( !empty( $obj['sender'] ) ) {
+					$relatedAddresses[] = $obj['sender']['address'];
+				}
+				array_map( static function ( $value ) use ( &$relatedAddresses ) {
+					$relatedAddresses[] = $value['address'];
+				}, $obj['fromParsed'] );
 				break;
 			case 'spam':
 			case 'other':
 			case 'inbox':
 			case 'trash':
 			default:
-				$relatedAddress = $obj['deliveredTo'];
+				$mailboxAddresses = $this->mailboxData['all_addresses'];
+				if ( !empty( $obj['deliveredTo'] ) ) {
+					$relatedAddresses[] = $obj['deliveredTo'];
+				}
+				foreach ( [ 'toParsed', 'ccParsed', 'bccParsed' ] as $value ) {
+					if ( array_key_exists( $value, $obj ) ) {
+						array_map( static function ( $v ) use ( &$relatedAddresses, $mailboxAddresses ) {
+							if ( in_array( $v['address'], $mailboxAddresses ) ) {
+								$relatedAddresses[] = $v['address'];
+							}
+						}, $obj[$value] );
+					}
+				}
 				break;
 		}
 
-		if ( !$relatedAddress ) {
-			$relatedAddress = $this->mailboxData['all_addresses'][count( $this->mailboxData['all_addresses'] ) - 1];
-		}
+		$relatedAddresses = array_unique( $relatedAddresses );
+		// if ( !$relatedAddress ) {
+		// 	$relatedAddress = $this->mailboxData['all_addresses'][count( $this->mailboxData['all_addresses'] ) - 1];
+		// }
 
-		return [ $hash, $relatedAddress ];
+		return [ $hash, $relatedAddresses ];
 	}
 
 	/**
@@ -516,11 +815,11 @@ class ImportMessage {
 	 * @param string $hash
 	 * @param string $deliveredTo
 	 * @param array $conversationRecipients
-	 * @param string $relatedAddress
+	 * @param array $relatedAddresses
 	 * @param string $date
 	 * @return bool|null|string
 	 */
-	private function saveConversation( $user, $context, $params, $hash, $deliveredTo, $conversationRecipients, $relatedAddress, $date ) {
+	private function saveConversation( $user, $context, $params, $hash, $deliveredTo, $conversationRecipients, $relatedAddresses, $date ) {
 		// sending to oneself
 		if ( !count( $conversationRecipients ) ) {
 			return;
@@ -559,7 +858,7 @@ class ImportMessage {
 
 		$data = [
 			'mailbox' => $params['mailbox'],
-			'related_address' => $relatedAddress,
+			'related_addresses' => $relatedAddresses,
 			'addresses' => array_keys( $conversationRecipients ),
 			'hash' => $hash,
 			'date_last' => null,
@@ -592,7 +891,7 @@ class ImportMessage {
 
 		// *** this is necessary only if we want to order the
 		// conversations table by number of messages
-		$schema = $GLOBALS['wgContactManagerSchemasIncomingMail'];
+		$schema = $GLOBALS['wgContactManagerSchemasMessage'];
 
 		$targetTitle_ = \ContactManager::replaceParameter( 'ContactManagerAllMessagesPagenameFormula',
 			$params['mailbox'],
@@ -662,65 +961,72 @@ class ImportMessage {
 			$result_ = false;
 			switch ( $v['field'] ) {
 				case 'id':
-				case 'attachments/type':
-				case 'attachments/encoding':
+				case 'headers/contentDuration':
 				case 'attachments/sizeInBytes':
+				case 'attachments/sizeInMB':
 					$value_ = (int)$value_;
 					$result_ = ( $value_ >= $v['number_from']
 						&& $value_ <= $v['number_to'] );
 					break;
+
+				case 'headersRaw':
 				case 'imapPath':
 				case 'mailboxFolder':
-				case 'headersRaw':
-				case 'headers/subject':
-				case 'headers/Subject':
-				case 'headers/message_id':
-				case 'headers/toaddress':
-				case 'headers/fromaddress':
-				case 'headers/ccaddress':
-				case 'headers/reply_toaddress':
-				case 'headers/senderaddress':
-				case 'mimeVersion':
-				case 'xVirusScanned':
-				case 'organization':
-				case 'contentType':
-				case 'xMailer':
-				case 'contentLanguage':
-				case 'xSenderIp':
-				case 'priority':
-				case 'importance':
-				case 'sensitivity':
-				case 'autoSubmitted':
-				case 'precedence':
-				case 'failedRecipients':
-				case 'subject':
-				case 'fromHost':
-				case 'fromName':
-				case 'fromAddress':
-				case 'senderHost':
-				case 'senderName':
-				case 'senderAddress':
-				case 'xOriginalTo':
-				case 'toString':
-				case 'ccString':
-				case 'messageId':
+				case 'sender/name':
+				case 'sender/address':
+				case 'deliveredTo':
 				case 'textPlain':
 				case 'textHtml':
 				case 'visibleText':
-				case 'attachments/id':
+				case 'detectedLanguage':
+				case 'regularAttachments':
+				case 'conversationHash':
+				case 'headers/messageId':
+				case 'headers/returnPath':
+				case 'headers/received':
+				case 'headers/resentDate':
+				case 'headers/resentFrom':
+				case 'headers/resentSender':
+				case 'headers/resentTo':
+				case 'headers/resentCc':
+				case 'headers/resentBcc':
+				case 'headers/resentMessageId':
+				case 'headers/from':
+				case 'headers/sender':
+				case 'headers/replyTo':
+				case 'headers/to':
+				case 'headers/cc':
+				case 'headers/bcc':
+				case 'headers/messageId':
+				case 'headers/inReplyTo':
+				case 'headers/references':
+				case 'headers/subject':
+				case 'headers/comments':
+				case 'headers/keywords':
+				case 'headers/mimeVersion':
+				case 'headers/contentType':
+				case 'headers/contentTransferEncoding':
+				case 'headers/contentId':
+				case 'headers/contentDescription':
+				case 'headers/contentDisposition':
+				case 'headers/contentLanguage':
+				case 'headers/contentBase':
+				case 'headers/contentLocation':
+				case 'headers/contentFeatures':
+				case 'headers/contentAlternative':
+				case 'headers/contentMd5':
+				case 'headers/autoSubmitted':
 				case 'attachments/contentId':
-				case 'attachments/subtype':
+				case 'attachments/encoding':
 				case 'attachments/description':
+				case 'attachments/contentType':
 				case 'attachments/name':
 				case 'attachments/disposition':
-				case 'attachments/charset':
-				case 'attachments/emlOrigin':
-				case 'attachments/fileInfoRaw':
-				case 'attachments/fileInfo':
+				case 'attachments/fileinfo':
 				case 'attachments/mime':
+				case 'attachments/mimeType':
 				case 'attachments/mimeEncoding':
 				case 'attachments/fileExtension':
-				case 'attachments/mimeType':
 					$value_ = (string)$value_;
 					switch ( $v['match'] ) {
 						case 'contains':
@@ -735,14 +1041,14 @@ class ImportMessage {
 					}
 					break;
 
-				case 'date':
+				case 'parsedDate':
 				case 'headers/date':
-				case 'headers/Date':
 					$value_ = strtotime( $value_ );
 					$result_ = ( $value_ >= strtotime( $v['date_from'] )
 						&& $value_ <= strtotime( $v['date_to'] ) );
 					break;
 
+				case 'hasAttachments':
 				case 'isSeen':
 				case 'isAnswered':
 				case 'isRecent':

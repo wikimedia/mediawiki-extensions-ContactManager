@@ -4,19 +4,20 @@
 |mailbox={{#urldecode:{{#urlget:mailbox}}}}
 |path={{#urldecode:{{#urlget:path}}}}
 }}-->
-{{#if: {{#urlget:pageid}} | 
+{{#if: {{#urlget:pageid}} |
   {{#visualdataprint: {{#urlget:pageid}}
-    |schema=ContactManager/Incoming mail
-    |?date   
-    |?headers/fromaddress
-    |?fromAddress
-    |?subject
-    |?replyTo=
-    |?textPlain=
-    |?textHtml=
-    |?visibleText=
-    |?headersRaw=
-    |?conversationHash=
+    |schema=ContactManager/Message
+    |?parsedDate   
+    |?headers/from
+    |?headers/subject
+    |?headers/date
+    |?fromParsed/address
+    |?replyTo
+    |?textPlain
+    |?textHtml
+    |?visibleText
+    |?headersRaw
+    |?conversationHash
     |?regularAttachments
     |values-separator=@@
     |format=template
@@ -24,21 +25,22 @@
   }} 
 |
   {{#if: {{#visualdataquery: [[ContactManager:Mailboxes/{{#urldecode:{{#urlget:mailbox}}}}/messages/{{#urldecode:{{#urlget:folder}}}}/~]] [[id::{{#urlget:uid}}]]
-    |schema=ContactManager/Incoming mail 
+    |schema=ContactManager/Message
     |format=pageid 
   }} |
     {{#visualdataquery: [[ContactManager:Mailboxes/{{#urldecode:{{#urlget:mailbox}}}}/messages/{{#urldecode:{{#urlget:folder}}}}/~]] [[id::{{#urlget:uid}}]]
-      |schema=ContactManager/Incoming mail
-      |?date
-      |?headers/fromaddress
-      |?fromAddress
-      |?subject
-      |?replyTo=
-      |?textPlain=
-      |?textHtml=
-      |?visibleText=
-      |?headersRaw=
-      |?conversationHash=
+      |schema=ContactManager/Message
+      |?parsedDate
+      |?headers/from
+      |?headers/date
+      |?headers/subject
+      |?fromParsed/address
+      |?replyTo
+      |?textPlain
+      |?textHtml
+      |?visibleText
+      |?headersRaw
+      |?conversationHash
       |?regularAttachments
       |values-separator=@@
       |format=template

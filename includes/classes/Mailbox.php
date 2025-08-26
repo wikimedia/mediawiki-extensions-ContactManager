@@ -50,12 +50,12 @@ class Mailbox {
 		$data = \ContactManager::getMailboxes( $mailboxName );
 		if ( empty( $data ) ) {
 			$errors[] = 'mailbox not found';
-			return false;
+			return;
 		}
 
 		if ( empty( $GLOBALS['wgContactManagerIMAP'][$data['name']] ) ) {
 			$errors[] = 'credentials not found';
-			return false;
+			return;
 		}
 
 		$credentials = $GLOBALS['wgContactManagerIMAP'][$data['name']];

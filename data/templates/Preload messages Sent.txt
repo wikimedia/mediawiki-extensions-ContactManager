@@ -3,19 +3,19 @@
 
 ==%folder_name%==
 {{#visualdataquery: [[ContactManager:Mailboxes/%mailbox%/messages/%folder_name%/~]]
+|schema=ContactManager/Message
 |?pagetitle
-|?subject=subject
+|?headers/subject=subject
 |?to
-|?date
+|?parsedDate=date
 |pagetitle=
-|schema=ContactManager/Incoming mail
 |template?pagetitle=ContactManager/Messages read email field
 |format=datatables
 |datatables-searchPanes=true
 |datatables-searchPanes.columns=2
 |datatables-synch=true
 |datatables-synch.interval=100
-|order=date desc
+|order=parsedDate desc
 |limit=60
 |categories=false
 |mode=nested

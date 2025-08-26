@@ -1,13 +1,13 @@
 <div style="border-bottom:1px dotted #000;padding:12px 0">
-==={{#time:{{#ifeq:{{#urlget:show}}|all|d F Y|l, d}} | {{{date|}}} }}===
+==={{#time:{{#ifeq:{{#urlget:show}}|all|d F Y|l, d}} | {{{parsedDate|}}} }}===
 
-'''From:''' {{{headers/fromaddress}}}
+'''From:''' {{{headers/from|}}}
 
-'''To:''' {{{toString|}}}
+'''To:''' {{{headers/to|}}}
 
-'''Time:''' {{#time:g:i A| {{{date|}}} }}
+'''Time:''' {{#time:g:i A| {{{parsedDate|}}} }}
 
-'''Subject:''' {{{subject|}}}
+'''Subject:''' {{{headers/subject|}}}
 
 <div style="background:#f5f5f5;padding:12px;margin-top:6px">{{#shadowroot: {{#base64encode:{{{visibleText|}}} }}|host}}</div>
 {{#if:{{{regularAttachments|}}}|'''attachments:''' {{#arraymap:{{{regularAttachments}}} | @@ | @@ | {{#querylink:Special:ContactManagerGetResource/{{{pageid}}}|@@|filename=@@|target=_blank}} | ,\s | ,\s  }} }}

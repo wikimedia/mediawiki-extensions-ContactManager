@@ -23,7 +23,7 @@
 |datatables-searchPanes.columns=2
 |datatables-synch=true
 |datatables-synch.interval=100
-|order=date desc
+|order=parsedDate desc
 |limit=60
 }}
 

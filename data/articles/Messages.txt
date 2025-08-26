@@ -5,19 +5,19 @@
 <!-- [[mailboxFolder::{{#urldecode:{{#urlget:shortpath}}}}]] -->
 <!-- |?to -->
 {{#visualdataquery: [[{{#urldecode:{{#urlget:path}}}}/messages/{{#urldecode:{{#urlget:folder}}}}/~]]
+|schema=ContactManager/Message
 |?pagetitle
-|?subject=subject
-|?headers/fromaddress=from
-|?date
+|?headers/from=from
+|?headers/subject==subject
+|?parsedDate=date
 |pagetitle=
-|schema=ContactManager/Incoming mail
 |template?pagetitle=ContactManager/Read email field
 |format=datatables
 |datatables-searchPanes=true
 |datatables-searchPanes.columns=2
 |datatables-synch=true
 |datatables-synch.interval=100
-|order=date desc
+|order=parsedDate desc
 |limit=60
 |categories=false
 |mode=nested

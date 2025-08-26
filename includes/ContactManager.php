@@ -155,8 +155,8 @@ class ContactManager {
 	public static function getInfo( $user, $mailboxName, &$errors ) {
 		$mailbox = new Mailbox( $mailboxName, $errors );
 
-		if ( !$mailbox ) {
-			return false;
+		if ( count( $errors ) ) {
+			throw new \MWException( $errors[count( $errors ) - 1] );
 		}
 
 		$res = $mailbox->getInfo( $errors );
@@ -463,8 +463,8 @@ class ContactManager {
 	public static function getFolders( $user, $mailboxName, &$errors ) {
 		$mailbox = new Mailbox( $mailboxName, $errors );
 
-		if ( !$mailbox ) {
-			return false;
+		if ( count( $errors ) ) {
+			throw new \MWException( $errors[count( $errors ) - 1] );
 		}
 
 		$res = $mailbox->getFolders( $errors );
@@ -534,15 +534,15 @@ class ContactManager {
 
 		echo 'connecting to mailbox ' . $params['mailbox'] . PHP_EOL;
 
-		// @TODO maybe use instead this ?
-		// https://github.com/ddeboer/imap
-		// or:
+		// @TODO MIGRATE TO
 		// https://github.com/Webklex/php-imap
+		// or
+		// https://github.com/DirectoryTree/ImapEngine
 
 		$mailbox = new Mailbox( $params['mailbox'], $errors );
 
-		if ( !$mailbox ) {
-			return false;
+		if ( count( $errors ) ) {
+			throw new \MWException( $errors[count( $errors ) - 1] );
 		}
 
 		$mailboxData = self::getMailboxData( $params['mailbox'] );
@@ -719,7 +719,7 @@ class ContactManager {
 							$folder['folder_name'],
 							'~'
 						);
-						$schema_ = $GLOBALS['wgContactManagerSchemasIncomingMail'];
+						$schema_ = $GLOBALS['wgContactManagerSchemasMessage'];
 						$query_ = "[[id::+]][[$targetTitle_]]";
 						$printouts_ = [ 'id' ];
 						$options_ = [ 'limit' => 1, 'order' => 'id DESC' ];
@@ -1242,7 +1242,7 @@ class ContactManager {
 		$seenUntil = ( !empty( $data['seen_until'] ) ? strtotime( $data['seen_until'] ) : 0 );
 		$seenSince = ( !empty( $data['seen_since'] ) ? strtotime( $data['seen_since'] ) : PHP_INT_MAX );
 
-		$messageDateTime = strtotime( $obj['date'] );
+		$messageDateTime = strtotime( $obj['parsedDate'] ?? $obj['date'] );
 		if ( $messageDateTime > $seenUntil ) {
 			$data['seen_until'] = date( 'Y-m-d', $messageDateTime );
 		}

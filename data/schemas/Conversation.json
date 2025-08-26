@@ -21,24 +21,39 @@
 			"format": "text",
 			"title": "mailbox"
 		},
-		"related_address": {
+		"related_addresses": {
 			"wiki": {
-				"type": "property",
-				"uuid": "686b9f3cce3f2",
-				"name": "related_address",
-				"visibility": "hidden",
-				"label": "delivered_to",
-				"multiple-items": false,
-				"preferred-input": "OO.ui.TextInputWidget (email)",
-				"input-config": [],
-				"required": true
+				"name": "related_addresses",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "688fd283ba52f"
 			},
-			"options": {
-				"hidden": true
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "related_addresses",
+					"type": "property",
+					"uuid": "686b9f3cce3f2",
+					"visibility": "hidden",
+					"label": "delivered_to",
+					"multiple-items": true,
+					"preferred-input": "OO.ui.TextInputWidget (email)",
+					"input-config": [],
+					"required": true,
+					"default": []
+				},
+				"options": {
+					"hidden": true
+				},
+				"format": "email",
+				"title": "delivered_to",
+				"default": []
 			},
-			"type": "string",
-			"format": "email",
-			"title": "delivered_to"
+			"required": [
+				"related_addresses"
+			],
+			"type": "array",
+			"uniqueItems": false
 		},
 		"addresses": {
 			"wiki": {
@@ -53,14 +68,14 @@
 				"wiki": {
 					"name": "addresses",
 					"type": "property",
-					"uuid": "686baf9d02cef",
+					"multiple-items": true,
 					"visibility": "hidden",
 					"label": "addresses",
-					"multiple-items": true,
+					"default": [],
+					"uuid": "686baf9d02cef",
 					"preferred-input": "OO.ui.TextInputWidget (email)",
 					"input-config": [],
-					"required": false,
-					"default": []
+					"required": false
 				},
 				"options": {
 					"hidden": true
@@ -142,8 +157,8 @@
 	},
 	"required": [
 		"mailbox",
-		"related_address",
 		"hash"
 	],
 	"type": "object"
 }
+

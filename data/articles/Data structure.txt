@@ -75,7 +75,6 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 **[[VisualDataSchema:ContactManager/Compose email]]
 **[[VisualDataSchema:ContactManager/Contact]]
 **[[VisualDataSchema:ContactManager/Conversation]]
-**[[VisualDataSchema:ContactManager/Incoming mail]]
 **[[VisualDataSchema:ContactManager/Job get folders]]
 **[[VisualDataSchema:ContactManager/Job mailbox info]]
 **[[VisualDataSchema:ContactManager/Job retrieve messages]]
@@ -84,4 +83,5 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 **[[VisualDataSchema:ContactManager/Mailbox info]]
 **[[VisualDataSchema:ContactManager/Mailer]]
 **[[VisualDataSchema:ContactManager/Message header]]
+**[[VisualDataSchema:ContactManager/Message]]
 

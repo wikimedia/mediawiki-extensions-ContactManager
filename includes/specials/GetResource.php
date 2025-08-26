@@ -86,7 +86,7 @@ class GetResource extends \SpecialPage {
 		$out->disable();
 
 		$jsonData = \VisualData::getJsonData( $title_ );
-		$schema_ = $GLOBALS['wgContactManagerSchemasIncomingMail'];
+		$schema_ = $GLOBALS['wgContactManagerSchemasMessage'];
 		if ( !isset( $jsonData['schemas'][$schema_]['attachments'] ) ) {
 			echo 'no valid attachment';
 			exit();

@@ -1,23 +1,23 @@
 {| class="wikitable"
 ! date
-| {{{date}}}
+| {{#time: d F Y g:i A | {{{parsedDate|}}} }}
 |-
 ! from
-| {{#querylink:ContactManager:Contact|{{{headers/fromaddress}}}|pageid={{#visualdataquery:[[email::{{{fromAddress}}}]][[ContactManager:Mailboxes/{{#urldecode:{{#urlget:mailbox}}}}/~]]
+| {{#querylink:ContactManager:Contact|{{{headers/from|}}}|pageid={{#visualdataquery:[[email::{{{fromParsed/address|}}}]][[ContactManager:Mailboxes/{{#urldecode:{{#urlget:mailbox}}}}/~]]
 |schema=ContactManager/Contact
 |format=pageid
 }}|target=_blank}}
 |-
 ! subject
-| {{{subject}}}
+| {{{headers/subject|}}}
 |-
 ! conversation
-| {{#querylink:ContactManager:Conversation|{{#visualdataquery:[[conversations::{{{conversationHash}}}]]
+| {{#querylink:ContactManager:Conversation|{{#visualdataquery:[[conversations::{{{conversationHash|}}}]]
   |schema=ContactManager/Contact 
   |?full_name
   |format=raw
   |separator=,<nowiki> </nowiki>
- }}|target=_blank|mailbox={{#urldecode:{{#urlget:mailbox}}}}|hash={{{conversationHash}}}|show=all|month=-1 }}
+ }}|target=_blank|mailbox={{#urldecode:{{#urlget:mailbox}}}}|hash={{{conversationHash|}}}|show=all|month=-1 }}
 |-
 ! attachments
 | {{#arraymap:{{{regularAttachments|}}} | @@ | @@ | {{#querylink:Special:ContactManagerGetResource/{{{pageid}}}|@@|filename=@@|target=_blank}} | ,\s | ,\s  }}
@@ -53,11 +53,12 @@
 |submit-button-text =
 |validate-button-text =
 |overwrite-existing-article-on-create=true
-|preload-data?to={{{replyTo}}}
-|preload-data?subject=Re: {{{subject}}}
-|preload-data?text+base64={{ContactManager/Format reply|{{#base64encode:{{{textPlain|}}} }}|{{{headers/fromaddress}}}|{{{date}}}|text }} 
-|preload-data?text_html+base64={{ContactManager/Format reply|{{#base64encode:{{{textHtml|}}} }}|{{{headers/fromaddress}}}|{{{date}}}|html }}
+|preload-data?to={{{replyTo|}}}
+|preload-data?subject=Re: {{{headers/subject|}}}
+|preload-data?text+base64={{ContactManager/Format reply|{{#base64encode:{{{textPlain|}}} }}|{{{headers/from|}}}|{{{headers/date|}}}|text }}
+|preload-data?text_html+base64={{ContactManager/Format reply|{{#base64encode:{{{textHtml|}}} }}|{{{headers/from|}}}|{{{headers/date|}}}|html }}
 |preload-data?mailbox={{#urldecode:{{#urlget:mailbox}}}}
+|preload-data-separator=@@
 }}
 
 

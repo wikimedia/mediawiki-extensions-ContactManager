@@ -1,0 +1,1746 @@
+{
+	"wiki": {
+		"type": "schema",
+		"uuid": "688fa42a170bd",
+		"name": "ContactManager/Message",
+		"title": "ContactManager/Message"
+	},
+	"properties": {
+		"id": {
+			"wiki": {
+				"name": "id",
+				"type": "property",
+				"multiple-items": false,
+				"label": "id",
+				"preferred-input": "OO.ui.NumberInputWidget",
+				"uuid": "688fa42a170d6"
+			},
+			"type": "integer",
+			"title": "id"
+		},
+		"headersRaw": {
+			"wiki": {
+				"name": "headersRaw",
+				"type": "property",
+				"multiple-items": false,
+				"label": "headersRaw",
+				"uuid": "688fa42a170c3",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.MultilineTextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "textarea",
+			"title": "headersRaw"
+		},
+		"headers": {
+			"wiki": {
+				"name": "headers",
+				"type": "schema",
+				"uuid": "688fa42a170c6",
+				"title": "headers",
+				"layout": "section",
+				"visibility": "visible"
+			},
+			"properties": {
+				"returnPath": {
+					"wiki": {
+						"name": "returnPath",
+						"type": "property",
+						"multiple-items": false,
+						"label": "returnPath",
+						"uuid": "688fa42a170c8",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false
+					},
+					"type": "string",
+					"format": "text",
+					"title": "returnPath"
+				},
+				"received": {
+					"wiki": {
+						"name": "received",
+						"type": "property",
+						"multiple-items": false,
+						"label": "received",
+						"uuid": "688fa42a170ca",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false
+					},
+					"type": "string",
+					"format": "text",
+					"title": "received"
+				},
+				"resentDate": {
+					"wiki": {
+						"name": "resentDate",
+						"type": "property",
+						"multiple-items": false,
+						"label": "resentDate",
+						"visibility": "visible",
+						"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc84"
+					},
+					"type": "string",
+					"format": "datetime",
+					"title": "resentDate"
+				},
+				"resentFrom": {
+					"wiki": {
+						"name": "resentFrom",
+						"type": "property",
+						"multiple-items": false,
+						"label": "resentFrom",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc89"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "resentFrom"
+				},
+				"resentSender": {
+					"wiki": {
+						"name": "resentSender",
+						"type": "property",
+						"multiple-items": false,
+						"label": "resentSender",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc8a"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "resentSender"
+				},
+				"resentTo": {
+					"wiki": {
+						"name": "resentTo",
+						"type": "property",
+						"multiple-items": false,
+						"label": "resentTo",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc8b"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "resentTo"
+				},
+				"resentCc": {
+					"wiki": {
+						"name": "resentCc",
+						"type": "property",
+						"multiple-items": false,
+						"label": "resentCc",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc8c"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "resentCc"
+				},
+				"resentBcc": {
+					"wiki": {
+						"name": "resentBcc",
+						"type": "property",
+						"multiple-items": false,
+						"label": "resentBcc",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc8d"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "resentBcc"
+				},
+				"resentMessageId": {
+					"wiki": {
+						"name": "resentMessageId",
+						"type": "property",
+						"multiple-items": false,
+						"label": "resentMessageId",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc8e"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "resentMessageId"
+				},
+				"date": {
+					"wiki": {
+						"name": "date",
+						"type": "property",
+						"multiple-items": false,
+						"label": "date",
+						"uuid": "688fa42a170cb",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false
+					},
+					"type": "string",
+					"format": "text",
+					"title": "date"
+				},
+				"from": {
+					"wiki": {
+						"name": "from",
+						"type": "property",
+						"multiple-items": false,
+						"label": "from",
+						"uuid": "688fa42a170cc",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false
+					},
+					"type": "string",
+					"format": "text",
+					"title": "from"
+				},
+				"sender": {
+					"wiki": {
+						"name": "sender",
+						"type": "property",
+						"multiple-items": false,
+						"label": "sender",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc8f"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "sender"
+				},
+				"replyTo": {
+					"wiki": {
+						"name": "replyTo",
+						"type": "property",
+						"multiple-items": false,
+						"label": "replyTo",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc90"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "replyTo"
+				},
+				"to": {
+					"wiki": {
+						"name": "to",
+						"type": "property",
+						"multiple-items": false,
+						"label": "to",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"uuid": "688fa42a170ce"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "to"
+				},
+				"cc": {
+					"wiki": {
+						"name": "cc",
+						"type": "property",
+						"multiple-items": false,
+						"label": "cc",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc91"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "cc"
+				},
+				"bcc": {
+					"wiki": {
+						"name": "bcc",
+						"type": "property",
+						"multiple-items": false,
+						"label": "bcc",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc92"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "bcc"
+				},
+				"messageId": {
+					"wiki": {
+						"name": "messageId",
+						"type": "property",
+						"multiple-items": false,
+						"label": "messageId",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"uuid": "688fa42a170cf"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "messageId"
+				},
+				"inReplyTo": {
+					"wiki": {
+						"name": "inReplyTo",
+						"type": "property",
+						"multiple-items": false,
+						"label": "inReplyTo",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc93"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "inReplyTo"
+				},
+				"references": {
+					"wiki": {
+						"name": "references",
+						"type": "property",
+						"multiple-items": false,
+						"label": "references",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc94"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "references"
+				},
+				"subject": {
+					"wiki": {
+						"name": "subject",
+						"type": "property",
+						"multiple-items": false,
+						"label": "subject",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"uuid": "688fa42a170d0"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "subject"
+				},
+				"comments": {
+					"wiki": {
+						"name": "comments",
+						"type": "property",
+						"multiple-items": false,
+						"label": "comments",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc95"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "comments"
+				},
+				"keywords": {
+					"wiki": {
+						"name": "keywords",
+						"type": "property",
+						"multiple-items": false,
+						"label": "keywords",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc96"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "keywords"
+				},
+				"mimeVersion": {
+					"wiki": {
+						"name": "mimeVersion",
+						"type": "property",
+						"multiple-items": false,
+						"label": "mimeVersion",
+						"preferred-input": "OO.ui.NumberInputWidget",
+						"uuid": "688fa42a170d1"
+					},
+					"type": "number",
+					"title": "mimeVersion"
+				},
+				"contentType": {
+					"wiki": {
+						"name": "contentType",
+						"type": "property",
+						"multiple-items": false,
+						"label": "contentType",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"uuid": "688fa42a170d4"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "contentType"
+				},
+				"contentTransferEncoding": {
+					"wiki": {
+						"name": "contentTransferEncoding",
+						"type": "property",
+						"multiple-items": false,
+						"label": "contentTransferEncoding",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc97"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "contentTransferEncoding"
+				},
+				"contentId": {
+					"wiki": {
+						"name": "contentId",
+						"type": "property",
+						"multiple-items": false,
+						"label": "contentId",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc98"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "contentId"
+				},
+				"contentDescription": {
+					"wiki": {
+						"name": "contentDescription",
+						"type": "property",
+						"multiple-items": false,
+						"label": "contentDescription",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc99"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "contentDescription"
+				},
+				"contentDisposition": {
+					"wiki": {
+						"name": "contentDisposition",
+						"type": "property",
+						"multiple-items": false,
+						"label": "contentDisposition",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc9a"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "contentDisposition"
+				},
+				"contentLanguage": {
+					"wiki": {
+						"name": "contentLanguage",
+						"type": "property",
+						"multiple-items": false,
+						"label": "contentLanguage",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc9b"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "contentLanguage"
+				},
+				"contentBase": {
+					"wiki": {
+						"name": "contentBase",
+						"type": "property",
+						"multiple-items": false,
+						"label": "contentBase",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc9c"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "contentBase"
+				},
+				"contentLocation": {
+					"wiki": {
+						"name": "contentLocation",
+						"type": "property",
+						"multiple-items": false,
+						"label": "contentLocation",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc9d"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "contentLocation"
+				},
+				"contentFeatures": {
+					"wiki": {
+						"name": "contentFeatures",
+						"type": "property",
+						"multiple-items": false,
+						"label": "contentFeatures",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc9e"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "contentFeatures"
+				},
+				"contentAlternative": {
+					"wiki": {
+						"name": "contentAlternative",
+						"type": "property",
+						"multiple-items": false,
+						"label": "contentAlternative",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adc9f"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "contentAlternative"
+				},
+				"contentMd5": {
+					"wiki": {
+						"name": "contentMd5",
+						"type": "property",
+						"multiple-items": false,
+						"label": "contentMd5",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adca0"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "contentMd5"
+				},
+				"contentDuration": {
+					"wiki": {
+						"name": "contentDuration",
+						"type": "property",
+						"multiple-items": false,
+						"label": "contentDuration",
+						"uuid": "688fa597adca1",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.NumberInputWidget",
+						"input-config": [],
+						"required": false
+					},
+					"type": "integer",
+					"title": "contentDuration"
+				},
+				"autoSubmitted": {
+					"wiki": {
+						"name": "autoSubmitted",
+						"type": "property",
+						"multiple-items": false,
+						"label": "autoSubmitted",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fa597adca2"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "autoSubmitted"
+				}
+			},
+			"type": "object",
+			"title": "headers"
+		},
+		"imapPath": {
+			"wiki": {
+				"name": "imapPath",
+				"type": "property",
+				"multiple-items": false,
+				"label": "imapPath",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"uuid": "688fa42a170d7"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "imapPath"
+		},
+		"mailboxFolder": {
+			"wiki": {
+				"name": "mailboxFolder",
+				"type": "property",
+				"multiple-items": false,
+				"label": "mailboxFolder",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"uuid": "688fa42a170d8"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "mailboxFolder"
+		},
+		"isSeen": {
+			"wiki": {
+				"name": "isSeen",
+				"type": "property",
+				"multiple-items": false,
+				"label": "isSeen",
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"uuid": "688fa42a170da"
+			},
+			"type": "boolean",
+			"title": "isSeen"
+		},
+		"isAnswered": {
+			"wiki": {
+				"name": "isAnswered",
+				"type": "property",
+				"multiple-items": false,
+				"label": "isAnswered",
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"uuid": "688fa42a170db"
+			},
+			"type": "boolean",
+			"title": "isAnswered"
+		},
+		"isRecent": {
+			"wiki": {
+				"name": "isRecent",
+				"type": "property",
+				"multiple-items": false,
+				"label": "isRecent",
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"uuid": "688fa42a170dc"
+			},
+			"type": "boolean",
+			"title": "isRecent"
+		},
+		"isFlagged": {
+			"wiki": {
+				"name": "isFlagged",
+				"type": "property",
+				"multiple-items": false,
+				"label": "isFlagged",
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"uuid": "688fa42a170dd"
+			},
+			"type": "boolean",
+			"title": "isFlagged"
+		},
+		"isDeleted": {
+			"wiki": {
+				"name": "isDeleted",
+				"type": "property",
+				"multiple-items": false,
+				"label": "isDeleted",
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"uuid": "688fa42a170de"
+			},
+			"type": "boolean",
+			"title": "isDeleted"
+		},
+		"isDraft": {
+			"wiki": {
+				"name": "isDraft",
+				"type": "property",
+				"multiple-items": false,
+				"label": "isDraft",
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"uuid": "688fa42a170df"
+			},
+			"type": "boolean",
+			"title": "isDraft"
+		},
+		"parsedDate": {
+			"wiki": {
+				"name": "parsedDate",
+				"type": "property",
+				"multiple-items": false,
+				"label": "parsedDate",
+				"uuid": "688fa42a170e0",
+				"visibility": "visible",
+				"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "datetime",
+			"title": "parsedDate"
+		},
+		"sender": {
+			"wiki": {
+				"name": "sender",
+				"type": "schema",
+				"layout": "section",
+				"visibility": "visible",
+				"uuid": "688fc8330d561"
+			},
+			"properties": {
+				"name": {
+					"wiki": {
+						"name": "name",
+						"type": "property",
+						"multiple-items": false,
+						"label": "name",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fc8330d563"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "name"
+				},
+				"address": {
+					"wiki": {
+						"name": "address",
+						"type": "property",
+						"multiple-items": false,
+						"label": "address",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget (email)",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fc8330d564"
+					},
+					"type": "string",
+					"format": "email",
+					"title": "address"
+				}
+			},
+			"type": "object"
+		},
+		"from": {
+			"wiki": {
+				"name": "from",
+				"type": "schema",
+				"title": "from",
+				"uuid": "688fa42a170e6"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "",
+					"type": "property",
+					"multiple-items": true,
+					"preferred-input": "OO.ui.TextInputWidget",
+					"uuid": "688fa42a170e7",
+					"layout": "table"
+				},
+				"format": "text"
+			},
+			"type": "array",
+			"title": "from"
+		},
+		"fromParsed": {
+			"wiki": {
+				"name": "fromParsed",
+				"title": "fromParsed",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "688fa7464920e"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "",
+					"type": "schema",
+					"uuid": "688fa42a170e9",
+					"layout": "section",
+					"visibility": "visible"
+				},
+				"properties": {
+					"address": {
+						"wiki": {
+							"name": "address",
+							"type": "property",
+							"multiple-items": false,
+							"label": "address",
+							"uuid": "688fa42a170eb",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget (email)",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "email",
+						"title": "address"
+					},
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a170ec"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					}
+				}
+			},
+			"type": "array",
+			"title": "fromParsed",
+			"uniqueItems": false
+		},
+		"to": {
+			"wiki": {
+				"name": "to",
+				"type": "schema",
+				"title": "to",
+				"uuid": "688fa42a170e6"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "",
+					"type": "property",
+					"multiple-items": true,
+					"preferred-input": "OO.ui.TextInputWidget",
+					"uuid": "688fa42a170e7",
+					"layout": "table"
+				},
+				"format": "text"
+			},
+			"type": "array",
+			"title": "to"
+		},
+		"toParsed": {
+			"wiki": {
+				"name": "toParsed",
+				"title": "toParsed",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "688fa7464920e"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "",
+					"type": "schema",
+					"uuid": "688fa42a170e9",
+					"layout": "section",
+					"visibility": "visible"
+				},
+				"properties": {
+					"address": {
+						"wiki": {
+							"name": "address",
+							"type": "property",
+							"multiple-items": false,
+							"label": "address",
+							"uuid": "688fa42a170eb",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget (email)",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "email",
+						"title": "address"
+					},
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a170ec"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					}
+				}
+			},
+			"type": "array",
+			"title": "toParsed",
+			"uniqueItems": false
+		},
+		"cc": {
+			"wiki": {
+				"name": "cc",
+				"type": "schema",
+				"title": "cc",
+				"uuid": "688fa42a170e6"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "",
+					"type": "property",
+					"multiple-items": true,
+					"preferred-input": "OO.ui.TextInputWidget",
+					"uuid": "688fa42a170e7",
+					"layout": "table"
+				},
+				"format": "text"
+			},
+			"type": "array",
+			"title": "cc"
+		},
+		"ccParsed": {
+			"wiki": {
+				"name": "ccParsed",
+				"title": "ccParsed",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "688fa7464920e"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "",
+					"type": "schema",
+					"uuid": "688fa42a170e9",
+					"layout": "section",
+					"visibility": "visible"
+				},
+				"properties": {
+					"address": {
+						"wiki": {
+							"name": "address",
+							"type": "property",
+							"multiple-items": false,
+							"label": "address",
+							"uuid": "688fa42a170eb",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget (email)",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "email",
+						"title": "address"
+					},
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a170ec"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					}
+				}
+			},
+			"type": "array",
+			"title": "ccParsed",
+			"uniqueItems": false
+		},
+		"bcc": {
+			"wiki": {
+				"name": "bcc",
+				"type": "schema",
+				"title": "bcc",
+				"uuid": "688fa42a170e6"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "",
+					"type": "property",
+					"multiple-items": true,
+					"preferred-input": "OO.ui.TextInputWidget",
+					"uuid": "688fa42a170e7",
+					"layout": "table"
+				},
+				"format": "text"
+			},
+			"type": "array",
+			"title": "bcc"
+		},
+		"bccParsed": {
+			"wiki": {
+				"name": "bccParsed",
+				"title": "bccParsed",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "688fa7464920e"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "",
+					"type": "schema",
+					"uuid": "688fa42a170e9",
+					"layout": "section",
+					"visibility": "visible"
+				},
+				"properties": {
+					"address": {
+						"wiki": {
+							"name": "address",
+							"type": "property",
+							"multiple-items": false,
+							"label": "address",
+							"uuid": "688fa42a170eb",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget (email)",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "email",
+						"title": "address"
+					},
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a170ec"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					}
+				}
+			},
+			"type": "array",
+			"title": "bccParsed",
+			"uniqueItems": false
+		},
+		"replyTo": {
+			"wiki": {
+				"name": "replyTo",
+				"type": "schema",
+				"title": "replyTo",
+				"uuid": "688fa42a170e6"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "",
+					"type": "property",
+					"multiple-items": true,
+					"preferred-input": "OO.ui.TextInputWidget",
+					"uuid": "688fa42a170e7",
+					"layout": "table"
+				},
+				"format": "text"
+			},
+			"type": "array",
+			"title": "replyTo"
+		},
+		"replyToParsed": {
+			"wiki": {
+				"name": "replyToParsed",
+				"title": "replyToParsed",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "688fa7464920e"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "",
+					"type": "schema",
+					"uuid": "688fa42a170e9",
+					"layout": "section",
+					"visibility": "visible"
+				},
+				"properties": {
+					"address": {
+						"wiki": {
+							"name": "address",
+							"type": "property",
+							"multiple-items": false,
+							"label": "address",
+							"uuid": "688fa42a170eb",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget (email)",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "email",
+						"title": "address"
+					},
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a170ec"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					}
+				}
+			},
+			"type": "array",
+			"title": "replyToParsed",
+			"uniqueItems": false
+		},
+		"resentFrom": {
+			"wiki": {
+				"name": "resentFrom",
+				"type": "schema",
+				"layout": "section",
+				"visibility": "visible",
+				"uuid": "688fc8330d561"
+			},
+			"properties": {
+				"name": {
+					"wiki": {
+						"name": "name",
+						"type": "property",
+						"multiple-items": false,
+						"label": "name",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fc8330d563"
+					},
+					"type": "string",
+					"format": "text",
+					"title": "name"
+				},
+				"address": {
+					"wiki": {
+						"name": "address",
+						"type": "property",
+						"multiple-items": false,
+						"label": "address",
+						"visibility": "visible",
+						"preferred-input": "OO.ui.TextInputWidget (email)",
+						"input-config": [],
+						"required": false,
+						"uuid": "688fc8330d564"
+					},
+					"type": "string",
+					"format": "email",
+					"title": "address"
+				}
+			},
+			"type": "object"
+		},
+		"resentTo": {
+			"wiki": {
+				"name": "resentTo",
+				"type": "schema",
+				"title": "resentTo",
+				"uuid": "688fa42a170e6"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "",
+					"type": "property",
+					"multiple-items": true,
+					"preferred-input": "OO.ui.TextInputWidget",
+					"uuid": "688fa42a170e7",
+					"layout": "table"
+				},
+				"format": "text"
+			},
+			"type": "array",
+			"title": "resentTo"
+		},
+		"resentToParsed": {
+			"wiki": {
+				"name": "resentToParsed",
+				"title": "resentToParsed",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "688fa7464920e"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "",
+					"type": "schema",
+					"uuid": "688fa42a170e9",
+					"layout": "section",
+					"visibility": "visible"
+				},
+				"properties": {
+					"address": {
+						"wiki": {
+							"name": "address",
+							"type": "property",
+							"multiple-items": false,
+							"label": "address",
+							"uuid": "688fa42a170eb",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget (email)",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "email",
+						"title": "address"
+					},
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a170ec"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					}
+				}
+			},
+			"type": "array",
+			"title": "resentToParsed",
+			"uniqueItems": false
+		},
+		"resentCc": {
+			"wiki": {
+				"name": "resentCc",
+				"type": "schema",
+				"title": "resentCc",
+				"uuid": "688fa42a170e6"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "",
+					"type": "property",
+					"multiple-items": true,
+					"preferred-input": "OO.ui.TextInputWidget",
+					"uuid": "688fa42a170e7",
+					"layout": "table"
+				},
+				"format": "text"
+			},
+			"type": "array",
+			"title": "resentCc"
+		},
+		"resentCcParsed": {
+			"wiki": {
+				"name": "resentCcParsed",
+				"title": "resentCcParsed",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "688fa7464920e"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "",
+					"type": "schema",
+					"uuid": "688fa42a170e9",
+					"layout": "section",
+					"visibility": "visible"
+				},
+				"properties": {
+					"address": {
+						"wiki": {
+							"name": "address",
+							"type": "property",
+							"multiple-items": false,
+							"label": "address",
+							"uuid": "688fa42a170eb",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget (email)",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "email",
+						"title": "address"
+					},
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a170ec"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					}
+				}
+			},
+			"type": "array",
+			"title": "resentCcParsed",
+			"uniqueItems": false
+		},
+		"resentBcc": {
+			"wiki": {
+				"name": "resentBcc",
+				"type": "schema",
+				"title": "resentBcc",
+				"uuid": "688fa42a170e6"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "",
+					"type": "property",
+					"multiple-items": true,
+					"preferred-input": "OO.ui.TextInputWidget",
+					"uuid": "688fa42a170e7",
+					"layout": "table"
+				},
+				"format": "text"
+			},
+			"type": "array",
+			"title": "resentBcc"
+		},
+		"resentBccParsed": {
+			"wiki": {
+				"name": "resentBccParsed",
+				"title": "resentBccParsed",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "688fa7464920e"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "",
+					"type": "schema",
+					"uuid": "688fa42a170e9",
+					"layout": "section",
+					"visibility": "visible"
+				},
+				"properties": {
+					"address": {
+						"wiki": {
+							"name": "address",
+							"type": "property",
+							"multiple-items": false,
+							"label": "address",
+							"uuid": "688fa42a170eb",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget (email)",
+							"input-config": [],
+							"required": false
+						},
+						"type": "string",
+						"format": "email",
+						"title": "address"
+					},
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a170ec"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					}
+				}
+			},
+			"type": "array",
+			"title": "resentBccParsed",
+			"uniqueItems": false
+		},
+		"deliveredTo": {
+			"wiki": {
+				"name": "deliveredTo",
+				"type": "property",
+				"multiple-items": false,
+				"label": "deliveredTo",
+				"uuid": "688fa42a170ee",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget (email)",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "email",
+			"title": "deliveredTo"
+		},
+		"textPlain": {
+			"wiki": {
+				"name": "textPlain",
+				"type": "property",
+				"multiple-items": false,
+				"label": "textPlain",
+				"uuid": "688fa42a170f0",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.MultilineTextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "textarea",
+			"title": "textPlain"
+		},
+		"textHtml": {
+			"wiki": {
+				"name": "textHtml",
+				"type": "property",
+				"multiple-items": false,
+				"label": "textHtml",
+				"uuid": "688fa42a170f1",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.MultilineTextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "textarea",
+			"title": "textHtml"
+		},
+		"visibleText": {
+			"wiki": {
+				"name": "visibleText",
+				"type": "property",
+				"multiple-items": false,
+				"label": "visibleText",
+				"uuid": "688fa42a170f3",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.MultilineTextInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"type": "string",
+			"format": "textarea",
+			"title": "visibleText"
+		},
+		"detectedLanguage": {
+			"wiki": {
+				"name": "detectedLanguage",
+				"type": "property",
+				"multiple-items": false,
+				"label": "detectedLanguage",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"uuid": "688fa42a170f4"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "detectedLanguage"
+		},
+		"hasAttachments": {
+			"wiki": {
+				"name": "hasAttachments",
+				"type": "property",
+				"multiple-items": false,
+				"label": "hasAttachments",
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"uuid": "688fa42a170f5"
+			},
+			"type": "boolean",
+			"title": "hasAttachments"
+		},
+		"attachments": {
+			"wiki": {
+				"name": "attachments",
+				"title": "attachments",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "688fa74649213"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "",
+					"type": "schema",
+					"uuid": "688fa42a170f8",
+					"layout": "section",
+					"visibility": "visible"
+				},
+				"properties": {
+					"contentId": {
+						"wiki": {
+							"name": "contentId",
+							"type": "property",
+							"multiple-items": false,
+							"label": "contentId",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false,
+							"uuid": "688fa74649214"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "contentId"
+					},
+					"encoding": {
+						"wiki": {
+							"name": "encoding",
+							"type": "property",
+							"multiple-items": false,
+							"label": "encoding",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a170fb"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "encoding"
+					},
+					"description": {
+						"wiki": {
+							"name": "description",
+							"type": "property",
+							"multiple-items": false,
+							"label": "description",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false,
+							"uuid": "688fa74649215"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "description"
+					},
+					"contentType": {
+						"wiki": {
+							"name": "contentType",
+							"type": "property",
+							"multiple-items": false,
+							"label": "contentType",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a170fd"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "contentType"
+					},
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a170ff"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					},
+					"sizeInBytes": {
+						"wiki": {
+							"name": "sizeInBytes",
+							"type": "property",
+							"multiple-items": false,
+							"label": "sizeInBytes",
+							"preferred-input": "OO.ui.NumberInputWidget",
+							"uuid": "688fa42a17100"
+						},
+						"type": "integer",
+						"title": "sizeInBytes"
+					},
+					"sizeInMB": {
+						"wiki": {
+							"name": "sizeInMB",
+							"type": "property",
+							"multiple-items": false,
+							"label": "sizeInMB",
+							"preferred-input": "OO.ui.NumberInputWidget",
+							"uuid": "688fa42a17101"
+						},
+						"type": "number",
+						"title": "sizeInMB"
+					},
+					"disposition": {
+						"wiki": {
+							"name": "disposition",
+							"type": "property",
+							"multiple-items": false,
+							"label": "disposition",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a17102"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "disposition"
+					},
+					"fileInfo": {
+						"wiki": {
+							"name": "fileInfo",
+							"type": "property",
+							"multiple-items": false,
+							"label": "fileInfo",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a17103"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "fileInfo"
+					},
+					"mime": {
+						"wiki": {
+							"name": "mime",
+							"type": "property",
+							"multiple-items": false,
+							"label": "mime",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a17105"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "mime"
+					},
+					"mimeType": {
+						"wiki": {
+							"name": "mimeType",
+							"type": "property",
+							"multiple-items": false,
+							"label": "mimeType",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a17106"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "mimeType"
+					},
+					"mimeEncoding": {
+						"wiki": {
+							"name": "mimeEncoding",
+							"type": "property",
+							"multiple-items": false,
+							"label": "mimeEncoding",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a17107"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "mimeEncoding"
+					},
+					"fileExtension": {
+						"wiki": {
+							"name": "fileExtension",
+							"type": "property",
+							"multiple-items": false,
+							"label": "fileExtension",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"uuid": "688fa42a17108"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "fileExtension"
+					}
+				}
+			},
+			"type": "array",
+			"title": "attachments",
+			"uniqueItems": false
+		},
+		"regularAttachments": {
+			"wiki": {
+				"name": "regularAttachments",
+				"title": "regularAttachments",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "68ad796a45e7a"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "regularAttachments",
+					"type": "property",
+					"multiple-items": true,
+					"default": [],
+					"uuid": "688fa7908701b",
+					"visibility": "visible",
+					"preferred-input": "OO.ui.TextInputWidget",
+					"input-config": [],
+					"required": false,
+					"layout": "table"
+				},
+				"format": "text",
+				"default": []
+			},
+			"type": "array",
+			"title": "regularAttachments",
+			"uniqueItems": false
+		},
+		"conversationHash": {
+			"wiki": {
+				"name": "conversationHash",
+				"type": "property",
+				"multiple-items": false,
+				"label": "conversationHash",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "68ad796a45e7c"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "conversationHash"
+		}
+	},
+	"type": "object",
+	"title": "ContactManager/Message"
+}

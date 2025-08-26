@@ -824,8 +824,32 @@ class Mailer {
 			$this->transportClass->setPersonalizations( $this->personalizations );
 		}
 
+		// this is equivalent to $email->to( ...$this->obj['to'] );
+		// however it filters invalid email addresses
+		$getParsedRecipients = static function ( $recipients ) {
+			$arr = array_filter( array_map( static function ( $value ) {
+				if ( $value instanceof Address ) {
+					return [ $value->getName(), $value->getAddress() ];
+				}
+				return \ContactManager::parseRecipient( $value );
+			}, $recipients ) );
+
+			return array_map( static function ( $value ) {
+				return new Address( $value[1], $value[0] );
+			}, $arr );
+		};
+
 		$email = new Email();
-		$email->from( $this->obj['from'] );
+
+		// *** this is allowed by https://datatracker.ietf.org/doc/html/rfc5322#section-3.6.2
+		// but not supported on most of webmail
+		foreach ( $this->obj['from'] as $value ) {
+			$email->addFrom( $value );
+		}
+
+		if ( !empty( $this->obj['sender'] ) ) {
+			$email->sender( $this->obj['sender'] );
+		}
 
 		if ( $this->editor === 'VisualEditor' ) {
 			[ $text, $html ] = $this->parseWikitext( $this->obj['text'] );
@@ -849,21 +873,6 @@ class Mailer {
 				$email->text( $this->obj['text'] );
 			}
 		}
-
-		// this is equivalent to $email->to( ...$this->obj['to'] );
-		// however it filters the invalid email addresses
-		$getParsedRecipients = static function ( $recipients ) {
-			$arr = array_filter( array_map( static function ( $value ) {
-				if ( $value instanceof Address ) {
-					return [ $value->getName(), $value->getAddress() ];
-				}
-				return \ContactManager::parseRecipient( $value );
-			}, $recipients ) );
-
-			return array_map( static function ( $value ) {
-				return new Address( $value[1], $value[0] );
-			}, $arr );
-		};
 
 		// avoids symfony error "An email must have a "To", "Cc", or "Bcc" header."
 		if ( count( $this->personalizations ) &&

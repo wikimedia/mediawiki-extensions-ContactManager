@@ -45,6 +45,7 @@
 		"dragonmantank/cron-expression": "^3.3",
 		"mmucklo/email-parse": "^2.2",
 		"twig/twig": "3.11.3",
-		"patrickschur/language-detection": "^5.3"
+		"patrickschur/language-detection": "^5.3",
+		"zbateson/mail-mime-parser": "^3.0"
 	}
 }

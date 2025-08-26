@@ -133,6 +133,16 @@ class PHPImapMailbox extends \PhpImap\Mailbox {
 				$attachment->name = $this->decodeRFC2231( $this->decodeMimeStr( $rawFilename ) );
 			}
 		}
+
+		// *** this is required when the filename is
+		// truncated due to invalid characters (like '"')
+		$attachment->name = trim( $attachment->name );
+
+		// alternatively retrieve the original filename
+		// with a mime parser
+		if ( !preg_match( '/\.[a-zA-Z0-9]{1,10}$/', $attachment->name ) && $attachment->fileExtension ) {
+			$attachment->name .= '.' . $attachment->fileExtension;
+		}
 	}
 
 	/**
@@ -171,6 +181,13 @@ class PHPImapMailbox extends \PhpImap\Mailbox {
 
 		/** @var list<object> */
 		return $mails;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getMailboxFolder() {
+		return $this->mailboxFolder;
 	}
 
 	/**

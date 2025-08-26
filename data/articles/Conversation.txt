@@ -79,17 +79,17 @@ __NOTOC__
 }}
 {{#ifeq:{{#urlget:show}}|all|
   {{#visualdataquery: [[conversationHash::{{#urlget:hash}}]]
-    |schema=ContactManager/Incoming mail
-    |?headers/fromaddress
-    |?date
-    |?subject
-    |?toString
+    |schema=ContactManager/Message
+    |?headers/from
+    |?headers/to
+    |?headers/subject
+    |?parsedDate
     |?regularAttachments
     |?visibleText
     |template=ContactManager/Conversation
     |values-separator=@@
     |format=template
-    |order=date asc
+    |order=parsedDate asc
     |limit = 100
     |offset = {{#if: {{#urlget:offset}} | {{#urlget:offset}} | 0 }}
   }}
@@ -102,26 +102,26 @@ __NOTOC__
    | show={{#urlget:show}}
    | offset={{#urlget:offset}}
    | count= {{#visualdataquery: [[conversationHash::{{#urlget:hash}}]]
-    |schema=ContactManager/Incoming mail
-    |format=count
+     |schema=ContactManager/Message
+     |format=count
    }}
   }}</big>
 
 |
   {{#visualdataquery: [[conversationHash::{{#urlget:hash}}]]
-    [[date::>{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}-{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}-01]]
-    [[date::<{{#expr:{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|+1|+0}} }}-{{padleft:{{#expr:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|-11|+1}} }} |2|0}}-01]]
-    |schema=ContactManager/Incoming mail
-    |?headers/fromaddress
-    |?date
-    |?subject
-    |?toString
+    [[parsedDate::>{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}-{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}-01]]
+    [[parsedDate::<{{#expr:{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|+1|+0}} }}-{{padleft:{{#expr:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|-11|+1}} }} |2|0}}-01]]
+    |schema=ContactManager/Message
+    |?headers/from
+    |?headers/to
+    |?headers/subject
+    |?parsedDate
     |?regularAttachments
     |?visibleText
     |template=ContactManager/Conversation
     |values-separator=@@
     |format=template
-    |order=date asc
+    |order=parsedDate asc
     |limit = 100
     |offset = {{#if: {{#urlget:offset}} | {{#urlget:offset}} | 0 }}
   }}
@@ -134,9 +134,9 @@ __NOTOC__
    | show={{#urlget:show}}
    | offset={{#urlget:offset}}
    | count= {{#visualdataquery: [[conversationHash::{{#urlget:hash}}]]
-    [[date::>{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}-{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}-01]]
-    [[date::<{{#expr:{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|+1|+0}} }}-{{padleft:{{#expr:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|-11|+1}} }} |2|0}}-01]]
-    |schema=ContactManager/Incoming mail
+    [[parsedDate::>{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}-{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}-01]]
+    [[parsedDate::<{{#expr:{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|+1|+0}} }}-{{padleft:{{#expr:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|-11|+1}} }} |2|0}}-01]]
+    |schema=ContactManager/Message
     |format=count
   }}
   }}</big>
