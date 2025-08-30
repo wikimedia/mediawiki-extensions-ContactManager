@@ -1,0 +1,95 @@
+{
+	"wiki": {
+		"type": "schema",
+		"uuid": "68b2bad8880e5",
+		"name": "ContactManager/Fetched messages"
+	},
+	"properties": {
+		"mailbox": {
+			"wiki": {
+				"name": "mailbox",
+				"type": "property",
+				"multiple-items": false,
+				"label": "mailbox",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget",
+				"input-config": [],
+				"required": false,
+				"uuid": "68b2bad8880e8"
+			},
+			"type": "string",
+			"format": "text",
+			"title": "mailbox"
+		},
+		"folders": {
+			"wiki": {
+				"name": "folders",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "68b2c2a41e89e"
+			},
+			"items": {
+				"type": "object",
+				"wiki": {
+					"name": "",
+					"type": "schema",
+					"uuid": "68b2c2633ce24",
+					"title": "folders",
+					"layout": "section",
+					"visibility": "visible"
+				},
+				"properties": {
+					"name": {
+						"wiki": {
+							"name": "name",
+							"type": "property",
+							"multiple-items": false,
+							"label": "name",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.TextInputWidget",
+							"input-config": [],
+							"required": false,
+							"uuid": "68b2c2389ffcf"
+						},
+						"type": "string",
+						"format": "text",
+						"title": "name"
+					},
+					"IDs": {
+						"wiki": {
+							"name": "IDs",
+							"title": "IDs",
+							"unique-items": true,
+							"type": "schema",
+							"uuid": "68b2c2a41e8a7"
+						},
+						"items": {
+							"type": "integer",
+							"wiki": {
+								"name": "IDs",
+								"type": "property",
+								"uuid": "68b2c2633ce2c",
+								"visibility": "visible",
+								"label": "IDs",
+								"multiple-items": true,
+								"preferred-input": "OO.ui.NumberInputWidget",
+								"input-config": [],
+								"required": false,
+								"default": []
+							},
+							"title": "IDs",
+							"default": []
+						},
+						"type": "array",
+						"title": "IDs",
+						"uniqueItems": true
+					}
+				},
+				"title": "folders"
+			},
+			"type": "array",
+			"uniqueItems": false
+		}
+	},
+	"type": "object"
+}

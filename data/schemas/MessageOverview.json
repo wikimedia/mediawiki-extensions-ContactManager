@@ -2,7 +2,7 @@
 	"wiki": {
 		"type": "schema",
 		"uuid": "6754671f1a5d3",
-		"name": "ContactManager/Message header"
+		"name": "ContactManager/Message overview"
 	},
 	"properties": {
 		"subject": {
@@ -55,12 +55,12 @@
 		},
 		"date": {
 			"wiki": {
-				"type": "property",
-				"uuid": "6754671f1a5f7",
 				"name": "date",
-				"visibility": "visible",
-				"label": "date",
+				"type": "property",
 				"multiple-items": false,
+				"label": "date",
+				"uuid": "6754671f1a5f7",
+				"visibility": "visible",
 				"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
 				"input-config": [],
 				"required": false
@@ -270,4 +270,3 @@
 	},
 	"type": "object"
 }
-

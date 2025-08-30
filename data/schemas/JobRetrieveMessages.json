@@ -7,15 +7,17 @@
 	"properties": {
 		"name": {
 			"wiki": {
-				"name": "name",
 				"type": "property",
-				"multiple-items": false,
-				"required": true,
-				"label": "name",
 				"uuid": "660830d33f16f",
+				"name": "name",
 				"visibility": "visible",
+				"label": "name",
+				"multiple-items": false,
 				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": []
+				"input-config": {
+					"disabled": true
+				},
+				"required": true
 			},
 			"type": "string",
 			"format": "text",
@@ -45,14 +47,14 @@
 				"min-items": 1,
 				"unique-items": false,
 				"type": "schema",
-				"uuid": "687233e6a5d04"
+				"uuid": "68aec7792ce9b"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
-					"uuid": "686bb2f1b6994",
+					"uuid": "687233e6a5d04",
 					"layout": "section",
 					"visibility": "visible"
 				},
@@ -208,13 +210,13 @@
 						"type": "integer",
 						"title": "UID to"
 					},
-					"fetch_message": {
+					"only_overview": {
 						"wiki": {
-							"name": "fetch_message",
+							"name": "only_overview",
 							"type": "property",
 							"multiple-items": false,
-							"label": "fetch message",
-							"default": "true",
+							"label": "only overview",
+							"help-message": "toggle if you want to fetch only the overview, not the complete message",
 							"uuid": "675495e626d6d",
 							"visibility": "visible",
 							"preferred-input": "OO.ui.ToggleSwitchWidget",
@@ -222,8 +224,8 @@
 							"required": false
 						},
 						"type": "boolean",
-						"title": "fetch message",
-						"default": "true"
+						"title": "only overview",
+						"description": "toggle if you want to fetch only the overview, not the complete message"
 					},
 					"search_criteria": {
 						"wiki": {
@@ -545,7 +547,7 @@
 				"name": "categories",
 				"unique-items": false,
 				"type": "schema",
-				"uuid": "67efbc61db61c"
+				"uuid": "68b33dc7cfd44"
 			},
 			"items": {
 				"type": "string",
@@ -554,9 +556,9 @@
 					"type": "property",
 					"multiple-items": true,
 					"label": "categories",
-					"help-message": "assign one or more categories to download messages (can be overridden by \"filters by messages\")",
+					"help-message": "assign one or more categories to download messages, overviews or contacts",
 					"default": [],
-					"uuid": "6754cc0f72154",
+					"uuid": "67efbc61db61c",
 					"visibility": "visible",
 					"preferred-input": "mw.widgets.CategoryMultiselectWidget",
 					"input-config": [],
@@ -565,29 +567,77 @@
 				},
 				"format": "text",
 				"title": "categories",
-				"description": "assign one or more categories to download messages (can be overridden by \"filters by messages\")",
+				"description": "assign one or more categories to download messages, overviews or contacts",
 				"default": []
 			},
 			"type": "array",
 			"uniqueItems": false
 		},
-		"filters_by_headers": {
+		"categories_target": {
 			"wiki": {
-				"name": "filters_by_headers",
-				"title": "Filters by headers",
+				"name": "categories_target",
+				"unique-items": false,
+				"type": "schema",
+				"uuid": "68aec7de90c61"
+			},
+			"items": {
+				"type": "string",
+				"wiki": {
+					"name": "categories_target",
+					"type": "property",
+					"multiple-items": true,
+					"label": "categories target",
+					"help-message": "set the target items for the assigned categories",
+					"default": [],
+					"uuid": "68adfea87c36a",
+					"visibility": "visible",
+					"preferred-input": "OO.ui.MenuTagMultiselectWidget",
+					"input-config": [],
+					"options-allow-null": false,
+					"required": false,
+					"options-values-parsed": {
+						"message": "message",
+						"overview": "overview",
+						"contact (from)": "contact (from)",
+						"contact (to)": "contact (to)",
+						"contact (cc)": "contact (cc)",
+						"contact (bcc)": "contact (bcc)"
+					},
+					"layout": "table"
+				},
+				"format": "text",
+				"title": "categories target",
+				"description": "set the target items for the assigned categories",
+				"default": [],
+				"enum": [
+					"message",
+					"overview",
+					"contact (from)",
+					"contact (to)",
+					"contact (cc)",
+					"contact (bcc)"
+				]
+			},
+			"type": "array",
+			"uniqueItems": false
+		},
+		"filter_by_overview": {
+			"wiki": {
+				"name": "filter_by_overview",
+				"title": "Filter by overview",
 				"min-items": 0,
 				"unique-items": true,
 				"type": "schema",
-				"uuid": "67baf7b6dad98"
+				"uuid": "68b341485b587"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
+					"uuid": "68aec7de90c67",
 					"layout": "section",
-					"visibility": "visible",
-					"uuid": "67baf7b6dad9b"
+					"visibility": "visible"
 				},
 				"properties": {
 					"header": {
@@ -872,6 +922,55 @@
 						},
 						"type": "array",
 						"uniqueItems": true
+					},
+					"categories_target": {
+						"wiki": {
+							"name": "categories_target",
+							"unique-items": false,
+							"type": "schema",
+							"uuid": "68b341485b592"
+						},
+						"items": {
+							"type": "string",
+							"wiki": {
+								"name": "categories_target",
+								"type": "property",
+								"multiple-items": true,
+								"label": "categories target",
+								"help-message": "set the target items for the assigned categories",
+								"default": [],
+								"uuid": "68aec7de90c81",
+								"visibility": "condition",
+								"preferred-input": "OO.ui.MenuTagMultiselectWidget",
+								"input-config": [],
+								"options-allow-null": false,
+								"required": false,
+								"showif-field": "action",
+								"showif-condition": "!=",
+								"showif-value": "skip",
+								"showif-value-wikitext": false,
+								"options-values-parsed": {
+									"overview": "overview",
+									"contact (from)": "contact (from)",
+									"contact (to)": "contact (to)",
+									"contact (cc)": "contact (cc)",
+									"contact (bcc)": "contact (bcc)"
+								}
+							},
+							"format": "text",
+							"title": "categories target",
+							"description": "set the target items for the assigned categories",
+							"default": [],
+							"enum": [
+								"overview",
+								"contact (from)",
+								"contact (to)",
+								"contact (cc)",
+								"contact (bcc)"
+							]
+						},
+						"type": "array",
+						"uniqueItems": false
 					}
 				},
 				"required": [
@@ -879,25 +978,25 @@
 				]
 			},
 			"type": "array",
-			"title": "Filters by headers",
+			"title": "Filter by overview",
 			"minItems": 0,
 			"uniqueItems": true
 		},
-		"filters_by_message_fields": {
+		"filters_by_message": {
 			"wiki": {
-				"name": "filters_by_message_fields",
-				"title": "Filters by message fields",
+				"name": "filters_by_message",
+				"title": "Filters by message",
 				"min-items": 0,
 				"unique-items": true,
 				"type": "schema",
-				"uuid": "68ace5d43af5e"
+				"uuid": "68aec7792cf19"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
-					"uuid": "68ace434cb80a",
+					"uuid": "68adfea87c391",
 					"layout": "section",
 					"visibility": "visible"
 				},
@@ -990,79 +1089,7 @@
 						},
 						"type": "string",
 						"format": "text",
-						"title": "Field",
-						"enum": [
-							"id",
-							"headersRaw",
-							"imapPath",
-							"mailboxFolder",
-							"isSeen",
-							"isAnswered",
-							"isRecent",
-							"isFlagged",
-							"isDeleted",
-							"isDraft",
-							"parsedDate",
-							"sender/name",
-							"sender/address",
-							"deliveredTo",
-							"textPlain",
-							"textHtml",
-							"visibleText",
-							"detectedLanguage",
-							"hasAttachments",
-							"regularAttachments",
-							"conversationHash",
-							"headers/returnPath",
-							"headers/received",
-							"headers/resentDate",
-							"headers/resentFrom",
-							"headers/resentSender",
-							"headers/resentTo",
-							"headers/resentCc",
-							"headers/resentBcc",
-							"headers/resentMessageId",
-							"headers/date",
-							"headers/from",
-							"headers/sender",
-							"headers/replyTo",
-							"headers/to",
-							"headers/cc",
-							"headers/bcc",
-							"headers/messageId",
-							"headers/inReplyTo",
-							"headers/references",
-							"headers/subject",
-							"headers/comments",
-							"headers/keywords",
-							"headers/mimeVersion",
-							"headers/contentType",
-							"headers/contentTransferEncoding",
-							"headers/contentId",
-							"headers/contentDescription",
-							"headers/contentDisposition",
-							"headers/contentLanguage",
-							"headers/contentBase",
-							"headers/contentLocation",
-							"headers/contentFeatures",
-							"headers/contentAlternative",
-							"headers/contentMd5",
-							"headers/contentDuration",
-							"headers/autoSubmitted",
-							"attachments/contentId",
-							"attachments/encoding",
-							"attachments/description",
-							"attachments/contentType",
-							"attachments/name",
-							"attachments/sizeInBytes",
-							"attachments/sizeInMB",
-							"attachments/disposition",
-							"attachments/fileinfo",
-							"attachments/mime",
-							"attachments/mimeType",
-							"attachments/mimeEncoding",
-							"attachments/fileExtension"
-						]
+						"title": "Field"
 					},
 					"match": {
 						"wiki": {
@@ -1290,6 +1317,56 @@
 						},
 						"type": "array",
 						"uniqueItems": true
+					},
+					"categories_target": {
+						"wiki": {
+							"name": "categories_target",
+							"unique-items": false,
+							"type": "schema",
+							"uuid": "68adfea87c3b0"
+						},
+						"items": {
+							"type": "string",
+							"wiki": {
+								"name": "categories_target",
+								"type": "property",
+								"multiple-items": true,
+								"label": "categories target",
+								"help-message": "set the target items for the assigned categories",
+								"default": [],
+								"uuid": "68adfdd70e86e",
+								"visibility": "condition",
+								"showif-field": "action",
+								"showif-condition": "!=",
+								"showif-value": "skip",
+								"showif-value-wikitext": false,
+								"preferred-input": "OO.ui.MenuTagMultiselectWidget",
+								"input-config": [],
+								"options-allow-null": false,
+								"required": false,
+								"options-values-parsed": {
+									"message": "message",
+									"contact (from)": "contact (from)",
+									"contact (to)": "contact (to)",
+									"contact (cc)": "contact (cc)",
+									"contact (bcc)": "contact (bcc)"
+								},
+								"layout": "table"
+							},
+							"format": "text",
+							"title": "categories target",
+							"description": "set the target items for the assigned categories",
+							"default": [],
+							"enum": [
+								"message",
+								"contact (from)",
+								"contact (to)",
+								"contact (cc)",
+								"contact (bcc)"
+							]
+						},
+						"type": "array",
+						"uniqueItems": false
 					}
 				},
 				"required": [
@@ -1297,7 +1374,7 @@
 				]
 			},
 			"type": "array",
-			"title": "Filters by message fields",
+			"title": "Filters by message",
 			"minItems": 0,
 			"uniqueItems": true
 		},
@@ -1380,4 +1457,3 @@
 	],
 	"type": "object"
 }
-

@@ -188,16 +188,17 @@ class ImportMessage {
 	}
 
 	/**
+	 * @param array &$fetchedMessages
 	 * @return array|int
 	 */
-	public function doImport() {
+	public function doImport( &$fetchedMessages ) {
 		$params = $this->params;
 		$user = $this->user;
 		$imapMailbox = $this->mailbox->getImapMailbox();
 
 		if ( !$imapMailbox ) {
 			$this->errors[] = 'no imap mailbox';
-			echo '***skipped on error' . PHP_EOL;
+			echo '***skipped on error: no imap mailbox' . PHP_EOL;
 			return \ContactManager::SKIPPED_ON_ERROR;
 		}
 
@@ -427,6 +428,7 @@ conversationHash
 		}
 
 		$allContacts = [];
+		$emailFieldMap = [];
 		foreach ( $allRecipients as $key => $value ) {
 			foreach ( $value as $k => $v ) {
 				$obj[$key][] = $formatRecipient( $v['address'], $v['name'] );
@@ -435,6 +437,7 @@ conversationHash
 					'name' => $v['name'],
 				];
 				$allContacts[$v['address']] = $v['name'];
+				$emailFieldMap[$v['address']] = $key;
 			}
 		}
 
@@ -480,36 +483,51 @@ conversationHash
 			return $finfo->buffer( $contents );
 		};
 
-		$obj['regularAttachments'] = [];
 		$attachmentPaths = [];
-		foreach ( $attachments as $part ) {
-			// @see PhpImap/Mailbox
-			$fileSysName = bin2hex( random_bytes( 16 ) ) . '.bin';
-			$dest_ = $attachmentsFolder . '/' . $fileSysName;
-			$part->saveContent( $dest_ );
-			$attachmentPaths[] = $dest_;
+		if ( $obj['hasAttachments'] ) {
+			// @see https://github.com/barbushin/php-imap/issues/569
+			preg_match_all( '/\bcid:([^\s\'"<>]{1,256})/mi', $obj['textHtml'], $matches );
+			$cidList = isset( $matches[1] ) ? array_unique( $matches[1] ) : [];
 
-			$contents_ = file_get_contents( $dest_ );
-			$obj['attachments'][] = [
-				'contentId'      => $part->getContentId(),
-				'encoding'       => $part->getContentTransferEncoding(),
-				'description'    => $part->getHeaderValue( 'Content-Description' ),
-				'contentType'    => $part->getContentType(),
-				'name'           => $part->getFilename(),
-				'sizeInBytes'    => strlen( $contents_ ),
-				'sizeInMB'       => round( strlen( $contents_ ) / 1048576, 2 ),
-				'disposition'    => $part->getContentDisposition(),
-				'charset'        => $part->getCharset(),
-				'fileInfo'       => $getFileInfo( \FILEINFO_NONE, $contents_ ),
-				// 'fileInfoRaw'  => $getFileInfo( \FILEINFO_RAW, $contents_ ),
-				'mime'           => $getFileInfo( \FILEINFO_MIME, $contents_ ),
-				'mimeType'       => $getFileInfo( \FILEINFO_MIME_TYPE, $contents_ ),
-				'mimeEncoding'   => $getFileInfo( \FILEINFO_MIME_ENCODING, $contents_ ),
-				'fileExtension'  => $getFileInfo( \FILEINFO_EXTENSION, $contents_ ),
-			];
+			$obj['regularAttachments'] = [];
+			foreach ( $attachments as $part ) {
+				// @see PhpImap/Mailbox
+				$fileSysName = bin2hex( random_bytes( 16 ) ) . '.bin';
+				$dest_ = $attachmentsFolder . '/' . $fileSysName;
+				$part->saveContent( $dest_ );
+				$attachmentPaths[] = $dest_;
 
-			if ( $part->getContentDisposition() === 'attachment' ) {
-				$obj['regularAttachments'][count( $obj['attachments'] ) - 1] = $part->getFilename();
+				$contents_ = file_get_contents( $dest_ );
+
+				$disposition_ = (
+					$part->getContentDisposition() === 'attachment' ||
+					empty( $part->getContentId() ) ||
+					!in_array( $part->getContentId(), $cidList, true )
+					? 'attachment'
+					: 'inline'
+				);
+
+				$obj['attachments'][] = [
+					'contentId'      => $part->getContentId(),
+					'encoding'       => $part->getContentTransferEncoding(),
+					'description'    => $part->getHeaderValue( 'Content-Description' ),
+					'contentType'    => $part->getContentType(),
+					'name'           => $part->getFilename(),
+					'sizeInBytes'    => strlen( $contents_ ),
+					'sizeInMB'       => round( strlen( $contents_ ) / 1048576, 2 ),
+					'disposition'    => $disposition_,
+					'charset'        => $part->getCharset(),
+					'fileInfo'       => $getFileInfo( \FILEINFO_NONE, $contents_ ),
+					// 'fileInfoRaw'  => $getFileInfo( \FILEINFO_RAW, $contents_ ),
+					'mime'           => $getFileInfo( \FILEINFO_MIME, $contents_ ),
+					'mimeType'       => $getFileInfo( \FILEINFO_MIME_TYPE, $contents_ ),
+					'mimeEncoding'   => $getFileInfo( \FILEINFO_MIME_ENCODING, $contents_ ),
+					'fileExtension'  => $getFileInfo( \FILEINFO_EXTENSION, $contents_ ),
+				];
+
+				if ( $disposition_ === 'attachment' ) {
+					$obj['regularAttachments'][] = $obj['attachments'][count( $obj['attachments'] ) - 1]['name'];
+				}
 			}
 		}
 
@@ -530,16 +548,53 @@ conversationHash
 			'<ContactManager/Message/id>'
 		);
 
-		$categories = ( array_key_exists( 'categories', $params )
-			&& is_array( $params['categories'] ) ? $params['categories'] : [] );
+		$categories = [
+			'message' => [],
+			'from' => [],
+			'to' => [],
+			'cc' => [],
+			'bcc' => [],
+		];
+
+		$assignCategories = static function ( $params, $categories ) {
+			if ( !array_key_exists( 'categories_target', $params ) ||
+				!array_key_exists( 'categories', $params ) ||
+				!is_array( $params['categories_target'] ) ||
+				!is_array( $params['categories'] )
+			) {
+				return;
+			}
+
+			foreach ( $params['categories_target'] as $target_ ) {
+				switch ( $target_ ) {
+					case 'contact (from)':
+						$target_ = 'from';
+						break;
+					case 'contact (to)':
+						$target_ = 'to';
+						break;
+					case 'contact (cc)':
+						$target_ = 'cc';
+						break;
+					case 'contact (bcc)':
+						$target_ = 'bcc';
+						break;
+				}
+				$categories[$target_] = $params['categories'];
+			}
+
+			return $categories;
+		};
+
+		$categories = $assignCategories( $params, $categories );
 
 		if ( strtolower( $params['folder']['folder_type'] ) === 'inbox' &&
 			count( array_intersect( $senderAddresses, $this->mailboxData['all_addresses'] ) )
 		) {
-			$categories[] = 'Messages in wrong folder';
+			$categories['message'] = 'Messages in wrong folder';
 		}
 
-		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories ) ) {
+		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories, $assignCategories ) ) {
 			echo 'skipped by filter' . PHP_EOL;
 			$deleteAttachments();
 			return \ContactManager::SKIPPED_ON_FILTER;
@@ -567,7 +622,7 @@ conversationHash
 		if ( empty( $pagenameFormula ) ) {
 			// throw new \MWException( 'invalid title' );
 			$this->errors[] = 'empty pagename formula';
-			echo '***skipped on error' . PHP_EOL;
+			echo '***skipped on error: empty pagename formula' . PHP_EOL;
 			$deleteAttachments();
 			return \ContactManager::SKIPPED_ON_ERROR;
 		}
@@ -576,14 +631,13 @@ conversationHash
 
 		if ( !$title_ ) {
 			$this->errors[] = 'invalid title';
-			echo '***skipped on error' . PHP_EOL;
+			echo '***skipped on error: invalid title "' . $pagenameFormula . '"' . PHP_EOL;
 			$deleteAttachments();
 			return \ContactManager::SKIPPED_ON_ERROR;
 		}
 
 		if ( $title_->isKnown() && !empty( $params['ignore_existing'] ) ) {
 			echo 'skipped as existing' . PHP_EOL;
-			$deleteAttachments();
 			return \ContactManager::SKIPPED_ON_EXISTING;
 		}
 
@@ -601,13 +655,13 @@ conversationHash
 		];
 		$importer = new VisualDataImporter( $user, $context, $schema, $options );
 
-		$obj['categories'] = $categories;
+		$obj['categories'] = $categories['message'];
 
 		$retMessage = $importer->importData( $pagenameFormula, $obj, $showMsg );
 
 		if ( !is_array( $retMessage ) || !count( $retMessage ) ) {
 			$this->errors[] = 'import failed';
-			echo '***skipped on error' . PHP_EOL;
+			echo '***skipped on error: import failed' . PHP_EOL;
 			$deleteAttachments();
 			return \ContactManager::SKIPPED_ON_ERROR;
 		}
@@ -630,8 +684,8 @@ conversationHash
 				$jsonData_ = [
 					$GLOBALS['wgContactManagerSchemasMailbox'] => $mailboxData
 				];
-				$title_ = TitleClass::newFromText( $this->mailboxData['title'] );
-				\VisualData::updateCreateSchemas( $user, $title_, $jsonData_ );
+				$title__ = TitleClass::newFromText( $this->mailboxData['title'] );
+				\VisualData::updateCreateSchemas( $user, $title__, $jsonData_ );
 			}
 		}
 
@@ -675,8 +729,13 @@ conversationHash
 				// it will be added separately
 				$conversationHash_ = ( array_key_exists( $email, $conversationRecipients ) ? $conversationHash : null );
 
-				$ret_ = \ContactManager::saveUpdateContact( $user, $context, $params, $obj, $name, $email, $conversationHash_,
-					( in_array( $email, $senderAddresses ) ? $detectedLanguage : null ) );
+				$categories_ = ( !array_key_exists( $emailFieldMap[$email], $categories )
+					|| in_array( $email, $this->mailboxData['all_addresses'] )
+					? []
+					: $categories[$emailFieldMap[$email]] );
+
+				$ret_ = \ContactManager::saveUpdateContact( $user, $context, $params, $obj, $name, $email,
+					$categories_, $conversationHash_, ( in_array( $email, $senderAddresses ) ? $detectedLanguage : null ) );
 
 				if ( is_string( $ret_ ) && $ret_ ) {
 					$retContacts[] = $ret_;
@@ -690,6 +749,47 @@ conversationHash
 				$retConversation[] = $ret_;
 			}
 		}
+
+		// update fetchedMessages
+		if ( empty( $fetchedMessages ) ) {
+			$fetchedMessages = [ 'mailbox' => $params['mailbox'] ];
+		}
+
+		$found = false;
+		if ( !isset( $fetchedMessages['folders'] ) || !is_array( $fetchedMessages['folders'] ) ) {
+			$fetchedMessages['folders'] = [];
+		}
+
+		foreach ( $fetchedMessages['folders'] as $k => $v ) {
+			if ( $v['name'] === $folder['folder_name'] ) {
+				$ids = isset( $v['IDs'] ) && is_array( $v['IDs'] ) ? $v['IDs'] : [];
+				$ids[] = $mailId;
+				$ids = array_unique( $ids );
+				sort( $ids );
+				$fetchedMessages['folders'][$k]['IDs'] = $ids;
+				$found = true;
+				break;
+			}
+		}
+
+		if ( !$found ) {
+			$fetchedMessages['folders'][] = [
+				'name' => $folder['folder_name'],
+				'IDs' => [ $mailId ]
+			];
+		}
+
+		$pagenameFormula = \ContactManager::replaceParameter( 'ContactManagerFetchedMessagesPagenameFormula',
+			$params['mailbox']
+		);
+
+		$title_ = TitleClass::newFromText( $pagenameFormula );
+
+		$jsonData_ = [
+			$GLOBALS['wgContactManagerSchemasFetchedMessages'] => $fetchedMessages
+		];
+
+		\VisualData::updateCreateSchemas( $user, $title_, $jsonData_ );
 
 		return [ $retMessage, $retContacts, $retConversation ];
 	}
@@ -779,15 +879,12 @@ conversationHash
 					$relatedAddresses[] = $value['address'];
 				}, $obj['fromParsed'] );
 				break;
+			case 'inbox':
 			case 'spam':
 			case 'other':
-			case 'inbox':
 			case 'trash':
 			default:
 				$mailboxAddresses = $this->mailboxData['all_addresses'];
-				if ( !empty( $obj['deliveredTo'] ) ) {
-					$relatedAddresses[] = $obj['deliveredTo'];
-				}
 				foreach ( [ 'toParsed', 'ccParsed', 'bccParsed' ] as $value ) {
 					if ( array_key_exists( $value, $obj ) ) {
 						array_map( static function ( $v ) use ( &$relatedAddresses, $mailboxAddresses ) {
@@ -801,9 +898,6 @@ conversationHash
 		}
 
 		$relatedAddresses = array_unique( $relatedAddresses );
-		// if ( !$relatedAddress ) {
-		// 	$relatedAddress = $this->mailboxData['all_addresses'][count( $this->mailboxData['all_addresses'] ) - 1];
-		// }
 
 		return [ $hash, $relatedAddresses ];
 	}
@@ -932,9 +1026,10 @@ conversationHash
 	 * @param array $obj
 	 * @param string &$pagenameFormula
 	 * @param array &$categories
+	 * @param callable $assignCategories
 	 * @return bool
 	 */
-	private function applyFilters( $obj, &$pagenameFormula, &$categories ) {
+	private function applyFilters( $obj, &$pagenameFormula, &$categories, $assignCategories ) {
 		$params = $this->params;
 
 		$obj = \ContactManager::flattenArray( $obj );
@@ -1075,8 +1170,8 @@ conversationHash
 						}
 
 						if ( !empty( $v['categories'] ) ) {
-							$categories = array_merge( $categories, $v['categories'] );
-							echo 'apply categories ' . implode( ', ', $categories ) . PHP_EOL;
+							$categories = $assignCategories( $v, $categories );
+							echo 'apply categories ' . print_r( $categories, true ) . PHP_EOL;
 						}
 				}
 			}
@@ -1100,34 +1195,6 @@ conversationHash
 				[ 'cid' => $cid ] );
 			return $matches[1] . $url . $matches[3];
 		}, $textHtml );
-	}
-
-	/**
-	 * @see PhpImap\IncomingMail
-	 * @param string $textHtml
-	 * @param \PhpImap\IncomingMailAttachment $attachments
-	 * @return array
-	 */
-	private function getAttachmentsType( $textHtml, $attachments ) {
-		preg_match_all( '/\bcid:([^\s\'"<>]{1,256})/mi', $textHtml, $matches );
-		$cidList = isset( $matches[1] ) ? array_unique( $matches[1] ) : [];
-
-		$regular = [];
-		$inline = [];
-		foreach ( $attachments as $attachment ) {
-			$disposition = \mb_strtolower( (string)$attachment->disposition );
-			// @see https://github.com/barbushin/php-imap/issues/569
-			if (
-				in_array( $attachment->contentId, $cidList, true ) ||
-				strtolower( $disposition ) === 'inline'
-			) {
-				$inline[] = $attachment;
-			} else {
-				$regular[] = $attachment;
-			}
-		}
-
-		return [ $regular, $inline ];
 	}
 
 }

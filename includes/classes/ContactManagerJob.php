@@ -124,37 +124,11 @@ class ContactManagerJob extends \Job {
 
 			case 'get-message':
 			case 'retrieve-message':
-				foreach ( $this->params['folders'] as $folder_ ) {
-					if ( $folder_['folder_name'] === $this->params['folder_name'] ) {
-						$this->params['folder'] = $folder_;
-						break;
-					}
-				}
-				$mailbox = new Mailbox( $mailboxName, $errors );
-				if ( count( $errors ) ) {
-					throw new \MWException( $errors[count( $errors ) - 1] );
-				}
-
-				$mailboxData = \ContactManager::getMailboxData( $params['mailbox'] );
-				$importMessage = new ImportMessage( $user, $mailbox, $mailboxData, $this->params, $errors );
-				$res_ = $importMessage->doImport();
-				if ( !is_array( $res_ ) ) {
-					switch ( $res_ ) {
-						case \ContactManager::SKIPPED_ON_ERROR:
-							$this->error = 'ContactManager: error retrieving message';
-							break;
-						case \ContactManager::SKIPPED_ON_FILTER:
-							$this->error = 'ContactManager: skipped on filter';
-							break;
-						case \ContactManager::SKIPPED_ON_EXISTING:
-							$this->error = 'ContactManager: skipped on existing';
-							break;
-					}
-				}
+				\ContactManager::getSingleMessage( $user, $this->params, $errors );
 				break;
-			// case 'record-header':
-			// 	$recordHeader = new RecordHeader( $user, $this->params, $errors );
-			// 	$recordHeader->doImport();
+			// case 'record-overview':
+			// 	$recordOverview = new RecordOverview( $user, $this->params, $errors );
+			// 	$recordOverview->doImport();
 			// 	break;
 			// case 'get-contacts':
 			// case 'retrieve-contacts':

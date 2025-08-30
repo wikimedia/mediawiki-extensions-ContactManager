@@ -590,11 +590,16 @@ class Mailer {
 				$cat = Category::newFromName( $value );
 				$iterator_ = $cat->getMembers( 10 );
 				$found = false;
+				$excludeSchemas = [
+					$GLOBALS['wgContactManagerSchemasMessageOverview'],
+					$GLOBALS['wgContactManagerSchemasMessage'],
+				];
 				while ( $iterator_->valid() && !$found ) {
 					$title_ = $iterator_->current();
 					$data_ = \VisualData::getJsonData( $title_ );
 					if ( !empty( $data_['schemas'] ) ) {
 						$schemas_ = array_keys( $data_['schemas'] );
+						$schemas_ = array_diff( $schemas_, $excludeSchemas );
 						foreach ( $schemas_ as $schemaName_ ) {
 							$schema_ = \VisualData::getSchema( $context, $schemaName_ );
 							[ $emailPrintouts_, $requiredPrintouts_ ] = $this->getRelevantPrintouts( $schema_, $this->obj['text'] );

@@ -2,14 +2,14 @@
 |schema=ContactManager/Job retrieve messages
 |?folders/folder_name
 |?folders/folder?
-|template?folders/folder_name=ContactManager/Headers folder name field
+|template?folders/folder_name=ContactManager/Overview folder name field
 |format=raw
 }}</big>
 <templatestyles src="ContactManager:Styles.css" />
 
 =={{#urlget:folder}}==
-{{#visualdataquery: [[ContactManager:Mailboxes/{{#urlget:mailbox}}/headers/{{#urlget:folder}}/~]]
-|schema=ContactManager/Message header
+{{#visualdataquery: [[ContactManager:Mailboxes/{{#urlget:mailbox}}/overview/{{#urlget:folder}}/~]]
+|schema=ContactManager/Message overview
 |?pagetitle
 |?subject
 |?from
@@ -17,7 +17,7 @@
 |?date
 |?uid=
 |pagetitle=
-|template?pagetitle=ContactManager/Headers read email field
+|template?pagetitle=ContactManager/Overview read email field
 |format=datatables
 |datatables-searchPanes=true
 |datatables-searchPanes.columns=2

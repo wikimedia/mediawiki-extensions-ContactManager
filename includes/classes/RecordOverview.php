@@ -19,7 +19,7 @@
  * @file
  * @ingroup extensions
  * @author thomas-topway-it <support@topway.it>
- * @copyright Copyright ©2024, https://wikisphere.org
+ * @copyright Copyright ©2024-2025, https://wikisphere.org
  */
 
 namespace MediaWiki\Extension\ContactManager;
@@ -34,7 +34,7 @@ if ( is_readable( __DIR__ . '/../../vendor/autoload.php' ) ) {
 	include_once __DIR__ . '/../../vendor/autoload.php';
 }
 
-class RecordHeader {
+class RecordOverview {
 
 	/** @var User */
 	private $user;
@@ -82,14 +82,53 @@ class RecordHeader {
 		$folder = $params['folder'];
 
 		// may be overridden by $this->applyFilters
-		$pagenameFormula = \ContactManager::replaceParameter( 'ContactManagerHeaderPagenameFormula',
+		$pagenameFormula = \ContactManager::replaceParameter( 'ContactManagerOverviewPagenameFormula',
 			$params['mailbox'],
 			$folder['folder_name'],
-			'<ContactManager/Message header/uid>'
+			'<ContactManager/Message overview/uid>'
 		);
 
-		$categories_ = [];
-		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories_ ) ) {
+		$categories = [
+			'overview' => [],
+			'from' => [],
+			'to' => [],
+			'cc' => [],
+			'bcc' => [],
+		];
+
+		$assignCategories = static function ( $params, $categories ) {
+			if ( !array_key_exists( 'categories_target', $params ) ||
+				!array_key_exists( 'categories', $params ) ||
+				!is_array( $params['categories_target'] ) ||
+				!is_array( $params['categories'] )
+			) {
+				return;
+			}
+
+			foreach ( $params['categories_target'] as $target_ ) {
+				switch ( $target_ ) {
+					case 'contact (from)':
+						$target_ = 'from';
+						break;
+					case 'contact (to)':
+						$target_ = 'to';
+						break;
+					case 'contact (cc)':
+						$target_ = 'cc';
+						break;
+					case 'contact (bcc)':
+						$target_ = 'bcc';
+						break;
+				}
+				$categories[$target_] = $params['categories'];
+			}
+
+			return $categories;
+		};
+
+		$categories = $assignCategories( $params, $categories );
+
+		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories, $assignCategories ) ) {
 			echo 'skipped by filter' . PHP_EOL;
 			return \ContactManager::SKIPPED_ON_FILTER;
 		}
@@ -98,7 +137,7 @@ class RecordHeader {
 		$pagenameFormula = str_replace( '<folder_name>', $folder['folder_name'], $pagenameFormula );
 
 		$pagenameFormula = \ContactManager::replaceFormula( $obj, $pagenameFormula,
-			$GLOBALS['wgContactManagerSchemasMessageHeader'] );
+			$GLOBALS['wgContactManagerSchemasMessageOverview'] );
 
 		$pagenameFormula = \ContactManager::parseWikitext( $output, $pagenameFormula );
 
@@ -106,7 +145,7 @@ class RecordHeader {
 
 		if ( !$title_ ) {
 			$this->errors[] = 'invalid title';
-			echo '***skipped on error' . PHP_EOL;
+			echo '***skipped on error: invalid title "' . $pagenameFormula . '"' . PHP_EOL;
 			return \ContactManager::SKIPPED_ON_ERROR;
 		}
 
@@ -115,7 +154,7 @@ class RecordHeader {
 			return \ContactManager::SKIPPED_ON_EXISTING;
 		}
 
-		$schema_ = $GLOBALS['wgContactManagerSchemasMessageHeader'];
+		$schema_ = $GLOBALS['wgContactManagerSchemasMessageOverview'];
 		$options_ = [
 			'main-slot' => true,
 			'limit' => INF,
@@ -123,13 +162,13 @@ class RecordHeader {
 		];
 		$importer = new VisualDataImporter( $user, $context, $schema_, $options_ );
 
-		$obj['categories'] = $categories_;
+		$obj['categories'] = $categories['overview'];
 
 		$retHeader = $importer->importData( $pagenameFormula, $obj, $showMsg );
 
 		if ( !is_array( $retHeader ) ) {
 			$this->errors[] = 'import failed';
-			echo '***skipped on error' . PHP_EOL;
+			echo '***skipped on error: import failed' . PHP_EOL;
 			return \ContactManager::SKIPPED_ON_ERROR;
 		}
 
@@ -137,20 +176,27 @@ class RecordHeader {
 		$title_ = TitleClass::newFromText( $pagenameFormula );
 
 		$retContacts = [];
+		$emailFieldMap = [];
 		if ( !empty( $params['save_contacts'] ) ) {
 			$allContacts = [];
 			foreach ( [ 'to', 'from' ] as $value ) {
 				$parsed_ = EmailParse::getInstance()->parse( $obj[$value] );
 				if ( $parsed_['success'] ) {
 					foreach ( $parsed_['email_addresses'] as $v_ ) {
-						$v_['simple_address'] = strtolower( $v_['simple_address'] );
-						$allContacts[$v_['simple_address']] = $v_['name'];
+						$email_ = strtolower( $v_['simple_address'] );
+						$allContacts[$email_] = $v_['name'];
+						$emailFieldMap[$email_] = $value;
 					}
 				}
 			}
 
 			foreach ( $allContacts as $email => $name ) {
-				$ret_ = \ContactManager::saveUpdateContact( $user, $context, $params, $obj, $name, $email );
+				$categories_ = ( !array_key_exists( $emailFieldMap[$email], $categories )
+					|| in_array( $email, $this->mailboxData['all_addresses'] )
+					? []
+					: $categories[$emailFieldMap[$email]] );
+
+				$ret_ = \ContactManager::saveUpdateContact( $user, $context, $params, $obj, $name, $email, $categories_ );
 				if ( is_string( $ret_ ) && $ret_ ) {
 					$retContacts[] = $ret_;
 				}
@@ -164,16 +210,17 @@ class RecordHeader {
 	 * @param obj $obj
 	 * @param string &$pagenameFormula
 	 * @param array &$categories
+	 * @param callable $assignCategories
 	 * @return bool
 	 */
-	private function applyFilters( $obj, &$pagenameFormula, &$categories ) {
+	private function applyFilters( $obj, &$pagenameFormula, &$categories, $assignCategories ) {
 		$params = $this->params;
 
-		if ( !array_key_exists( 'filters_by_headers', $params ) ) {
-			$params['filters_by_headers'] = [];
+		if ( !array_key_exists( 'filters_by_overview', $params ) ) {
+			$params['filters_by_overview'] = [];
 		}
 
-		foreach ( (array)$params['filters_by_headers'] as $v ) {
+		foreach ( (array)$params['filters_by_overview'] as $v ) {
 			if ( !array_key_exists( 'header', $v ) || empty( $v['header'] ) ) {
 				continue;
 			}
@@ -244,8 +291,8 @@ class RecordHeader {
 						}
 
 						if ( !empty( $v['categories'] ) ) {
-							$categories = array_merge( $categories, $v['categories'] );
-							echo 'apply categories ' . implode( ', ', $categories ) . PHP_EOL;
+							$categories = $assignCategories( $v, $categories );
+							echo 'apply categories ' . print_r( $categories, true ) . PHP_EOL;
 						}
 				}
 			}

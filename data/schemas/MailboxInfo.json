@@ -1,121 +1,103 @@
 {
 	"wiki": {
 		"type": "schema",
-		"uuid": "6609c732670ae",
-		"name": "ContactManager/Mailbox info",
-		"title": "Mailbox info"
+		"uuid": "680d700c814c1",
+		"name": "ContactManager/Job mailbox info"
 	},
 	"properties": {
 		"name": {
 			"wiki": {
-				"name": "name",
 				"type": "property",
+				"uuid": "680d700c814c5",
+				"name": "name",
+				"visibility": "visible",
+				"label": "name",
 				"multiple-items": false,
-				"label": "Name",
-				"label-parsed": "Name",
 				"preferred-input": "OO.ui.TextInputWidget",
-				"uuid": "6609c732670b4"
+				"input-config": {
+					"disabled": true
+				},
+				"required": true
 			},
 			"type": "string",
 			"format": "text",
-			"title": "Name"
-		},
-		"unread": {
-			"wiki": {
-				"name": "unread",
-				"type": "property",
-				"multiple-items": false,
-				"label": "Unread",
-				"label-parsed": "Unread",
-				"preferred-input": "OO.ui.NumberInputWidget",
-				"uuid": "6609c732670b5"
-			},
-			"type": "integer",
-			"title": "Unread"
-		},
-		"deleted": {
-			"wiki": {
-				"name": "deleted",
-				"type": "property",
-				"multiple-items": false,
-				"label": "Deleted",
-				"label-parsed": "Deleted",
-				"preferred-input": "OO.ui.NumberInputWidget",
-				"uuid": "6609c732670b7"
-			},
-			"type": "integer",
-			"title": "Deleted"
-		},
-		"nmsgs": {
-			"wiki": {
-				"name": "nmsgs",
-				"type": "property",
-				"multiple-items": false,
-				"label": "Nmsgs",
-				"label-parsed": "Nmsgs",
-				"preferred-input": "OO.ui.NumberInputWidget",
-				"uuid": "6609c732670b8"
-			},
-			"type": "integer",
-			"title": "Nmsgs"
-		},
-		"size": {
-			"wiki": {
-				"name": "size",
-				"type": "property",
-				"multiple-items": false,
-				"label": "Size",
-				"label-parsed": "Size",
-				"preferred-input": "OO.ui.NumberInputWidget",
-				"uuid": "6609c732670b9"
-			},
-			"type": "integer",
-			"title": "Size"
-		},
-		"date": {
-			"wiki": {
-				"type": "property",
-				"uuid": "6609c732670ba",
-				"name": "date",
-				"visibility": "visible",
-				"label": "Date",
-				"multiple-items": false,
-				"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
-				"input-config": [],
-				"required": false
-			},
-			"type": "string",
-			"format": "datetime",
-			"title": "Date"
+			"title": "name"
 		},
 		"mailbox": {
 			"wiki": {
 				"name": "mailbox",
 				"type": "property",
 				"multiple-items": false,
-				"label": "Mailbox",
-				"label-parsed": "Mailbox",
+				"required": true,
+				"label": "mailbox",
+				"uuid": "680d704bc4ef5",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.TextInputWidget",
-				"uuid": "6609c732670bc"
+				"input-config": []
 			},
 			"type": "string",
 			"format": "text",
-			"title": "Mailbox"
+			"title": "mailbox"
 		},
-		"recent": {
+		"is_running": {
 			"wiki": {
-				"name": "recent",
+				"name": "is_running",
 				"type": "property",
 				"multiple-items": false,
-				"label": "Recent",
-				"label-parsed": "Recent",
-				"preferred-input": "OO.ui.NumberInputWidget",
-				"uuid": "6609c732670bd"
+				"label": "is running",
+				"help-message": "'''Attention''', this field is automatically handled. Toggle manually off only if a job has not been completed and isn't running.",
+				"uuid": "680d704bc4ef8",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.ToggleSwitchWidget",
+				"input-config": [],
+				"required": false
 			},
-			"type": "integer",
-			"title": "Recent"
+			"type": "boolean",
+			"title": "is running",
+			"description": "\u003Cb\u003EAttention\u003C/b\u003E, this field is automatically handled. Toggle manually off only if a job has not been completed and isn't running."
+		},
+		"start_date": {
+			"wiki": {
+				"name": "start_date",
+				"type": "property",
+				"multiple-items": false,
+				"visibility": "hidden",
+				"label": "start date",
+				"uuid": "680d84db82924",
+				"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"options": {
+				"hidden": true
+			},
+			"type": "string",
+			"format": "datetime",
+			"title": "start date"
+		},
+		"end_date": {
+			"wiki": {
+				"name": "end_date",
+				"type": "property",
+				"multiple-items": false,
+				"visibility": "hidden",
+				"label": "end date",
+				"uuid": "680d84db82927",
+				"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
+				"input-config": [],
+				"required": false
+			},
+			"options": {
+				"hidden": true
+			},
+			"type": "string",
+			"format": "datetime",
+			"title": "end date"
 		}
 	},
-	"type": "object",
-	"title": "Mailbox info"
+	"required": [
+		"name",
+		"mailbox"
+	],
+	"type": "object"
 }

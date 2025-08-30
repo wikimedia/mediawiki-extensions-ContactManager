@@ -1,1 +1,0 @@
-{{#querylink:ContactManager:Headers|{{{folder_name}}}|mailbox={{#urlget:mailbox}}|folder={{{folder_name}}}|shortpath={{#urlget:shortpath}}|class=item-{{#ifeq:{{#urlget:folder}}|{{{folder_name}}}||un}}selected }}

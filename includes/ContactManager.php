@@ -29,7 +29,7 @@ use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Extension\ContactManager\ImportMessage;
 use MediaWiki\Extension\ContactManager\Mailbox;
 use MediaWiki\Extension\ContactManager\Mailer;
-use MediaWiki\Extension\ContactManager\RecordHeader;
+use MediaWiki\Extension\ContactManager\RecordOverview;
 use MediaWiki\Extension\VisualData\Importer as VisualDataImporter;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
@@ -584,20 +584,33 @@ class ContactManager {
 			echo $msg . PHP_EOL;
 		};
 
-		$fetchUIDsIncremental = static function () use ( $folders ) {
+		$fetchUIDsIncremental = ( static function () use ( $folders ) {
 			foreach ( $folders as $folder ) {
 				if ( strtolower( $folder['fetch'] ) === 'uids incremental' ) {
 					return true;
 				}
 			}
 			return false;
+		} )();
+
+		$getRange = static function ( $UIDs ) {
+			$len = count( $UIDs );
+			if ( !$len ) {
+				return '';
+			}
+
+			if ( $len === ( $UIDs[$len - 1] - $UIDs[0] + 1 ) ) {
+				return $UIDs[0] . ':' . $UIDs[$len - 1];
+			}
+
+			return implode( ',', $UIDs );
 		};
 
 		$foldersData = [];
 
 		// get folders data, required to check
 		// for uidvalidity
-		if ( !empty( $params['fetch_folder_status'] ) || $fetchUIDsIncremental() ) {
+		if ( !empty( $params['fetch_folder_status'] ) || $fetchUIDsIncremental ) {
 			echo 'getting mailbox status' . PHP_EOL;
 
 			$schema_ = $GLOBALS['wgContactManagerSchemasMailboxFolders'];
@@ -619,6 +632,49 @@ class ContactManager {
 			$foldersData = $results_[0]['data'];
 		}
 
+		$fetchedMessages = [];
+		// alternatively store each fetched email as .eml
+		// *** we cannot query the id of the last retrieved message
+		// since messages could be individually fetched from
+		// the read email page
+		$schema_ = $GLOBALS['wgContactManagerSchemasFetchedMessages'];
+		$query_ = '[[mailbox::' . $params['mailbox'] . ']]';
+		$printouts_ = [ 'IDs' ];
+		$options_ = [ 'limit' => 1 ];
+		$results_ = \VisualData::getQueryResults( $schema_, $query_, $printouts_, $options_ );
+
+		if ( self::queryError( $results_, false ) ) {
+			echo 'error query' . PHP_EOL;
+			print_r( $results_ );
+
+		} elseif ( count( $results_ ) ) {
+			$fetchedMessages = $results_[0]['data'];
+		}
+
+		$getExistingMessages = static function ( $folderName ) use ( $params, $fetchedMessages ) {
+			if ( empty( $params['ignore_existing'] ) ) {
+				return [];
+			}
+
+			if (
+				!isset( $fetchedMessages['folders'] ) ||
+				!is_array( $fetchedMessages['folders'] )
+			) {
+				return [];
+			}
+
+			foreach ( $fetchedMessages['folders'] as $folder ) {
+				if ( $folder['name'] === $folderName ) {
+					if ( isset( $folder['IDs'] ) && is_array( $folder['IDs'] ) ) {
+						return array_values( $folder['IDs'] );
+					}
+					return [];
+				}
+			}
+
+			return [];
+		};
+
 		$switchMailbox = static function ( $folder ) use( $imapMailbox ) {
 			$name_pos = strpos( $folder['folder'], '}' );
 			$shortpath = substr( $folder['folder'], $name_pos + 1 );
@@ -626,7 +682,7 @@ class ContactManager {
 			return $shortpath;
 		};
 
-		$determineFetchQuery = static function ( $folder = [] ) use ( $imapMailbox, $params ) {
+		$determineOverviewQuery = static function ( $folder = [] ) use ( $imapMailbox, $params ) {
 			switch ( strtolower( $folder['fetch'] ) ) {
 				case 'search':
 					$criteria = [];
@@ -656,47 +712,29 @@ class ContactManager {
 					}
 
 					$UIDs = $imapMailbox->searchMailbox( implode( ' ', $criteria ) );
-					$UIDs = array_values( $UIDs );
-					$len_ = count( $UIDs );
-					if ( $len_ === ( $UIDs[$len_ - 1] - $UIDs[0] + 1 ) ) {
-						$UIDs = $UIDs[0] . ':' . $UIDs[$len_ - 1];
-					} else {
-						$UIDs = implode( ',', $UIDs );
-					}
-					return [
-						$UIDs,
-						$UIDs
-					];
+					return array_values( $UIDs );
 
 				case 'uids greater than or equal':
 					if ( $folder['UID_from'] < 1 ) {
 						$folder['UID_from'] = 1;
 					}
-					return [
-						$folder['UID_from'] . ':' . $folder['mailboxStatus']['uidnext'],
-						$folder['UID_from'] . ':' . $folder['mailboxStatus']['uidnext']
-					];
+					return range( $folder['UID_from'], $folder['mailboxStatus']['uidnext'] );
 
 				case 'uids less than or equal':
-					return [
-						'1:' . $folder['UID_to'],
-						'1:' . $folder['UID_to']
-					];
+					return range( 1, $folder['UID_to'] );
+
 				case 'uids range':
 					if ( $folder['UID_from'] < 1 ) {
 						$folder['UID_from'] = 1;
 					}
-					return [
-						$folder['UID_from'] . ':' . $folder['UID_to'],
-						$folder['UID_from'] . ':' . $folder['UID_to']
-					];
+					return range( $folder['UID_from'], $folder['UID_to'] );
 
 				case 'uids incremental':
 				default:
 					// get latest knows UID for this folder
-					$schema_ = $GLOBALS['wgContactManagerSchemasMessageHeader'];
+					$schema_ = $GLOBALS['wgContactManagerSchemasMessageOverview'];
 					// phpcs:ignore Generic.Files.LineLength.TooLong
-					$query_ = '[[uid::+]][[ContactManager:Mailboxes/' . $params['mailbox'] . '/headers/' . $folder['folder_name'] . '/~]]';
+					$query_ = '[[uid::+]][[ContactManager:Mailboxes/' . $params['mailbox'] . '/overview/' . $folder['folder_name'] . '/~]]';
 					$printouts_ = [ 'uid' ];
 					$options_ = [ 'limit' => 1, 'order' => 'uid DESC' ];
 					$results_ = \VisualData::getQueryResults( $schema_, $query_, $printouts_, $options_ );
@@ -705,51 +743,19 @@ class ContactManager {
 						echo 'error query' . PHP_EOL;
 						print_r( $results_ );
 						// return false;
-						$lastKnowHeaderUid = 0;
+						$lastKnowOverviewUid = 0;
 
 					} else {
-						$lastKnowHeaderUid = ( !empty( $results_[0] ) && !empty( $results_[0]['data']['uid'] ) ?
+						$lastKnowOverviewUid = ( !empty( $results_[0] ) && !empty( $results_[0]['data']['uid'] ) ?
 							$results_[0]['data']['uid'] : 0 );
 					}
 
-					$UIDsMessageSequence = '';
-					if ( !empty( $folder['fetch_message'] ) ) {
-						$targetTitle_ = self::replaceParameter( 'ContactManagerMessagePagenameFormula',
-							$params['mailbox'],
-							$folder['folder_name'],
-							'~'
-						);
-						$schema_ = $GLOBALS['wgContactManagerSchemasMessage'];
-						$query_ = "[[id::+]][[$targetTitle_]]";
-						$printouts_ = [ 'id' ];
-						$options_ = [ 'limit' => 1, 'order' => 'id DESC' ];
-						$results_ = \VisualData::getQueryResults( $schema_, $query_, $printouts_, $options_ );
-
-						if ( self::queryError( $results_, false ) ) {
-							echo 'error query' . PHP_EOL;
-							print_r( $results_ );
-							$lastKnowMessageUid = 0;
-
-						} else {
-							$lastKnowMessageUid = ( !empty( $results_[0] ) && !empty( $results_[0]['data']['id'] ) ?
-								$results_[0]['data']['id'] : 0 );
-						}
-
-						// @TODO set to -1 if the previous job didn't finish
-						$UIDsMessageSequence = ( $lastKnowMessageUid + 1 ) . ':' . $folder['mailboxStatus']['uidnext'];
-					}
-
-					return [
-						// @TODO set to -1 if the previous job didn't finish
-						( $lastKnowHeaderUid + 1 ) . ':' . $folder['mailboxStatus']['uidnext'],
-						$UIDsMessageSequence
-					];
+					return range( ( $lastKnowOverviewUid + 1 ), $folder['mailboxStatus']['uidnext'] );
 			}
 		};
 
-		echo 'determining fetch query' . PHP_EOL;
+		echo 'determining overview range' . PHP_EOL;
 
-		// determine fetch query
 		foreach ( $folders as $key => $folder ) {
 			$folders[$key]['shortpath'] = $switchMailbox( $folder );
 			echo 'shortpath: ' . $folders[$key]['shortpath'] . PHP_EOL;
@@ -767,22 +773,21 @@ class ContactManager {
 			echo 'mailboxStatus' . PHP_EOL;
 			print_r( $folders[$key]['mailboxStatus'] );
 
-			$folders[$key]['fetchQuery'] = $determineFetchQuery( $folders[$key] );
-			echo 'fetchQuery headers: ' . $folders[$key]['fetchQuery'][0] . PHP_EOL;
-			echo 'fetchQuery messages: ' . $folders[$key]['fetchQuery'][1] . PHP_EOL;
+			$folders[$key]['overviewQuery'] = $determineOverviewQuery( $folders[$key] );
+			$folders[$key]['overviewRange'] = $getRange( $folders[$key]['overviewQuery'] );
+			echo 'overviewRange: ' . $folders[$key]['overviewRange'] . PHP_EOL;
 		}
 
-		echo 'retrieving headers' . PHP_EOL;
+		echo 'retrieving overview' . PHP_EOL;
 
-		$newHeaders = 0;
+		$newOverview = 0;
 		$newContacts = 0;
-		$overviewHeaders = [];
+		$fetchedOverview = [];
 		$skippedByFilters = [];
 		foreach ( $folders as $key => $folder ) {
 			echo 'switching folder ' . $folder['shortpath'] . PHP_EOL;
 
 			$shortpath = $switchMailbox( $folder );
-			[ $headersQuery, $messagesQuery ] = $folder['fetchQuery'];
 			$skippedByFilters[$shortpath] = [];
 
 			if ( !empty( $params['fetch_folder_status'] ) || $folder['fetch'] === 'UIDs incremental' ) {
@@ -821,23 +826,23 @@ class ContactManager {
 			// if ( !empty( $params['fetch_folder_status'] ) ) {
 			}
 
-			echo 'getting folder overview: ' . PHP_EOL;
-			echo $headersQuery . PHP_EOL;
+			$overviewRange = $folder['overviewRange'];
 
-			$overviewHeaders[$key] = $imapMailbox->fetch_overview( $headersQuery );
+			echo 'getting folder overview: ' . $overviewRange . PHP_EOL;
+			$fetchedOverview[$key] = $imapMailbox->fetch_overview( $overviewRange );
 
 			echo 'recording job status' . PHP_EOL;
 			self::setRunningJob( $user, 'retrieve-messages', self::JOB_LAST_STATUS, $params['mailbox'] );
 
 			$n = 0;
 			$i = 0;
-			$size_ = count( $overviewHeaders[$key] );
+			$size_ = count( $fetchedOverview[$key] );
 			echo 'size ' . $size_ . PHP_EOL;
 
 			// retrieve all headers in this folder
-			foreach ( $overviewHeaders[$key] as $header ) {
+			foreach ( $fetchedOverview[$key] as $header ) {
 				$n++;
-				echo "importing header $n/{$size_}" . PHP_EOL;
+				echo "importing overview $n/{$size_}" . PHP_EOL;
 
 				$header = (array)$header;
 
@@ -852,15 +857,15 @@ class ContactManager {
 					$header['to'] = '';
 				}
 
-				$recordHeader = new RecordHeader( $user, $mailboxData, array_merge( $params, [
+				$recordOverview = new RecordOverview( $user, $mailboxData, array_merge( $params, [
 					'folder' => $folder,
 					'obj' => $header
 				] ), $errors );
 
-				$res_ = $recordHeader->doImport();
+				$res_ = $recordOverview->doImport();
 				if ( is_array( $res_ ) ) {
-					[ $newHeaders_, $newContacts_ ] = $res_;
-					$newHeaders += count( $newHeaders_ );
+					[ $newOverview_, $newContacts_ ] = $res_;
+					$newOverview += count( $newOverview_ );
 					$newContacts += count( $newContacts_ );
 
 				} elseif ( $res_ === self::SKIPPED_ON_FILTER ) {
@@ -884,7 +889,7 @@ class ContactManager {
 		}
 
 		// @TODO show Echo notification
-		echo "$newHeaders new headers" . PHP_EOL;
+		echo "$newOverview new overviews" . PHP_EOL;
 
 		echo 'retrieve messages' . PHP_EOL;
 
@@ -892,48 +897,45 @@ class ContactManager {
 		$newConversations = 0;
 		// then retrieve all messages
 		foreach ( $folders as $key => $folder ) {
-			if ( empty( $folder['fetch_message'] ) ) {
+			if ( empty( !$folder['only_overview'] ) ) {
 				continue;
 			}
 
 			echo 'switching folder ' . $folder['shortpath'] . PHP_EOL;
-
 			$shortpath = $switchMailbox( $folder );
+			$overviewQuery = $folder['overviewQuery'];
 
-			[ $headersQuery, $messagesQuery ] = $folder['fetchQuery'];
-
-			if ( $headersQuery !== $messagesQuery ) {
-				echo 'retrieving messages overview' . PHP_EOL;
-				echo $messagesQuery . PHP_EOL;
+			// use overviewQuery except if $folder['fetch'] === 'UIDs incremental'
+			if ( $folder['fetch'] === 'UIDs incremental' ) {
+				$overviewQuery = range( 1, $folder['mailboxStatus']['uidnext'] );
 			}
 
-			$overviewMessages = ( $headersQuery === $messagesQuery
-				 ? $overviewHeaders[$key]
-				 : $imapMailbox->fetch_overview( $messagesQuery )
-			);
+			// ignore existing messages if $params['ignore_existing'] == true
+			// or $fetchedMessages[$folder['folder_name']]['IDs'] is not an array
+			$existingMessages = $getExistingMessages( $folder['folder_name'] );
+			$IDs = array_diff( $overviewQuery, $existingMessages );
+			$IDs = array_values( $IDs );
 
 			$n = 0;
 			$i = 0;
-			$size_ = count( $overviewMessages );
+			$size_ = count( $IDs );
 			echo 'size ' . $size_ . PHP_EOL;
 
-			foreach ( $overviewMessages as $header ) {
+			foreach ( $IDs as $uid ) {
 				$n++;
 				echo "importing message $n/{$size_}" . PHP_EOL;
 
-				$header = (array)$header;
-
-				if ( in_array( $header['uid'], $skippedByFilters[$shortpath] ) ) {
-					echo $header['uid'] . ' skipped by header\'s filter' . PHP_EOL;
+				if ( in_array( $uid, $skippedByFilters[$shortpath] ) ) {
+					echo $uid . ' skipped by header\'s filter' . PHP_EOL;
 					continue;
 				}
 
 				$importMessage = new ImportMessage( $user, $mailbox, $mailboxData, array_merge( $params, [
 					'folder' => $folder,
-					'uid' => $header['uid']
+					'uid' => $uid
 				] ), $errors );
 
-				$res_ = $importMessage->doImport();
+				$res_ = $importMessage->doImport( $fetchedMessages );
 				if ( is_array( $res_ ) ) {
 					[ $newMessages_, $newContacts_, $newConversations_ ] = $res_;
 					$newMessages += count( $newMessages_ );
@@ -985,6 +987,66 @@ class ContactManager {
 		$mailbox->disconnect();
 
 		return true;
+	}
+
+	/**
+	 * @param \User $user
+	 * @param array $params
+	 * @param array &$errors []
+	 * @return bool|null
+	 */
+	public static function getSingleMessage( $user, $params, &$errors ) {
+		$mailbox = new Mailbox( $params['mailbox'], $errors );
+		if ( count( $errors ) ) {
+			// throw new \MWException( $errors[count( $errors ) - 1] );
+			return false;
+		}
+
+		// alternatively store each fetched email as .eml
+		// *** we cannot query the id of the last retrieved message
+		// since messages could be individually fetched from
+		// the read email page
+		$fetchedMessages = [];
+		$schema_ = $GLOBALS['wgContactManagerSchemasFetchedMessages'];
+		$query_ = '[[mailbox::' . $params['mailbox'] . ']]';
+		$printouts_ = [ 'IDs' ];
+		$options_ = [ 'limit' => 1 ];
+		$results_ = \VisualData::getQueryResults( $schema_, $query_, $printouts_, $options_ );
+
+		if ( self::queryError( $results_, false ) ) {
+			echo 'error query' . PHP_EOL;
+			print_r( $results_ );
+
+		} elseif ( count( $results_ ) ) {
+			$fetchedMessages = $results_[0]['data'];
+		}
+
+		$mailboxData = self::getMailboxData( $params['mailbox'] );
+		foreach ( $params['folders'] as $folder_ ) {
+			if ( $folder_['folder_name'] === $params['folder_name'] ) {
+				$params['folder'] = $folder_;
+				break;
+			}
+		}
+
+		$importMessage = new ImportMessage( $user, $mailbox, $mailboxData, $params, $errors );
+		$res_ = $importMessage->doImport( $fetchedMessages );
+		if ( !is_array( $res_ ) ) {
+			switch ( $res_ ) {
+				case self::SKIPPED_ON_ERROR:
+					$errors[] = 'ContactManager: error retrieving message';
+					break;
+				case self::SKIPPED_ON_FILTER:
+					$errors[] = 'ContactManager: skipped on filter';
+					break;
+				case self::SKIPPED_ON_EXISTING:
+					$errors[] = 'ContactManager: skipped on existing';
+					break;
+			}
+			return false;
+		}
+
+		return $res_;
 	}
 
 	/**
@@ -1128,12 +1190,13 @@ class ContactManager {
 	 * @param array $obj
 	 * @param string $name
 	 * @param string $email
+	 * @param array $categories
 	 * @param string|null $conversationHash
 	 * @param string|null $detectedLanguage
 	 * @return bool|null|string
 	 */
 	public static function saveUpdateContact( $user, $context, $params, $obj, $name, $email,
-		$conversationHash = null, $detectedLanguage = null
+		$categories, $conversationHash = null, $detectedLanguage = null
 	) {
 		if ( empty( $email ) ) {
 			echo '*** error, no email' . PHP_EOL;
@@ -1213,7 +1276,9 @@ class ContactManager {
 			'conversations' => [
 				// can be null
 				$conversationHash
-			]
+			],
+
+			'categories' => $categories
 		];
 
 		$exists = false;

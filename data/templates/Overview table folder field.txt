@@ -1,0 +1,7 @@
+{{#querylink:ContactManager:Overview|{{{folders/folder_name}}}|target=_blank|folder={{{folders/folder_name}}}|mailbox={{{mailbox}}}|shortpath={{#visualdataquery: [[name::{{{mailbox}}}]][[folders/fullpath::{{{folders/folder}}}]]
+   |schema=ContactManager/Mailbox folders
+   |?folders/shortpath
+   |format=raw
+   |limit=1
+  }}
+}}
