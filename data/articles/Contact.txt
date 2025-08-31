@@ -2,5 +2,6 @@
 |schema=ContactManager/Contact
 |format=template
 |template=ContactManager/Contact
+|values-separator=@@
 |categories=true
 }}

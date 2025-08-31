@@ -3,7 +3,7 @@
 | {{#time: d F Y g:i A | {{{parsedDate|}}} }}
 |-
 ! from
-| {{#querylink:ContactManager:Contact|{{{headers/from|}}}|pageid={{#visualdataquery:[[email::{{{fromParsed/address|}}}]][[ContactManager:Mailboxes/{{#urldecode:{{#urlget:mailbox}}}}/~]]
+| {{#querylink:ContactManager:Contact|{{{headers/from|}}}|pageid={{#visualdataquery:[[email::{{{fromParsed/0/address|}}}]][[ContactManager:Mailboxes/{{#urldecode:{{#urlget:mailbox}}}}/~]]
 |schema=ContactManager/Contact
 |format=pageid
 }}|target=_blank}}
@@ -53,7 +53,7 @@
 |submit-button-text =
 |validate-button-text =
 |overwrite-existing-article-on-create=true
-|preload-data?to={{{replyTo|}}}
+|preload-data?to={{{headers/from|}}}
 |preload-data?subject=Re: {{{headers/subject|}}}
 |preload-data?text+base64={{ContactManager/Format reply|{{#base64encode:{{{textPlain|}}} }}|{{{headers/from|}}}|{{{headers/date|}}}|text }}
 |preload-data?text_html+base64={{ContactManager/Format reply|{{#base64encode:{{{textHtml|}}} }}|{{{headers/from|}}}|{{{headers/date|}}}|html }}

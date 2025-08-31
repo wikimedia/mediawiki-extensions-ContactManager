@@ -848,9 +848,10 @@ class Mailer {
 
 		// *** this is allowed by https://datatracker.ietf.org/doc/html/rfc5322#section-3.6.2
 		// but not supported on most of webmail
-		foreach ( $this->obj['from'] as $value ) {
-			$email->addFrom( $value );
-		}
+		// foreach ( $this->obj['from'] as $value ) {
+		// 	$email->addFrom( $value );
+		// }
+		$email->from( $this->obj['from'] );
 
 		if ( !empty( $this->obj['sender'] ) ) {
 			$email->sender( $this->obj['sender'] );

@@ -4,10 +4,13 @@
 | {{{full_name|}}}
 |-
 ! email
-| {{{email|}}}
+| {{#arraymap: {{{email|}}} | @@ | @ | @ | ,\s }}
 |-
 ! phone
-| {{{phone|}}}
+| {{#arraymap: {{{phone|}}} | @@ | @ | @ | ,\s }}
+|-
+! links
+| {{#arraymap:{{{links|}}} | @@ | @ | [@ {{#urldecode:{{#explode:@|/|-1}}}}] | ,\s  }}
 |-
 ! seen since
 | {{{seen_since|}}}
@@ -16,7 +19,7 @@
 | {{{seen_until|}}}
 |-
 ! categories
-| {{#arraymap: {{{categories|}}} | , | @ | [[:Category:@|@]] |<nowiki>, </nowiki> }}
+| {{#arraymap: {{{categories|}}} | , | @ | [[:Category:@|@]] | ,\s }}
 |-
 |}
 
@@ -72,4 +75,3 @@
 }}| you don't have permissions to access this contact }}
 
 {{#arraymap: {{{categories|}}} | , | @ | [[Category:@]] |\s }}
-
