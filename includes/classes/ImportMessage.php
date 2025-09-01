@@ -245,6 +245,12 @@ class ImportMessage {
 		// $mail = $imapMailbox->getMail( $mailId, false );
 		$rawEmail = $imapMailbox->getRawMail( $mailId, false );
 
+		if ( $rawEmail === '' ) {
+			$this->errors[] = 'error fetching message ' . $mailId;
+			echo '***skipped on error: error fetching message ' . $mailId . PHP_EOL;
+			return \ContactManager::SKIPPED_ON_ERROR;
+		}
+
 		$mailMimeParser = new MailMimeParser();
 		$message = $mailMimeParser->parse( $rawEmail, false );
 
@@ -449,14 +455,14 @@ conversationHash
 			$this->mailboxData['all_addresses'] = array_filter( array_unique( $this->mailboxData['all_addresses'] ) );
 		}
 
-		$obj['subject'] = $message->getSubject();
-		$obj['textPlain'] = $message->getTextContent();
-		$obj['textHtml'] = $message->getHtmlContent();
+		$obj['subject'] = (string)$message->getSubject();
+		$obj['textPlain'] = (string)$message->getTextContent();
+		$obj['textHtml'] = (string)$message->getHtmlContent();
 
 		$parsedEmail = ( new EmailParser() )->parse( $obj['textPlain'] );
 
 		// custom entries
-		$obj['visibleText'] = $parsedEmail->getVisibleText();
+		$obj['visibleText'] = (string)$parsedEmail->getVisibleText();
 
 		// language detect @see https://github.com/patrickschur/language-detection
 		$detectedLanguage = null;

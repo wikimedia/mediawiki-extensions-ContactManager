@@ -16,7 +16,12 @@ See jobs data [[{{FULLPAGENAME}}/Jobs|here]]
 
 {{#visualdataquery: [[name::+]] [[{{FULLPAGENAME}}]]
 |schema=ContactManager/Mailbox info
-|template?mailbox=ContactManager/Mailbox info mailbox field
+|template?mailbox=ContactManager/Mailbox info mailbox field|?unread
+|?deleted
+|?nmsgs
+|?size
+|?date
+|?recent
 |pagetitle=
 |format=table
 }}  

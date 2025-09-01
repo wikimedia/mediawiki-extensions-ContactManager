@@ -593,6 +593,13 @@ class ContactManager {
 			return false;
 		} )();
 
+		$range = static function ( $start, $end ) {
+			if ( $start > $end ) {
+				return [];
+			}
+			return range( $start, $end );
+		};
+
 		$getRange = static function ( $UIDs ) {
 			$len = count( $UIDs );
 			if ( !$len ) {
@@ -682,7 +689,7 @@ class ContactManager {
 			return $shortpath;
 		};
 
-		$determineOverviewQuery = static function ( $folder = [] ) use ( $imapMailbox, $params ) {
+		$determineOverviewQuery = static function ( $folder = [] ) use ( &$range, $imapMailbox, $params ) {
 			switch ( strtolower( $folder['fetch'] ) ) {
 				case 'search':
 					$criteria = [];
@@ -718,16 +725,16 @@ class ContactManager {
 					if ( $folder['UID_from'] < 1 ) {
 						$folder['UID_from'] = 1;
 					}
-					return range( $folder['UID_from'], $folder['mailboxStatus']['uidnext'] );
+					return $range( $folder['UID_from'], $folder['mailboxStatus']['uidnext'] - 1 );
 
 				case 'uids less than or equal':
-					return range( 1, $folder['UID_to'] );
+					return $range( 1, $folder['UID_to'] );
 
 				case 'uids range':
 					if ( $folder['UID_from'] < 1 ) {
 						$folder['UID_from'] = 1;
 					}
-					return range( $folder['UID_from'], $folder['UID_to'] );
+					return $range( $folder['UID_from'], $folder['UID_to'] );
 
 				case 'uids incremental':
 				default:
@@ -750,63 +757,43 @@ class ContactManager {
 							$results_[0]['data']['uid'] : 0 );
 					}
 
-					return range( ( $lastKnowOverviewUid + 1 ), $folder['mailboxStatus']['uidnext'] );
+					return $range( ( $lastKnowOverviewUid + 1 ), $folder['mailboxStatus']['uidnext'] - 1 );
 			}
 		};
 
 		echo 'determining overview range' . PHP_EOL;
 
-		foreach ( $folders as $key => $folder ) {
-			$folders[$key]['shortpath'] = $switchMailbox( $folder );
-			echo 'shortpath: ' . $folders[$key]['shortpath'] . PHP_EOL;
+		foreach ( $folders as &$folder ) {
+			$folder['shortpath'] = $switchMailbox( $folder );
+			echo 'shortpath: ' . $folder['shortpath'] . PHP_EOL;
 
 			if ( strtolower( $folder['folder_type'] ) !== 'other' &&
-				strpos( mb_strtolower( $folders[$key]['shortpath'] ), strtolower( $folder['folder_type'] ) ) === false
+				strpos( mb_strtolower( $folder['shortpath'] ), strtolower( $folder['folder_type'] ) ) === false
 			) {
-				echo '***attention, foder name/type mismatch, ensure folder type is correct for folder "' . $folders[$key]['shortpath'] . '"';
+				echo '***attention, foder name/type mismatch, ensure folder type is correct for folder "' . $folder['shortpath'] . '"';
 				echo ' (current value: "' . $folder['folder_type'] . '")' . PHP_EOL;
 
 				self::countDown( 10 );
 			}
 
-			$folders[$key]['mailboxStatus'] = (array)$imapMailbox->statusMailbox( $errors );
+			$folder['mailboxStatus'] = (array)$imapMailbox->statusMailbox( $errors );
 			echo 'mailboxStatus' . PHP_EOL;
-			print_r( $folders[$key]['mailboxStatus'] );
+			print_r( $folder['mailboxStatus'] );
 
-			$folders[$key]['overviewQuery'] = $determineOverviewQuery( $folders[$key] );
-			$folders[$key]['overviewRange'] = $getRange( $folders[$key]['overviewQuery'] );
-			echo 'overviewRange: ' . $folders[$key]['overviewRange'] . PHP_EOL;
-		}
-
-		echo 'retrieving overview' . PHP_EOL;
-
-		$newOverview = 0;
-		$newContacts = 0;
-		$fetchedOverview = [];
-		$skippedByFilters = [];
-		foreach ( $folders as $key => $folder ) {
-			echo 'switching folder ' . $folder['shortpath'] . PHP_EOL;
-
-			$shortpath = $switchMailbox( $folder );
-			$skippedByFilters[$shortpath] = [];
-
+			// get/update folder status
 			if ( !empty( $params['fetch_folder_status'] ) || $folder['fetch'] === 'UIDs incremental' ) {
-
-				// get/update folder status
 				$folderKey = -1;
 				foreach ( $foldersData['folders'] as $folderKey => $value_ ) {
-					if ( $value_['shortpath'] === $shortpath ) {
+					if ( $value_['shortpath'] === $folder['shortpath'] ) {
 						break;
 					}
 				}
 
 				if ( $folderKey === -1 ) {
-					$errors[] = 'mailbox folder (' . $shortpath . ') hasn\'t been retrieved';
+					$errors[] = 'mailbox folder (' . $folder['shortpath'] . ') hasn\'t been retrieved';
 					$mailbox->disconnect();
 					return false;
 				}
-
-				$folder_ = $foldersData['folders'][$folderKey];
 
 				if ( !empty( $folder['mailboxStatus']['uidvalidity'] )
 					&& (int)$folder['mailboxStatus']['uidvalidity'] !== $folder['mailboxStatus']['uidvalidity']
@@ -817,14 +804,42 @@ class ContactManager {
 				}
 
 				// update status
+				if ( !isset( $foldersData['folders'][$folderKey]['status'] ) ||
+					!is_array( $foldersData['folders'][$folderKey]['status'] )
+				) {
+					$foldersData['folders'][$folderKey]['status'] = [];
+				}
+
 				$foldersData['folders'][$folderKey]['status'] = array_merge(
-						( !empty( $data_['folders'][$folderKey]['status'] )
-							? $data_['folders'][$folderKey]['status']
-							: []
-						),
-					$folder['mailboxStatus'] );
-			// if ( !empty( $params['fetch_folder_status'] ) ) {
+					$foldersData['folders'][$folderKey]['status'], $folder['mailboxStatus'] );
 			}
+
+			$folder['overviewQuery'] = $determineOverviewQuery( $folder );
+
+			if ( count( $folder['overviewQuery'] ) ) {
+				$folder['overviewRange'] = $getRange( $folder['overviewQuery'] );
+				echo 'overviewRange: ' . $folder['overviewRange'] . PHP_EOL;
+
+			} else {
+				echo 'no overview to retrieve' . PHP_EOL;
+			}
+		}
+
+		echo 'retrieving overview' . PHP_EOL;
+
+		$newOverview = 0;
+		$newContacts = 0;
+		$fetchedOverview = [];
+		$skippedByFilters = [];
+		foreach ( $folders as $key => $folder ) {
+			if ( !array_key_exists( 'overviewRange', $folder ) ) {
+				continue;
+			}
+
+			echo 'switching folder ' . $folder['shortpath'] . PHP_EOL;
+
+			$shortpath = $switchMailbox( $folder );
+			$skippedByFilters[$shortpath] = [];
 
 			$overviewRange = $folder['overviewRange'];
 
@@ -896,7 +911,7 @@ class ContactManager {
 		$newMessages = 0;
 		$newConversations = 0;
 		// then retrieve all messages
-		foreach ( $folders as $key => $folder ) {
+		foreach ( $folders as $folder ) {
 			if ( empty( !$folder['only_overview'] ) ) {
 				continue;
 			}
@@ -907,7 +922,7 @@ class ContactManager {
 
 			// use overviewQuery except if $folder['fetch'] === 'UIDs incremental'
 			if ( $folder['fetch'] === 'UIDs incremental' ) {
-				$overviewQuery = range( 1, $folder['mailboxStatus']['uidnext'] );
+				$overviewQuery = $range( 1, $folder['mailboxStatus']['uidnext'] - 1 );
 			}
 
 			// ignore existing messages if $params['ignore_existing'] == true

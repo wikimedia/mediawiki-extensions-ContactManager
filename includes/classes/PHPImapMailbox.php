@@ -191,6 +191,25 @@ class PHPImapMailbox extends \PhpImap\Mailbox {
 	}
 
 	/**
+	 * @param int $msgId
+	 * @param bool $markAsSeen true
+	 * @return string
+	 */
+	public function getRawMail( int $msgId, bool $markAsSeen = true ): string {
+		$options = ( SE_UID == $this->imapSearchOption ) ? FT_UID : 0;
+		if ( !$markAsSeen ) {
+			$options |= FT_PEEK;
+		}
+
+		try {
+			return \PhpImap\Imap::fetchbody( $this->getImapStream(), $msgId, '', $options );
+
+		} catch ( \Exception $e ) {
+			return '';
+		}
+	}
+
+	/**
 	 * @param int $mailId
 	 * @return string
 	 */
