@@ -62,7 +62,7 @@ See jobs data [[{{FULLPAGENAME}}/Jobs|here]]
 
 
 <tabs class="ContactManagerTabs">
-<tab name="Conversations" block>Attention, Conversations cannot be searched by participants' name if their number exceed the query limit. https://www.mediawiki.org/wiki/Extension:ContactManager#Known_issues Find out more].
+<tab name="Conversations" block>Attention, Conversations cannot be searched by participants' name if their number exceed the query limit. [https://www.mediawiki.org/wiki/Extension:ContactManager#Known_issues Find out more].
 {{ContactManager/Conversations|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}} }} }}</tab>
 <tab name="Contacts" block>{{#buttonlink:ContactManager:Create contact|Create contact|target=_blank|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}}}
 {{ContactManager/Contacts|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}} }} }}</tab>

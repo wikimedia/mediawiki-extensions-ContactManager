@@ -1,4 +1,3 @@
-
 {{#visualdataform: ContactManager/Mailbox
 |title = Add Mailbox
 |action = create
@@ -23,6 +22,8 @@
 |validate-button-text =
 |overwrite-existing-article-on-create=true
 }}
+
+[https://www.mediawiki.org/wiki/Extension:ContactManager#1)_Create_a_mailbox docs]
 
 
 {{#buttonlink:{{FULLPAGENAME}}|Purge article cache|action=purge}}

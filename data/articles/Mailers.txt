@@ -22,6 +22,8 @@
 |validate-button-text =
 }}
 
+[https://www.mediawiki.org/wiki/Extension:ContactManager#5)_Create_additional_mailers docs]
+
 
 {{#buttonlink:{{FULLPAGENAME}}|Purge article cache|action=purge}}
 

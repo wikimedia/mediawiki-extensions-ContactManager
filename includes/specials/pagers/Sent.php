@@ -92,6 +92,7 @@ class Sent extends TablePager {
 		/** @var object $row */
 		$row = $this->mCurrentRow;
 
+		$formatted = '';
 		switch ( $field ) {
 			case 'user':
 				$services = MediaWikiServices::getInstance();
