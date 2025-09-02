@@ -1043,11 +1043,11 @@ conversationHash
 		// *** attention, this is empty if called from
 		// 'get message' and the toggle 'fetch message'
 		// is false in the ContactManager/Retrieve messages form
-		if ( !array_key_exists( 'filters_by_message_fields', $params ) ) {
-			$params['filters_by_message_fields'] = [];
+		if ( !array_key_exists( 'filters_by_message', $params ) ) {
+			$params['filters_by_message'] = [];
 		}
 
-		foreach ( (array)$params['filters_by_message_fields'] as $v ) {
+		foreach ( (array)$params['filters_by_message'] as $v ) {
 			if ( !array_key_exists( 'field', $v ) || empty( $v['field'] ) ) {
 				continue;
 			}
@@ -1137,7 +1137,7 @@ conversationHash
 							$result_ = strpos( $value_, $v['value_text'] ) === false;
 							break;
 						case 'regex':
-							$result_ = preg_match( '/' . str_replace( '/', '\/', $v['value_text'] ) . '/', $value_ );
+							$result_ = preg_match( $v['value_text'], $value_ );
 							break;
 					}
 					break;

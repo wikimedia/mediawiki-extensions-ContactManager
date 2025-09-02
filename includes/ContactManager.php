@@ -532,6 +532,55 @@ class ContactManager {
 			echo '***attention, use parameter --memory-limit default' . PHP_EOL;
 		}
 
+		// check regexes
+		$isValidRegex = static function ( $pattern ) {
+			set_error_handler( static function () {
+			}, E_WARNING );
+			$isValid = preg_match( $pattern, '' ) !== false;
+			restore_error_handler();
+			return $isValid;
+		};
+
+		$wrapWithDelimiter = static function ( $text ) {
+			$delimiters = [ '/', '#', '~', '%', '`', '@', '!' ];
+
+			foreach ( $delimiters as $delim ) {
+				if ( strpos( $text, $delim ) === false ) {
+					return "$delim$text$delim";
+				}
+			}
+
+			$delim = '/';
+			return $delim . str_replace( $delim, '\\' . $delim, $text ) . $delim;
+		};
+
+		foreach ( [ 'filters_by_overview', 'filters_by_message' ] as $k ) {
+			if ( array_key_exists( $k, $params ) ) {
+				foreach ( (array)$params[$k] as &$v ) {
+					if ( $v['match'] !== 'regex' ) {
+						continue;
+					}
+					$value = $v['value_text'];
+
+					if ( $isValidRegex( $value ) ) {
+						continue;
+					}
+
+					$regex = $wrapWithDelimiter ( $value );
+
+					if ( $isValidRegex( $regex ) ) {
+						$v['value_text'] = $regex;
+						continue;
+					}
+
+					$errors[] = 'regex "' . $v['value_text'] . '" is not valid';
+					echo 'regex "' . $v['value_text'] . '" is not valid' . PHP_EOL;
+					return;
+				}
+				unset( $v );
+			}
+		}
+
 		echo 'connecting to mailbox ' . $params['mailbox'] . PHP_EOL;
 
 		// @TODO MIGRATE TO
@@ -824,6 +873,7 @@ class ContactManager {
 				echo 'no overview to retrieve' . PHP_EOL;
 			}
 		}
+		unset( $folder );
 
 		echo 'retrieving overview' . PHP_EOL;
 
