@@ -29,6 +29,6 @@ if ( class_exists( 'DerivativeRequest' ) ) {
 	}
 } else {
 	// phpcs:ignore Generic.Classes.DuplicateClassName.Found
-	class DerivativeRequest extends \Mediawiki\Request\DerivativeRequest {
+	class DerivativeRequest extends \MediaWiki\Request\DerivativeRequest {
 	}
 }

@@ -7,15 +7,17 @@
 	"properties": {
 		"name": {
 			"wiki": {
-				"name": "name",
 				"type": "property",
-				"multiple-items": false,
-				"required": true,
-				"label": "name",
 				"uuid": "680d700c814c5",
+				"name": "name",
 				"visibility": "visible",
+				"label": "name",
+				"multiple-items": false,
 				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": []
+				"input-config": {
+					"disabled": true
+				},
+				"required": true
 			},
 			"type": "string",
 			"format": "text",
@@ -23,15 +25,17 @@
 		},
 		"mailbox": {
 			"wiki": {
-				"name": "mailbox",
 				"type": "property",
-				"multiple-items": false,
-				"required": true,
-				"label": "mailbox",
 				"uuid": "680d704bc4ef5",
+				"name": "mailbox",
 				"visibility": "visible",
+				"label": "mailbox",
+				"multiple-items": false,
 				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": []
+				"input-config": {
+					"disabled": true
+				},
+				"required": true
 			},
 			"type": "string",
 			"format": "text",
@@ -39,13 +43,13 @@
 		},
 		"is_running": {
 			"wiki": {
-				"type": "property",
-				"uuid": "680d704bc4ef8",
 				"name": "is_running",
-				"visibility": "visible",
+				"type": "property",
+				"multiple-items": false,
 				"label": "is running",
 				"help-message": "'''Attention''', this field is automatically handled. Toggle manually off only if a job has not been completed and isn't running.",
-				"multiple-items": false,
+				"uuid": "680d704bc4ef8",
+				"visibility": "visible",
 				"preferred-input": "OO.ui.ToggleSwitchWidget",
 				"input-config": [],
 				"required": false
@@ -99,4 +103,3 @@
 	],
 	"type": "object"
 }
-

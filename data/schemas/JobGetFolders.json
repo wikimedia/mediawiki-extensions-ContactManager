@@ -7,17 +7,17 @@
 	"properties": {
 		"name": {
 			"wiki": {
-				"type": "property",
-				"uuid": "680d70c58d660",
 				"name": "name",
-				"visibility": "visible",
-				"label": "name",
+				"type": "property",
 				"multiple-items": false,
-				"preferred-input": "OO.ui.TextInputWidget",
+				"required": true,
 				"input-config": {
 					"disabled": true
 				},
-				"required": true
+				"label": "name",
+				"uuid": "680d70c58d660",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget"
 			},
 			"type": "string",
 			"format": "text",
@@ -25,15 +25,17 @@
 		},
 		"mailbox": {
 			"wiki": {
-				"name": "mailbox",
 				"type": "property",
-				"multiple-items": false,
-				"required": true,
-				"label": "mailbox",
+				"uuid": "680d70ef76c99",
+				"name": "mailbox",
 				"visibility": "visible",
+				"label": "mailbox",
+				"multiple-items": false,
 				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"uuid": "680d70ef76c99"
+				"input-config": {
+					"disabled": true
+				},
+				"required": true
 			},
 			"type": "string",
 			"format": "text",

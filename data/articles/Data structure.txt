@@ -38,6 +38,7 @@ Official docs: https://www.mediawiki.org/wiki/Extension:ContactManager
 **[[Template:ContactManager/Overview read email field]]
 **[[Template:ContactManager/Overview table folder field]]
 **[[Template:ContactManager/Languages]]
+**[[Template:ContactManager/Mailbox buttons]]
 **[[Template:ContactManager/Mailbox edit]]
 **[[Template:ContactManager/Mailbox info mailbox field]]
 **[[Template:ContactManager/Mailbox jobs buttons]]

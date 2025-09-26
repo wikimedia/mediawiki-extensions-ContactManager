@@ -81,11 +81,10 @@ class RecordOverview {
 		$obj = $params['obj'];
 		$folder = $params['folder'];
 
-		// may be overridden by $this->applyFilters
 		$pagenameFormula = \ContactManager::replaceParameter( 'ContactManagerOverviewPagenameFormula',
 			$params['mailbox'],
 			$folder['folder_name'],
-			'<ContactManager/Message overview/uid>'
+			$obj['uid']
 		);
 
 		$categories = [

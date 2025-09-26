@@ -551,7 +551,7 @@ conversationHash
 		$pagenameFormula = \ContactManager::replaceParameter( 'ContactManagerMessagePagenameFormula',
 			$params['mailbox'],
 			$folder['folder_name'],
-			'<ContactManager/Message/id>'
+			$mailId
 		);
 
 		$categories = [

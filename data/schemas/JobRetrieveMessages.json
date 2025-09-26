@@ -25,16 +25,17 @@
 		},
 		"mailbox": {
 			"wiki": {
-				"name": "mailbox",
 				"type": "property",
-				"multiple-items": false,
-				"required": true,
-				"label": "mailbox",
-				"label-parsed": "mailbox",
+				"uuid": "660830d33f173",
+				"name": "mailbox",
 				"visibility": "visible",
+				"label": "mailbox",
+				"multiple-items": false,
 				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"uuid": "660830d33f173"
+				"input-config": {
+					"disabled": true
+				},
+				"required": true
 			},
 			"type": "string",
 			"format": "text",
@@ -841,16 +842,20 @@
 					},
 					"action": {
 						"wiki": {
-							"type": "property",
-							"uuid": "6609acecdacd6",
 							"name": "action",
-							"visibility": "visible",
-							"label": "action",
+							"type": "property",
 							"multiple-items": false,
+							"label": "action",
+							"uuid": "6609acecdacd6",
+							"visibility": "visible",
 							"preferred-input": "OO.ui.DropdownInputWidget",
 							"input-config": [],
 							"options-allow-null": false,
-							"required": false
+							"required": false,
+							"options-values-parsed": {
+								"skip": "skip",
+								"assign categories": "assign categories"
+							}
 						},
 						"type": "string",
 						"format": "text",
@@ -1211,16 +1216,20 @@
 					},
 					"action": {
 						"wiki": {
-							"type": "property",
-							"uuid": "6609acecdacd6",
 							"name": "action",
-							"visibility": "visible",
-							"label": "action",
+							"type": "property",
 							"multiple-items": false,
+							"label": "action",
+							"uuid": "6609acecdacd6",
+							"visibility": "visible",
 							"preferred-input": "OO.ui.DropdownInputWidget",
 							"input-config": [],
 							"options-allow-null": false,
-							"required": false
+							"required": false,
+							"options-values-parsed": {
+								"skip": "skip",
+								"assign categories": "assign categories"
+							}
 						},
 						"type": "string",
 						"format": "text",

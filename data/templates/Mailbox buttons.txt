@@ -1,0 +1,7 @@
+<table><tr><td>
+{{#buttonlink:ContactManager:Compose|Compose|target=_blank|mailbox={{ContactManager/Get mailbox|{{{mailbox}}} }} }}
+</td><td>
+{{#buttonlink:ContactManager:Create contact|Create contact|target=_blank|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}}}
+</td><td>
+{{#buttonlink:{{FULLPAGENAME}}|Reload data|action=purge}}
+</td></tr></table>
