@@ -30,7 +30,7 @@ use Wikimedia\ScopedCallback;
 class ContactManagerJob extends \Job {
 
 	/**
-	 * @param Title|Mediawiki\Title\Title $title
+	 * @param Title|MediaWiki\Title\Title $title
 	 * @param array|bool $params
 	 */
 	public function __construct( $title, $params = [] ) {

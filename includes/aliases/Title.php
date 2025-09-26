@@ -29,6 +29,6 @@ if ( class_exists( 'Title' ) ) {
 	}
 } else {
 	// phpcs:ignore Generic.Classes.DuplicateClassName.Found
-	class Title extends \Mediawiki\Title\Title {
+	class Title extends \MediaWiki\Title\Title {
 	}
 }

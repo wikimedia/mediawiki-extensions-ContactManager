@@ -7,17 +7,17 @@
 	"properties": {
 		"name": {
 			"wiki": {
-				"type": "property",
-				"uuid": "660830d33f16f",
 				"name": "name",
-				"visibility": "visible",
-				"label": "name",
+				"type": "property",
 				"multiple-items": false,
-				"preferred-input": "OO.ui.TextInputWidget",
+				"required": true,
 				"input-config": {
 					"disabled": true
 				},
-				"required": true
+				"label": "name",
+				"uuid": "660830d33f16f",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget"
 			},
 			"type": "string",
 			"format": "text",
@@ -621,21 +621,21 @@
 			"type": "array",
 			"uniqueItems": false
 		},
-		"filters_by_overview": {
+		"filter_by_overview": {
 			"wiki": {
-				"name": "filters_by_overview",
-				"title": "Filters by overview",
+				"name": "filter_by_overview",
+				"title": "Filter by overview",
 				"min-items": 0,
 				"unique-items": true,
 				"type": "schema",
-				"uuid": "68b341485b587"
+				"uuid": "68bbe2d0b46a4"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
-					"uuid": "68aec7de90c67",
+					"uuid": "68b341485b587",
 					"layout": "section",
 					"visibility": "visible"
 				},
@@ -841,50 +841,24 @@
 					},
 					"action": {
 						"wiki": {
-							"name": "action",
 							"type": "property",
-							"multiple-items": false,
-							"label": "action",
-							"label-parsed": "action",
+							"uuid": "6609acecdacd6",
+							"name": "action",
 							"visibility": "visible",
+							"label": "action",
+							"multiple-items": false,
 							"preferred-input": "OO.ui.DropdownInputWidget",
 							"input-config": [],
-							"required": false,
 							"options-allow-null": false,
-							"uuid": "6609acecdacd6",
-							"options-values-parsed": {
-								"skip": "skip",
-								"as follows": "as follows"
-							}
+							"required": false
 						},
 						"type": "string",
 						"format": "text",
 						"title": "action",
 						"enum": [
 							"skip",
-							"as follows"
+							"assign categories"
 						]
-					},
-					"pagename_formula": {
-						"wiki": {
-							"name": "pagename_formula",
-							"type": "property",
-							"multiple-items": false,
-							"label": "Pagename formula",
-							"help-message": "leave empty to use the default destination title -- the default is \u003Cnowiki\u003E{{FULLPAGENAME}}/headers/\u003Cfolder_name\u003E/\u003CContactManager/Message header/uid\u003E\u003C/nowiki\u003E",
-							"uuid": "6608f1b1136e2",
-							"visibility": "condition",
-							"showif-field": "action",
-							"showif-condition": "!=",
-							"showif-value": "skip",
-							"preferred-input": "OO.ui.TextInputWidget",
-							"input-config": [],
-							"required": false
-						},
-						"type": "string",
-						"format": "text",
-						"title": "Pagename formula",
-						"description": "leave empty to use the default destination title -- the default is {{FULLPAGENAME}}/headers/\u0026lt;folder_name\u0026gt;/\u0026lt;ContactManager/Message header/uid\u0026gt;"
 					},
 					"categories": {
 						"wiki": {
@@ -955,7 +929,8 @@
 									"contact (to)": "contact (to)",
 									"contact (cc)": "contact (cc)",
 									"contact (bcc)": "contact (bcc)"
-								}
+								},
+								"layout": "table"
 							},
 							"format": "text",
 							"title": "categories target",
@@ -989,14 +964,14 @@
 				"min-items": 0,
 				"unique-items": true,
 				"type": "schema",
-				"uuid": "68aec7792cf19"
+				"uuid": "68bbe2d0b46ba"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
-					"uuid": "68adfea87c391",
+					"uuid": "68aec7792cf19",
 					"layout": "section",
 					"visibility": "visible"
 				},
@@ -1236,50 +1211,24 @@
 					},
 					"action": {
 						"wiki": {
-							"name": "action",
 							"type": "property",
-							"multiple-items": false,
-							"label": "action",
-							"label-parsed": "action",
+							"uuid": "6609acecdacd6",
+							"name": "action",
 							"visibility": "visible",
+							"label": "action",
+							"multiple-items": false,
 							"preferred-input": "OO.ui.DropdownInputWidget",
 							"input-config": [],
-							"required": false,
 							"options-allow-null": false,
-							"uuid": "6609acecdacd6",
-							"options-values-parsed": {
-								"skip": "skip",
-								"as follows": "as follows"
-							}
+							"required": false
 						},
 						"type": "string",
 						"format": "text",
 						"title": "action",
 						"enum": [
 							"skip",
-							"as follows"
+							"assign categories"
 						]
-					},
-					"pagename_formula": {
-						"wiki": {
-							"name": "pagename_formula",
-							"type": "property",
-							"multiple-items": false,
-							"label": "Pagename formula",
-							"help-message": "leave empty to use the default destination title -- the default is \u003Cnowiki\u003E{{FULLPAGENAME}}/messages/\u003Cfolder_name\u003E/\u003CContactManager/Incoming mail/id\u003E\u003C/nowiki\u003E",
-							"uuid": "6608f1b1136e2",
-							"visibility": "condition",
-							"showif-field": "action",
-							"showif-condition": "!=",
-							"showif-value": "skip",
-							"preferred-input": "OO.ui.TextInputWidget",
-							"input-config": [],
-							"required": false
-						},
-						"type": "string",
-						"format": "text",
-						"title": "Pagename formula",
-						"description": "leave empty to use the default destination title -- the default is {{FULLPAGENAME}}/messages/\u0026lt;folder_name\u0026gt;/\u0026lt;ContactManager/Incoming mail/id\u0026gt;"
 					},
 					"categories": {
 						"wiki": {

@@ -89,7 +89,7 @@ class ContactManagerHooks {
 	}
 
 	/**
-	 * @param Title|Mediawiki\Title\Title &$title
+	 * @param Title|MediaWiki\Title\Title &$title
 	 * @param null $unused
 	 * @param OutputPage $output
 	 * @param User $user
@@ -110,7 +110,7 @@ class ContactManagerHooks {
 
 	/**
 	 * @param User $user
-	 * @param Title|Mediawiki\Title\Title $targetTitle
+	 * @param Title|MediaWiki\Title\Title $targetTitle
 	 * @param array $jsonData
 	 * @param string $freetext
 	 * @param bool $isNewPage

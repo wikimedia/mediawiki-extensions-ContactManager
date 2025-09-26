@@ -5,7 +5,7 @@
 
 '''To:''' {{{headers/to|}}}
 
-'''Time:''' {{#time:g:i A| {{{parsedDate|}}} }}
+'''Time:''' {{#timelocal: {{{parsedDate|}}} | HH:mm }}
 
 '''Subject:''' {{{headers/subject|}}}
 

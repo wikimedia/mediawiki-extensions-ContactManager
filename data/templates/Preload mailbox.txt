@@ -1,10 +1,9 @@
 [[ContactManager:Mailboxes|&larr; go back]]  
+ 
+<div id="editor_holder"></div>
 
 
-{{#buttonlink:{{FULLPAGENAME}}|Purge article cache|action=purge}}
-
-
-== Jobs ==
+== Jobs == 
 Follow the instructions [https://www.mediawiki.org/wiki/Extension:ContactManager here] to setup [https://en.wikipedia.org/wiki/Cron crontab] or execute the jobs from command line. In order to create the job's profile tap the edit icon on the buttons below and submit the form. Then press the buttons to actually create the jobs. The jobs "Get mailbox info" and "Get folders" need to be executed before "Get messages", since the folders' list must be known before to execute the latter. It is recommended to first search for messages after a certain date (using fetch "Search", criteria "Since") and then using fetch "UIDs incremental" and "check email every" few minutes to keep your mailbox updated.
 
 
@@ -16,17 +15,21 @@ See jobs data [[{{FULLPAGENAME}}/Jobs|here]]
 
 {{#visualdataquery: [[name::+]] [[{{FULLPAGENAME}}]]
 |schema=ContactManager/Mailbox info
-|template?mailbox=ContactManager/Mailbox info mailbox field|?unread
+|?unread
 |?deleted
 |?nmsgs
 |?size
 |?date
 |?recent
+|template?mailbox=ContactManager/Mailbox info mailbox field
 |pagetitle=
 |format=table
 }}  
 
 
+==Mailbox==
+
+{{ContactManager/Mailbox buttons|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}} }}
 
 
 <tabs class="ContactManagerTabs">
@@ -64,13 +67,6 @@ See jobs data [[{{FULLPAGENAME}}/Jobs|here]]
 <tabs class="ContactManagerTabs">
 <tab name="Conversations" block>Attention, Conversations cannot be searched by participants' name if their number exceed the query limit. [https://www.mediawiki.org/wiki/Extension:ContactManager#Known_issues Find out more].
 {{ContactManager/Conversations|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}} }} }}</tab>
-<tab name="Contacts" block>{{#buttonlink:ContactManager:Create contact|Create contact|target=_blank|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}}}
-{{ContactManager/Contacts|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}} }} }}</tab>
+<tab name="Contacts" block>{{ContactManager/Contacts|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}} }} }}</tab>
 </tabs>
-
-
-
-== Compose message ==
-
-{{#buttonlink:ContactManager:Compose|Compose|target=_blank|mailbox={{ContactManager/Get mailbox|{{FULLPAGENAME}}}}}}
 

@@ -100,7 +100,7 @@ class ContactManager {
 
 	/**
 	 * @param \User $user
-	 * @param Title|Mediawiki\Title\Title $targetTitle
+	 * @param Title|MediaWiki\Title\Title $targetTitle
 	 * @param array $jsonData
 	 * @param string $freetext
 	 * @param bool $isNewPage
@@ -1290,7 +1290,7 @@ class ContactManager {
 		$parsedName = $iconicParser->parse( $name );
 		self::fixIconicParserErrors( $parsedName );
 
-		$fullName = trim( $parsedName->getFullname() );
+		$fullName = $parsedName->getFullname();
 		// if ( empty( $fullName ) ) {
 		if ( empty( $parsedName->getGivenName() ) || empty( $parsedName->getLastname() ) ) {
 			$fullName = implode( ' ', $parsedName->getAll( false ) );
@@ -1323,7 +1323,7 @@ class ContactManager {
 			'nickname' => $parsedName->getNickname(),
 			'initials' => $parsedName->getInitials(),
 			'suffix' => $parsedName->getSuffix(),
-			'full_name' => $fullName,
+			'full_name' => trim( $fullName ),
 			'email' => [
 				$email
 			],
@@ -1558,7 +1558,7 @@ class ContactManager {
 
 	/**
 	 * @param \User $user
-	 * @param Title|Mediawiki\Title\Title $title
+	 * @param Title|MediaWiki\Title\Title $title
 	 * @return array
 	 */
 	public static function getArticleEditors( $user, $title ) {

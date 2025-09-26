@@ -7,15 +7,17 @@
 	"properties": {
 		"name": {
 			"wiki": {
-				"name": "name",
 				"type": "property",
-				"multiple-items": false,
-				"required": true,
-				"label": "name",
 				"uuid": "680d700c814c5",
+				"name": "name",
 				"visibility": "visible",
+				"label": "name",
+				"multiple-items": false,
 				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": []
+				"input-config": {
+					"disabled": true
+				},
+				"required": true
 			},
 			"type": "string",
 			"format": "text",
@@ -82,4 +84,3 @@
 	],
 	"type": "object"
 }
-

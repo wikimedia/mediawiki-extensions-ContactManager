@@ -600,21 +600,11 @@ conversationHash
 			$categories['message'] = 'Messages in wrong folder';
 		}
 
-		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories, $assignCategories ) ) {
+		if ( !$this->applyFilters( $obj, $categories, $assignCategories ) ) {
 			echo 'skipped by filter' . PHP_EOL;
 			$deleteAttachments();
 			return \ContactManager::SKIPPED_ON_FILTER;
 		}
-
-		$pagenameFormula = str_replace( '<folder_name>', $folder['folder_name'], $pagenameFormula );
-
-		$pagenameFormula = \ContactManager::replaceFormula( $obj, $pagenameFormula,
-			$GLOBALS['wgContactManagerSchemasMessage'] );
-
-		$pagenameFormula = \ContactManager::replaceFormula( $obj['headers'], $pagenameFormula,
-			$GLOBALS['wgContactManagerSchemasMessage'] . '/headers' );
-
-		// echo 'pagenameFormula: ' . $pagenameFormula . "\n";
 
 		// mailbox article
 		$title = TitleClass::newFromID( $params['pageid'] );
@@ -622,16 +612,6 @@ conversationHash
 		$context->setTitle( $title );
 		$output = $context->getOutput();
 		$output->setTitle( $title );
-
-		$pagenameFormula = \ContactManager::parseWikitext( $output, $pagenameFormula );
-
-		if ( empty( $pagenameFormula ) ) {
-			// throw new \MWException( 'invalid title' );
-			$this->errors[] = 'empty pagename formula';
-			echo '***skipped on error: empty pagename formula' . PHP_EOL;
-			$deleteAttachments();
-			return \ContactManager::SKIPPED_ON_ERROR;
-		}
 
 		$title_ = TitleClass::newFromText( $pagenameFormula );
 
@@ -1030,12 +1010,11 @@ conversationHash
 
 	/**
 	 * @param array $obj
-	 * @param string &$pagenameFormula
 	 * @param array &$categories
 	 * @param callable $assignCategories
 	 * @return bool
 	 */
-	private function applyFilters( $obj, &$pagenameFormula, &$categories, $assignCategories ) {
+	private function applyFilters( $obj, &$categories, $assignCategories ) {
 		$params = $this->params;
 
 		$obj = \ContactManager::flattenArray( $obj );
@@ -1131,13 +1110,13 @@ conversationHash
 					$value_ = (string)$value_;
 					switch ( $v['match'] ) {
 						case 'contains':
-							$result_ = strpos( $value_, $v['value_text'] ) !== false;
+							$result_ = strpos( $value_, (string)$v['value_text'] ) !== false;
 							break;
 						case 'does not contain':
-							$result_ = strpos( $value_, $v['value_text'] ) === false;
+							$result_ = strpos( $value_, (string)$v['value_text'] ) === false;
 							break;
 						case 'regex':
-							$result_ = preg_match( $v['value_text'], $value_ );
+							$result_ = preg_match( (string)$v['value_text'], $value_ );
 							break;
 					}
 					break;
@@ -1169,12 +1148,8 @@ conversationHash
 					case 'skip':
 						echo 'skipping message' . PHP_EOL;
 						return false;
-					default:
-						if ( !empty( $v['pagename_formula'] ) ) {
-							$pagenameFormula = $v['pagename_formula'];
-							echo 'new pagenameFormula ' . $pagenameFormula . PHP_EOL;
-						}
 
+					default:
 						if ( !empty( $v['categories'] ) ) {
 							$categories = $assignCategories( $v, $categories );
 							echo 'apply categories ' . print_r( $categories, true ) . PHP_EOL;

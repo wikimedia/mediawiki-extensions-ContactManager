@@ -48,7 +48,7 @@ class EchoInterface {
 
 	/**
 	 * @param \User $user
-	 * @param Title|Mediawiki\Title\Title $mailboxTitle
+	 * @param Title|MediaWiki\Title\Title $mailboxTitle
 	 * @param string $mailbox
 	 * @param array $updates
 	 * @return array

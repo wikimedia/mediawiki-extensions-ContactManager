@@ -24,7 +24,7 @@
 
 namespace MediaWiki\Extension\ContactManager\Pagers;
 
-use Linker;
+use MediaWiki\Extension\ContactManager\Aliases\Linker as LinkerClass;
 use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\MediaWikiServices;
@@ -114,13 +114,13 @@ class Sent extends TablePager {
 				$title_ = TitleClass::newFromId( $row->page_id );
 				$query = [];
 				if ( $title_ ) {
-					$formatted = Linker::link( $title_, $title_->getText(), [], $query );
+					$formatted = LinkerClass::link( $title_, $title_->getText(), [], $query );
 				}
 				break;
 
 			case 'mailbox':
 				$title_ = TitleClass::newFromText( 'ContactManager:Mailboxes/' . $row->$field );
-				$formatted = Linker::link( $title_, $row->$field, [], [] );
+				$formatted = LinkerClass::link( $title_, $row->$field, [], [] );
 				break;
 
 			case 'subject':
@@ -137,7 +137,7 @@ class Sent extends TablePager {
 					'view' => 'Tracking',
 					'account' => $row->account
 				];
-				$formatted = Linker::link( $title_, $link, [], $query );
+				$formatted = LinkerClass::link( $title_, $link, [], $query );
 				break;
 
 			default:

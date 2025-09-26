@@ -1,1 +1,0 @@
-{{#time:F Y| {{{date_last}}} }}

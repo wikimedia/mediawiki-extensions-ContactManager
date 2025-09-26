@@ -180,7 +180,8 @@
 					"preferred-input": "OO.ui.TextInputWidget (email)",
 					"input-config": [],
 					"required": false,
-					"uuid": "67c4126ecf9ce"
+					"uuid": "67c4126ecf9ce",
+					"layout": "table"
 				},
 				"format": "email",
 				"default": []
@@ -208,7 +209,8 @@
 					"visibility": "visible",
 					"preferred-input": "intl-tel-input",
 					"input-config": [],
-					"required": false
+					"required": false,
+					"layout": "table"
 				},
 				"format": "tel",
 				"default": []
@@ -285,29 +287,29 @@
 		"language": {
 			"wiki": {
 				"name": "language",
+				"title": "languages",
 				"unique-items": true,
 				"type": "schema",
-				"uuid": "67c4126ecf9d7"
+				"uuid": "68bbe36c960b0"
 			},
 			"items": {
 				"type": "string",
 				"wiki": {
 					"name": "language",
 					"type": "property",
-					"multiple-items": true,
-					"label": "language",
-					"default": [],
-					"uuid": "67b4409bc5f5b",
+					"uuid": "67c4126ecf9d7",
 					"visibility": "visible",
+					"multiple-items": true,
 					"preferred-input": "OO.ui.TextInputWidget",
 					"input-config": [],
-					"required": false
+					"required": false,
+					"default": []
 				},
 				"format": "text",
-				"title": "language",
 				"default": []
 			},
 			"type": "array",
+			"title": "languages",
 			"uniqueItems": true
 		},
 		"seen_since": {
@@ -354,13 +356,14 @@
 				"wiki": {
 					"name": "conversations",
 					"type": "property",
-					"visibility": "hidden",
 					"multiple-items": true,
+					"visibility": "hidden",
+					"default": [],
 					"preferred-input": "OO.ui.TextInputWidget",
 					"input-config": [],
 					"required": false,
-					"default": [],
-					"uuid": "67ed9be47aa8e"
+					"uuid": "67ed9be47aa8e",
+					"layout": "table"
 				},
 				"options": {
 					"hidden": true
@@ -375,4 +378,3 @@
 	"type": "object",
 	"title": "Contact"
 }
-

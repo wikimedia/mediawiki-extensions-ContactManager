@@ -82,7 +82,7 @@ class Mailer {
 
 	/**
 	 * @param User $user
-	 * @param Title|Mediawiki\Title\Title $title
+	 * @param Title|MediaWiki\Title\Title $title
 	 * @param array $obj
 	 * @param string $editor
 	 * @return bool

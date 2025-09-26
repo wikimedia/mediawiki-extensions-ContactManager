@@ -3,14 +3,13 @@
 |limit=40
 |?participants
 |?messages
-|?date_last=latest
+|?date_last=latest |+date-format=D MMMM
 |?hash=
 |?count=
 |?mailbox=
 |pagetitle=
 |template?participants=ContactManager/Conversations table participants
 |template?messages=ContactManager/Conversations table messages field
-|template?date_last=ContactManager/Conversations table latest field
 |order=date_last desc
 |format=datatable
 |datatables-synch=true

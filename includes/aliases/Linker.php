@@ -24,11 +24,11 @@
 
 namespace MediaWiki\Extension\ContactManager\Aliases;
 
-if ( class_exists( 'Html' ) ) {
-	class Html extends \Html {
+if ( class_exists( 'Linker' ) ) {
+	class Linker extends \Linker {
 	}
 } else {
-  	// phpcs:ignore Generic.Classes.DuplicateClassName.Found
-	class Html extends \MediaWiki\Html\Html {
+	// phpcs:ignore Generic.Classes.DuplicateClassName.Found
+	class Linker extends \MediaWiki\Linker\Linker {
 	}
 }

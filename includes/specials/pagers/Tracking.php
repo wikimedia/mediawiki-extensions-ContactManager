@@ -24,7 +24,7 @@
 
 namespace MediaWiki\Extension\ContactManager\Pagers;
 
-use Linker;
+use MediaWiki\Extension\ContactManager\Aliases\Linker as LinkerClass;
 use MediaWiki\Linker\LinkRenderer;
 use TablePager;
 
@@ -129,7 +129,7 @@ class Tracking extends TablePager {
 							'account' => $this->request->getVal( 'account' ),
 							'mailer' => $mailer
 						];
-						$formatted = Linker::link( $title_, $link, [], $query );
+						$formatted = LinkerClass::link( $title_, $link, [], $query );
 					}
 
 				} else {

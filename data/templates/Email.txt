@@ -1,6 +1,6 @@
 {| class="wikitable"
 ! date
-| {{#time: d F Y g:i A | {{{parsedDate|}}} }}
+| {{#timelocal: {{{parsedDate|}}} | DD MMMM YYYY HH:mm }}
 |-
 ! from
 | {{#querylink:ContactManager:Contact|{{{headers/from|}}}|pageid={{#visualdataquery:[[email::{{{fromParsed/0/address|}}}]][[ContactManager:Mailboxes/{{#urldecode:{{#urlget:mailbox}}}}/~]]

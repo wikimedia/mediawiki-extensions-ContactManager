@@ -128,18 +128,10 @@ class RecordOverview {
 
 		$categories = $assignCategories( $params, $categories );
 
-		if ( !$this->applyFilters( $obj, $pagenameFormula, $categories, $assignCategories ) ) {
+		if ( !$this->applyFilters( $obj, $categories, $assignCategories ) ) {
 			echo 'skipped by filter' . PHP_EOL;
 			return \ContactManager::SKIPPED_ON_FILTER;
 		}
-
-		// only if provided from applyFilters
-		$pagenameFormula = str_replace( '<folder_name>', $folder['folder_name'], $pagenameFormula );
-
-		$pagenameFormula = \ContactManager::replaceFormula( $obj, $pagenameFormula,
-			$GLOBALS['wgContactManagerSchemasMessageOverview'] );
-
-		$pagenameFormula = \ContactManager::parseWikitext( $output, $pagenameFormula );
 
 		$title_ = TitleClass::newFromText( $pagenameFormula );
 
@@ -208,12 +200,11 @@ class RecordOverview {
 
 	/**
 	 * @param obj $obj
-	 * @param string &$pagenameFormula
 	 * @param array &$categories
 	 * @param callable $assignCategories
 	 * @return bool
 	 */
-	private function applyFilters( $obj, &$pagenameFormula, &$categories, $assignCategories ) {
+	private function applyFilters( $obj, &$categories, $assignCategories ) {
 		$params = $this->params;
 
 		if ( !array_key_exists( 'filters_by_overview', $params ) ) {
@@ -249,13 +240,13 @@ class RecordOverview {
 					$value_ = (string)$value_;
 					switch ( $v['match'] ) {
 						case 'contains':
-							$result_ = strpos( $value_, $v['value_text'] ) !== false;
+							$result_ = strpos( $value_, (string)$v['value_text'] ) !== false;
 							break;
 						case 'does not contain':
-							$result_ = strpos( $value_, $v['value_text'] ) === false;
+							$result_ = strpos( $value_, (string)$v['value_text'] ) === false;
 							break;
 						case 'regex':
-							$result_ = preg_match( $v['value_text'], $value_ );
+							$result_ = preg_match( (string)$v['value_text'], $value_ );
 							break;
 					}
 					break;
@@ -284,12 +275,8 @@ class RecordOverview {
 					case 'skip':
 						echo 'skipping message' . PHP_EOL;
 						return false;
-					default:
-						if ( !empty( $v['pagename_formula'] ) ) {
-							$pagenameFormula = $v['pagename_formula'];
-							echo 'new pagenameFormula ' . $pagenameFormula . PHP_EOL;
-						}
 
+					default:
 						if ( !empty( $v['categories'] ) ) {
 							$categories = $assignCategories( $v, $categories );
 							echo 'apply categories ' . print_r( $categories, true ) . PHP_EOL;
