@@ -26,6 +26,7 @@ namespace MediaWiki\Extension\ContactManager\Special;
 
 // use MediaWiki\Extension\ContactManager\Special\Tracking as TrackingSpecial;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\ParserOptions;
 
 /**
  * A special page that lists protected pages
@@ -153,7 +154,10 @@ class BrowseTracking extends \SpecialPage {
 		);
 
 		if ( $pager->getNumRows() ) {
-			$out->addParserOutputContent( $pager->getFullOutput() );
+			$out->addParserOutputContent(
+				$pager->getFullOutput(),
+				ParserOptions::newFromContext( $this->getContext() )
+			 );
 
 		} else {
 			$out->addWikiMsg( 'contactmanager-browsetracking-table-empty' );
