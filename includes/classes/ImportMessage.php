@@ -1040,6 +1040,7 @@ conversationHash
 			$value_ = $obj[$v['field']];
 
 			$result_ = false;
+			$match_ = null;
 			switch ( $v['field'] ) {
 				case 'id':
 				case 'headers/contentDuration':
@@ -1117,7 +1118,7 @@ conversationHash
 							$result_ = strpos( $value_, (string)$v['value_text'] ) === false;
 							break;
 						case 'regex':
-							$result_ = preg_match( (string)$v['value_text'], $value_ );
+							$result_ = preg_match( (string)$v['value_text'], $value_, $match_ );
 							break;
 					}
 					break;
@@ -1152,8 +1153,17 @@ conversationHash
 
 					default:
 						if ( !empty( $v['categories'] ) ) {
+							if ( $match_ && is_array( $v['categories'] ) ) {
+								$v['categories'] = array_map( static function ( $value ) use ( $match_ ) {
+									return preg_replace_callback( '/\$(\d+)/', static function ( $m ) use ( $match_ ) {
+										$index = (int)$m[1];
+										return isset( $match_[$index] ) ? $match_[$index] : $m[0];
+									}, $value );
+								}, $v['categories'] );
+							}
 							$categories = $assignCategories( $v, $categories );
-							echo 'apply categories ' . print_r( $categories, true ) . PHP_EOL;
+							echo 'apply categories' . PHP_EOL;
+							print_r( $categories );
 						}
 				}
 			}

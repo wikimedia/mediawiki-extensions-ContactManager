@@ -4,6 +4,7 @@
 |?participants
 |?messages
 |?date_last=latest |+date-format=D MMMM
+|?status
 |?hash=
 |?count=
 |?mailbox=

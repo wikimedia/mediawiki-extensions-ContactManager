@@ -231,15 +231,24 @@ class ContactManager {
 	}
 
 	/**
-	 * @param string $name
+	 * @param string $jobName
 	 * @param string|null $mailboxName null
 	 * @return bool
 	 */
-	public static function jobIsRunning( $name, $mailboxName = null ) {
+	public static function jobIsRunning( $jobName, $mailboxName = null ) {
+		$excludeJobs = [
+			'get-message',
+			'retrieve-message'
+		];
+
+		if ( in_array( $jobName, $excludeJobs ) ) {
+			return false;
+		}
+
 		self::logError( 'debug', 'jobIsRunning start ' . date( 'Y-m-d H:i:s' ) );
 
-		$schema = self::jobNameToSchema( $name );
-		$query = '[[name::' . $name . ']]';
+		$schema = self::jobNameToSchema( $jobName );
+		$query = '[[name::' . $jobName . ']]';
 		$query .= ( $mailboxName ? '[[mailbox::' . $mailboxName . ']]' : '' );
 
 		self::logError( 'debug', 'schema', $schema );
@@ -261,7 +270,7 @@ class ContactManager {
 
 		if ( self::queryError( $results, false ) ) {
 			self::logError( 'error', 'jobIsRunning query error' );
-			self::logError( 'debug', name, $name );
+			self::logError( 'debug', name, $jobName );
 			self::logError( 'debug', mailboxName, $mailboxName );
 			self::logError( 'debug', results, $results );
 
@@ -369,6 +378,16 @@ class ContactManager {
 	 * @param string|null $mailbox null
 	 */
 	public static function setRunningJob( $user, $jobName, $status, $mailbox = null ) {
+		// ***exclude jobs sharing the same schema
+		$excludeJobs = [
+			'get-message',
+			'retrieve-message'
+		];
+
+		if ( in_array( $jobName, $excludeJobs ) ) {
+			return;
+		}
+
 		$targetTitle = ( $mailbox
 			? str_replace( '$1', $mailbox, $GLOBALS['wgContactManagerMailboxArticleJobs'] )
 			: $GLOBALS['wgContactManagerMainJobsArticle'] );
@@ -1087,6 +1106,13 @@ class ContactManager {
 		}
 
 		$mailboxData = self::getMailboxData( $params['mailbox'] );
+
+		if ( !array_key_exists( 'folder_name', $params ) || empty( params['folder_name'] ) ) {
+			echo 'empty parameter "folder_name"' . PHP_EOL;
+			$errors[] = 'empty parameter "folder_name"';
+			return false;
+		}
+
 		foreach ( $params['folders'] as $folder_ ) {
 			if ( $folder_['folder_name'] === $params['folder_name'] ) {
 				$params['folder'] = $folder_;
