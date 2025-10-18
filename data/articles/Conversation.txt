@@ -6,37 +6,7 @@ __NOTOC__
 </big>
 
 
-{{#visualdataform: ContactManager/Compose email
-|title = New email
-|action = create
-|edit-page = 
-|return-page = ContactManager:Success?mailbox={{#urlget:mailbox}}
-|view = popup
-|popup-size = large
-|css-class =
-|pagename-formula = ContactManager:Mailboxes/{{#urlget:mailbox}}/Sent email
-|edit-freetext = true   
-|edit-categories = false
-|edit-content-model = false
-|edit-target-slot = false
-|target-slot = main
-|default-categories = 
-|default-content-model = wikitext
-|preload=
-|preload-data?to={{#visualdataquery:[[hash::{{#urlget:hash}}]]
-  |schema=ContactManager/Conversation
-  |?addresses
-  |limit=1
-  |format=raw
-  }}
-|preload-data?mailbox={{#urlget:mailbox}}
-|layout-align = top
-|popup-help = false 
-|layout = tabs
-|submit-button-text =
-|validate-button-text =
-|overwrite-existing-article-on-create=true
-}}
+{{ContactManager/Conversation buttons|mailbox={{#urlget:mailbox}}|hash={{#urlget:hash}}|id={{#urlget:id}}|month={{#urlget:month}}|year={{#urlget:year}} }}
 
 
 ===Participants===
@@ -54,11 +24,7 @@ __NOTOC__
 |datatables-info=false
 |datatables-searching=false
 }}
-[[{{#visualdataquery:[[hash::{{#urlget:hash}}]]
-  |schema=ContactManager/Conversation
-  |limit=1
-  |format=pagetitle
-  }}|'''Source''']]
+[[Special:Redirect/page/{{#urlget:id}}|'''Source''']]
 {{#ifeq: {{#urlget:show}} | |
   == {{#switch: 
     {{#if: {{#urlget:month}} | {{#urlget:month}} | {{CURRENTMONTH}} }}
@@ -141,5 +107,3 @@ __NOTOC__
   }}
   }}</big>
 }}
-
-

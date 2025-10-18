@@ -955,6 +955,7 @@ conversationHash
 		}
 
 		$data = \VisualData::array_filter_recursive( $data, 'array_unique' );
+		$data['status'] = ( empty( $deliveredTo ) ? 'answered' : 'on hold' );
 
 		$messageDateTime = strtotime( $date );
 

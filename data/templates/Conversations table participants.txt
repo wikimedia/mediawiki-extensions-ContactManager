@@ -3,4 +3,4 @@
   |?full_name
   |format=raw
   |separator=,<nowiki> </nowiki>
- }}|target=_blank|mailbox={{{mailbox}}}|hash={{{hash}}}|month={{#time:m| {{{date_last}}} }}|year={{#time:Y| {{{date_last}}} }} }}
+ }}|target=_blank|id={{{pageid}}}|mailbox={{{mailbox}}}|hash={{{hash}}}|month={{#time:m| {{{date_last}}} }}|year={{#time:Y| {{{date_last}}} }} }}

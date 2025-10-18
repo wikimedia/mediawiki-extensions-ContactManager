@@ -61,17 +61,16 @@
 |limit=40
 |?participants
 |?messages
-|?latest
+|?date_last=latest |+date-format=D MMMM
 |?hash=
-|?date_last=
 |?count=
 |?mailbox=
 |pagetitle=
 |template?participants=ContactManager/Conversations table participants
 |template?messages=ContactManager/Conversations table messages field
-|template?latest=ContactManager/Conversations table latest field
 |format=datatable
 |mode=nested 
 }}| you don't have permissions to access this contact }}
 
 {{#arraymap: {{{categories|}}} | , | @ | [[Category:@]] |\s }}
+

@@ -1,0 +1,57 @@
+<table><tr><td>{{#visualdataform: ContactManager/Compose email
+|title = New email
+|action = create
+|edit-page = 
+|return-page = ContactManager:Success?mailbox={{{mailbox|}}}
+|view = popup
+|popup-size = large
+|css-class =
+|pagename-formula = ContactManager:Mailboxes/{{{mailbox|}}}/Sent email
+|edit-freetext = true   
+|edit-categories = false
+|edit-content-model = false
+|edit-target-slot = false
+|target-slot = main
+|default-categories = 
+|default-content-model = wikitext
+|preload=
+|preload-data?to={{#visualdataquery:[[hash::{{{hash|}}}]]
+  |schema=ContactManager/Conversation
+  |?addresses
+  |limit=1
+  |format=raw
+  }}
+|preload-data?mailbox={{{mailbox|}}}
+|layout-align = top
+|popup-help = false 
+|layout = tabs
+|submit-button-text =
+|validate-button-text =
+|overwrite-existing-article-on-create=true
+}}</td><td>
+{{#visualdataform: ContactManager/Conversation
+|title = edit conversation
+|action = edit
+|edit-page = {{{id|}}}
+|return-page=ContactManager:Conversation?id={{{id|}}}&mailbox={{{mailbox|}}}&hash={{{hash|}}}&month={{{month|}}}&year={{{year|}}}
+|view = popup
+|popup-size = medium
+|css-class =
+|pagename-formula = 
+|edit-freetext = false   
+|edit-categories = false
+|edit-content-model = false
+|edit-target-slot = false
+|target-slot = main
+|default-categories = 
+|default-content-model = wikitext
+|preload=
+|preload-data=
+|layout-align = top
+|popup-help = false 
+|layout = tabs
+|submit-button-text =
+|validate-button-text =
+|overwrite-existing-article-on-create=false
+}}</td></tr></table>
+

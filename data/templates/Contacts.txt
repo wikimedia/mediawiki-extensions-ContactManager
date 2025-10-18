@@ -1,6 +1,5 @@
 {{#visualdataquery:[[ContactManager:Mailboxes/{{{mailbox}}}/~]]
 |schema=ContactManager/Contact
-|limit=40
 |?full_name
 |?email
 |?categories
@@ -11,8 +10,9 @@
 |datatables-buttons=colvis,copy, csv, excel, download, print
 |datatables-synch=true
 |datatables-synch.interval=100
-|datatables-searchPanes=true
-|datatables-searchPanes.columns=0,2
-|datatables-searchPanes.threshold=1
 |categories=true
+|datatables-searchPanes=true
+|limit=40
+|displayLog=false
 }}
+

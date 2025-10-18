@@ -11,11 +11,16 @@
 				"type": "property",
 				"multiple-items": false,
 				"required": true,
+				"input-config": {
+					"disabled": true
+				},
+				"visibility": "hidden",
 				"label": "mailbox",
-				"visibility": "visible",
-				"preferred-input": "OO.ui.TextInputWidget",
-				"input-config": [],
-				"uuid": "678d8c642256d"
+				"uuid": "678d8c642256d",
+				"preferred-input": "OO.ui.TextInputWidget"
+			},
+			"options": {
+				"hidden": true
 			},
 			"type": "string",
 			"format": "text",
@@ -33,14 +38,15 @@
 				"wiki": {
 					"name": "related_addresses",
 					"type": "property",
-					"uuid": "686b9f3cce3f2",
+					"multiple-items": true,
+					"required": true,
 					"visibility": "hidden",
 					"label": "delivered_to",
-					"multiple-items": true,
+					"default": [],
+					"uuid": "686b9f3cce3f2",
 					"preferred-input": "OO.ui.TextInputWidget (email)",
 					"input-config": [],
-					"required": true,
-					"default": []
+					"layout": "table"
 				},
 				"options": {
 					"hidden": true
@@ -75,7 +81,8 @@
 					"uuid": "686baf9d02cef",
 					"preferred-input": "OO.ui.TextInputWidget (email)",
 					"input-config": [],
-					"required": false
+					"required": false,
+					"layout": "table"
 				},
 				"options": {
 					"hidden": true
@@ -109,50 +116,97 @@
 		},
 		"date_first": {
 			"wiki": {
-				"name": "date_first",
 				"type": "property",
-				"multiple-items": false,
+				"uuid": "67b9c086ac897",
+				"name": "date_first",
+				"visibility": "hidden",
 				"label": "date first",
-				"visibility": "visible",
+				"help-message": "date of the first message in this conversation (this field is automatically updated on new messages)",
+				"multiple-items": false,
 				"preferred-input": "mw.widgets.DateInputWidget",
-				"input-config": [],
-				"required": false,
-				"uuid": "67b9c086ac897"
+				"input-config": {
+					"disabled": true
+				},
+				"required": false
+			},
+			"options": {
+				"hidden": true
 			},
 			"type": "string",
 			"format": "date",
-			"title": "date first"
+			"title": "date first",
+			"description": "date of the first message in this conversation (this field is automatically updated on new messages)"
 		},
 		"date_last": {
 			"wiki": {
-				"name": "date_last",
 				"type": "property",
+				"uuid": "67b9c086ac89a",
+				"name": "date_last",
+				"visibility": "hidden",
+				"label": "date last",
+				"help-message": "date of the last message in this conversation (this field is automatically updated on new messages)",
 				"multiple-items": false,
-				"label": "date_last",
-				"visibility": "visible",
 				"preferred-input": "mw.widgets.DateInputWidget",
-				"input-config": [],
-				"required": false,
-				"uuid": "67b9c086ac89a"
+				"input-config": {
+					"disabled": true
+				},
+				"required": false
+			},
+			"options": {
+				"hidden": true
 			},
 			"type": "string",
 			"format": "date",
-			"title": "date_last"
+			"title": "date last",
+			"description": "date of the last message in this conversation (this field is automatically updated on new messages)"
 		},
 		"count": {
 			"wiki": {
 				"name": "count",
 				"type": "property",
 				"multiple-items": false,
+				"visibility": "hidden",
 				"label": "count",
-				"visibility": "visible",
+				"uuid": "67b9c086ac89c",
 				"preferred-input": "OO.ui.NumberInputWidget",
 				"input-config": [],
-				"required": false,
-				"uuid": "67b9c086ac89c"
+				"required": false
+			},
+			"options": {
+				"hidden": true
 			},
 			"type": "integer",
 			"title": "count"
+		},
+		"status": {
+			"wiki": {
+				"name": "status",
+				"type": "property",
+				"multiple-items": false,
+				"label": "status",
+				"help-message": "this field is automatically updated on new messages",
+				"uuid": "68f243a77b046",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.DropdownInputWidget",
+				"input-config": [],
+				"options-allow-null": false,
+				"options-wikilist": "ContactManager:Conversation status",
+				"required": false,
+				"options-values-parsed": {
+					"answered": "answered",
+					"on hold": "on hold",
+					"no response necessary": "no response necessary"
+				}
+			},
+			"type": "string",
+			"format": "text",
+			"title": "status",
+			"description": "this field is automatically updated on new messages",
+			"enum": [
+				"answered",
+				"on hold",
+				"no response necessary"
+			]
 		}
 	},
 	"required": [
@@ -161,4 +215,3 @@
 	],
 	"type": "object"
 }
-
