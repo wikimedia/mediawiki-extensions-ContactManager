@@ -25,17 +25,17 @@
 		},
 		"mailbox": {
 			"wiki": {
-				"type": "property",
-				"uuid": "660830d33f173",
 				"name": "mailbox",
-				"visibility": "visible",
-				"label": "mailbox",
+				"type": "property",
 				"multiple-items": false,
-				"preferred-input": "OO.ui.TextInputWidget",
+				"required": true,
 				"input-config": {
 					"disabled": true
 				},
-				"required": true
+				"label": "mailbox",
+				"uuid": "660830d33f173",
+				"visibility": "visible",
+				"preferred-input": "OO.ui.TextInputWidget"
 			},
 			"type": "string",
 			"format": "text",
@@ -896,7 +896,7 @@
 							},
 							"format": "text",
 							"title": "category",
-							"description": "assign one or more categories",
+							"description": "assign one or more categories (supports replacements of match groups with $1, $2... )",
 							"default": []
 						},
 						"type": "array",
@@ -969,14 +969,14 @@
 				"min-items": 0,
 				"unique-items": true,
 				"type": "schema",
-				"uuid": "68bbe2d0b46ba"
+				"uuid": "68f3d89e34870"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
-					"uuid": "68aec7792cf19",
+					"uuid": "68f3d86956555",
 					"layout": "section",
 					"visibility": "visible"
 				},
@@ -1081,7 +1081,8 @@
 							"visibility": "condition",
 							"showif-field": "field",
 							"showif-condition": "regex",
-							"showif-value": "(imapPath)|(mailboxFolder)|(headersRaw)|(headers/subject)|(headers/Subject)|(headers/message_id)|(headers/toaddress)|(headers/fromaddress)|(headers/ccaddress)|(headers/reply_toaddress)|(headers/senderaddress)|(mimeVersion)|(xVirusScanned)|(organization)|(contentType)|(xMailer)|(contentLanguage)|(xSenderIp)|(priority)|(importance)|(sensitivity)|(autoSubmitted)|(precedence)|(failedRecipients)|(subject)|(fromHost)|(fromName)|(fromAddress)|(senderHost)|(senderName)|(senderAddress)|(xOriginalTo)|(toString)|(ccString)|(messageId)|(textPlain)|(textHtml)|(visibleText)|(attachments/id)|(attachments/contentId)|(attachments/subtype)|(attachments/description)|(attachments/name)|(attachments/disposition)|(attachments/charset)|(attachments/emlOrigin)|(attachments/fileInfoRaw)|(attachments/fileInfo)|(attachments/mime)|(attachments/mimeEncoding)|(attachments/fileExtension)|(attachments/mimeType)",
+							"showif-value": "(headersRaw)|(imapPath)|(mailboxFolder)|(sender/name)|(sender/address)|(deliveredTo)|(textPlain)|(textHtml)|(visibleText)|(detectedLanguage)|(conversationHash)|(headers/returnPath)|(headers/received)|(headers/resentDate)|(headers/resentFrom)|(headers/resentSender)|(headers/resentTo)|(headers/resentCc)|(headers/resentBcc)|(headers/resentMessageId)|(headers/date)|(headers/from)|(headers/sender)|(headers/replyTo)|(headers/to)|(headers/cc)|(headers/bcc)|(headers/messageId)|(headers/inReplyTo)|(headers/references)|(headers/subject)|(headers/comments)|(headers/keywords)|(headers/mimeVersion)|(headers/contentType)|(headers/contentTransferEncoding)|(headers/contentId)|(headers/contentDescription)|(headers/contentDisposition)|(headers/contentLanguage)|(headers/contentBase)|(headers/contentLocation)|(headers/contentFeatures)|(headers/contentAlternative)|(headers/contentMd5)|(headers/contentDuration)|(headers/autoSubmitted)|(attachments/contentId)|(attachments/encoding)|(attachments/description)|(attachments/contentType)|(attachments/name)|(attachments/disposition)|(attachments/fileinfo)|(attachments/mime)|(attachments/mimeType)|(attachments/mimeEncoding)|(attachments/fileExtension)",
+							"showif-value-wikitext": false,
 							"preferred-input": "OO.ui.DropdownInputWidget",
 							"input-config": [],
 							"options-allow-null": false,
@@ -1112,7 +1113,8 @@
 							"visibility": "condition",
 							"showif-field": "field",
 							"showif-condition": "regex",
-							"showif-value": "(imapPath)|(mailboxFolder)|(headersRaw)|(headers/subject)|(headers/Subject)|(headers/message_id)|(headers/toaddress)|(headers/fromaddress)|(headers/ccaddress)|(headers/reply_toaddress)|(headers/senderaddress)|(mimeVersion)|(xVirusScanned)|(organization)|(contentType)|(xMailer)|(contentLanguage)|(xSenderIp)|(priority)|(importance)|(sensitivity)|(autoSubmitted)|(precedence)|(failedRecipients)|(subject)|(fromHost)|(fromName)|(fromAddress)|(senderHost)|(senderName)|(senderAddress)|(xOriginalTo)|(toString)|(ccString)|(messageId)|(textPlain)|(textHtml)|(visibleText)|(attachments/id)|(attachments/contentId)|(attachments/subtype)|(attachments/description)|(attachments/name)|(attachments/disposition)|(attachments/charset)|(attachments/emlOrigin)|(attachments/fileInfoRaw)|(attachments/fileInfo)|(attachments/mime)|(attachments/mimeEncoding)|(attachments/fileExtension)|(attachments/mimeType)",
+							"showif-value": "(headersRaw)|(imapPath)|(mailboxFolder)|(sender/name)|(sender/address)|(deliveredTo)|(textPlain)|(textHtml)|(visibleText)|(detectedLanguage)|(conversationHash)|(headers/returnPath)|(headers/received)|(headers/resentDate)|(headers/resentFrom)|(headers/resentSender)|(headers/resentTo)|(headers/resentCc)|(headers/resentBcc)|(headers/resentMessageId)|(headers/date)|(headers/from)|(headers/sender)|(headers/replyTo)|(headers/to)|(headers/cc)|(headers/bcc)|(headers/messageId)|(headers/inReplyTo)|(headers/references)|(headers/subject)|(headers/comments)|(headers/keywords)|(headers/mimeVersion)|(headers/contentType)|(headers/contentTransferEncoding)|(headers/contentId)|(headers/contentDescription)|(headers/contentDisposition)|(headers/contentLanguage)|(headers/contentBase)|(headers/contentLocation)|(headers/contentFeatures)|(headers/contentAlternative)|(headers/contentMd5)|(headers/contentDuration)|(headers/autoSubmitted)|(attachments/contentId)|(attachments/encoding)|(attachments/description)|(attachments/contentType)|(attachments/name)|(attachments/disposition)|(attachments/fileinfo)|(attachments/mime)|(attachments/mimeType)|(attachments/mimeEncoding)|(attachments/fileExtension)",
+							"showif-value-wikitext": false,
 							"preferred-input": "OO.ui.TextInputWidget",
 							"input-config": [],
 							"required": false
@@ -1132,7 +1134,8 @@
 							"visibility": "condition",
 							"showif-field": "field",
 							"showif-condition": "regex",
-							"showif-value": "(date)|(headers/date)|(headers/Date)",
+							"showif-value": "parsedDate",
+							"showif-value-wikitext": false,
 							"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
 							"input-config": [],
 							"required": false
@@ -1151,7 +1154,8 @@
 							"visibility": "condition",
 							"showif-field": "field",
 							"showif-condition": "regex",
-							"showif-value": "(date)|(headers/date)|(headers/Date)",
+							"showif-value": "parsedDate",
+							"showif-value-wikitext": false,
 							"preferred-input": "mw.widgets.datetime.DateTimeInputWidget",
 							"input-config": [],
 							"required": false
@@ -1170,7 +1174,8 @@
 							"visibility": "condition",
 							"showif-field": "field",
 							"showif-condition": "regex",
-							"showif-value": "(id)|(attachments/type)|(attachments/sizeInBytes)|(attachments/encoding)",
+							"showif-value": "(id)|(attachments/sizeInBytes)|(attachments/sizeInMB)",
+							"showif-value-wikitext": false,
 							"preferred-input": "OO.ui.NumberInputWidget",
 							"input-config": [],
 							"required": false
@@ -1180,15 +1185,16 @@
 					},
 					"number_to": {
 						"wiki": {
-							"name": "number_to",
 							"type": "property",
-							"multiple-items": false,
-							"label": "to",
 							"uuid": "662ca3fe55ffc",
+							"name": "number_to",
 							"visibility": "condition",
 							"showif-field": "field",
 							"showif-condition": "regex",
-							"showif-value": "(id)|(attachments/type)|(attachments/sizeInBytes)|(attachments/encoding)",
+							"showif-value": "(id)|(attachments/sizeInBytes)|(attachments/sizeInMB)",
+							"showif-value-wikitext": false,
+							"label": "to",
+							"multiple-items": false,
 							"preferred-input": "OO.ui.NumberInputWidget",
 							"input-config": [],
 							"required": false
@@ -1270,7 +1276,7 @@
 							},
 							"format": "text",
 							"title": "category",
-							"description": "assign one or more categories",
+							"description": "assign one or more categories (supports replacements of match groups with $1, $2... )",
 							"default": []
 						},
 						"type": "array",

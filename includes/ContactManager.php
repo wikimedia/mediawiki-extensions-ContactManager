@@ -1009,7 +1009,7 @@ class ContactManager {
 				$n++;
 				echo "importing message $n/{$size_}" . PHP_EOL;
 
-				if ( in_array( $uid, $skippedByFilters[$shortpath] ) ) {
+				if ( array_key_exists( $shortpath, $skippedByFilters ) && in_array( $uid, $skippedByFilters[$shortpath] ) ) {
 					echo $uid . ' skipped by header\'s filter' . PHP_EOL;
 					continue;
 				}
