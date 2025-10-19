@@ -1380,18 +1380,33 @@ class ContactManager {
 			$pagenameFormula = $results[0]['title'];
 			$dataOriginal = $results[0]['data'];
 
-			if ( !$fromUsername ) {
-				$data = \VisualData::array_merge_recursive( $data, $dataOriginal );
-
-			} else {
-				if ( !empty( $dataOriginal['seen_until'] ) ) {
-					$data['seen_until'] = $dataOriginal['seen_until'];
+			if ( $fromUsername ) {
+				foreach ( [
+					'first_name',
+					'last_name',
+					'salutation',
+					'middle_name',
+					'nickname',
+					'initials',
+					'suffix',
+					'full_name',
+				] as $field_ ) {
+					if ( array_key_exists( $field_, $dataOriginal ) && !empty( $dataOriginal[$field_] ) ) {
+						$data[$field_] = $dataOriginal[$field_];
+					}
 				}
-				if ( !empty( $dataOriginal['seen_since'] ) ) {
-					$data['seen_since'] = $dataOriginal['seen_since'];
-				}
-				$data = \VisualData::array_merge_recursive( $dataOriginal, $data );
 			}
+
+			foreach ( [
+				'seen_until',
+				'seen_since',
+			] as $field_ ) {
+				if ( array_key_exists( $field_, $dataOriginal ) && !empty( $dataOriginal[$field_] ) ) {
+					$data[$field_] = $dataOriginal[$field_];
+				}
+			}
+
+			$data = \VisualData::array_merge_recursive( $dataOriginal, $data );
 		}
 
 		$data = \VisualData::array_filter_recursive( $data, 'array_unique' );
