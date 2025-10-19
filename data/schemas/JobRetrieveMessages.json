@@ -622,10 +622,10 @@
 			"type": "array",
 			"uniqueItems": false
 		},
-		"filter_by_overview": {
+		"filters_by_overview": {
 			"wiki": {
-				"name": "filter_by_overview",
-				"title": "Filter by overview",
+				"name": "filters_by_overview",
+				"title": "Filters by overview",
 				"min-items": 0,
 				"unique-items": true,
 				"type": "schema",
@@ -958,7 +958,7 @@
 				]
 			},
 			"type": "array",
-			"title": "Filter by overview",
+			"title": "Filters by overview",
 			"minItems": 0,
 			"uniqueItems": true
 		},
