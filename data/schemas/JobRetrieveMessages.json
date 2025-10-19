@@ -48,14 +48,14 @@
 				"min-items": 1,
 				"unique-items": false,
 				"type": "schema",
-				"uuid": "68aec7792ce9b"
+				"uuid": "68f4b88a314cc"
 			},
 			"items": {
 				"type": "object",
 				"wiki": {
 					"name": "",
 					"type": "schema",
-					"uuid": "687233e6a5d04",
+					"uuid": "68aec7792ce9b",
 					"layout": "section",
 					"visibility": "visible"
 				},
@@ -210,23 +210,6 @@
 						},
 						"type": "integer",
 						"title": "UID to"
-					},
-					"only_overview": {
-						"wiki": {
-							"name": "only_overview",
-							"type": "property",
-							"multiple-items": false,
-							"label": "only overview",
-							"help-message": "toggle if you want to fetch only the overview, not the complete message",
-							"uuid": "675495e626d6d",
-							"visibility": "visible",
-							"preferred-input": "OO.ui.ToggleSwitchWidget",
-							"input-config": [],
-							"required": false
-						},
-						"type": "boolean",
-						"title": "only overview",
-						"description": "toggle if you want to fetch only the overview, not the complete message"
 					},
 					"search_criteria": {
 						"wiki": {
@@ -423,6 +406,23 @@
 						"title": "search criteria",
 						"minItems": 1,
 						"uniqueItems": false
+					},
+					"only_overview": {
+						"wiki": {
+							"name": "only_overview",
+							"type": "property",
+							"multiple-items": false,
+							"label": "only overview",
+							"help-message": "toggle if you want to fetch only the overview, not the complete message",
+							"uuid": "675495e626d6d",
+							"visibility": "visible",
+							"preferred-input": "OO.ui.ToggleSwitchWidget",
+							"input-config": [],
+							"required": false
+						},
+						"type": "boolean",
+						"title": "only overview",
+						"description": "toggle if you want to fetch only the overview, not the complete message"
 					}
 				},
 				"required": [
@@ -1185,16 +1185,16 @@
 					},
 					"number_to": {
 						"wiki": {
-							"type": "property",
-							"uuid": "662ca3fe55ffc",
 							"name": "number_to",
+							"type": "property",
+							"multiple-items": false,
+							"label": "to",
+							"uuid": "662ca3fe55ffc",
 							"visibility": "condition",
 							"showif-field": "field",
 							"showif-condition": "regex",
 							"showif-value": "(id)|(attachments/sizeInBytes)|(attachments/sizeInMB)",
 							"showif-value-wikitext": false,
-							"label": "to",
-							"multiple-items": false,
 							"preferred-input": "OO.ui.NumberInputWidget",
 							"input-config": [],
 							"required": false

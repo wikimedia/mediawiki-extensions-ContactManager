@@ -459,10 +459,15 @@ conversationHash
 		$obj['textPlain'] = (string)$message->getTextContent();
 		$obj['textHtml'] = (string)$message->getHtmlContent();
 
-		$parsedEmail = ( new EmailParser() )->parse( $obj['textPlain'] );
+		// custom entry
+		if ( !empty( $obj['textPlain'] ) ) {
+			$parsedEmail = ( new EmailParser() )->parse( $obj['textPlain'] );
+			$obj['visibleText'] = (string)$parsedEmail->getVisibleText();
 
-		// custom entries
-		$obj['visibleText'] = (string)$parsedEmail->getVisibleText();
+		} elseif ( !empty( $obj['textHtml'] ) ) {
+			$html2Text = new \Html2Text\Html2Text( $obj['textHtml'] );
+			$obj['visibleText'] = $html2Text->getText();
+		}
 
 		// language detect @see https://github.com/patrickschur/language-detection
 		$detectedLanguage = null;
