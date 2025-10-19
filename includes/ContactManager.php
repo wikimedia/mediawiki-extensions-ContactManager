@@ -574,8 +574,8 @@ class ContactManager {
 		};
 
 		foreach ( [ 'filters_by_overview', 'filters_by_message' ] as $k ) {
-			if ( array_key_exists( $k, $params ) ) {
-				foreach ( (array)$params[$k] as &$v ) {
+			if ( array_key_exists( $k, $params ) && is_array( $params[$k] ) ) {
+				foreach ( $params[$k] as &$v ) {
 					if ( $v['match'] !== 'regex' ) {
 						continue;
 					}
@@ -1379,6 +1379,7 @@ class ContactManager {
 			$exists = true;
 			$pagenameFormula = $results[0]['title'];
 			$dataOriginal = $results[0]['data'];
+
 			if ( !$fromUsername ) {
 				$data = \VisualData::array_merge_recursive( $data, $dataOriginal );
 

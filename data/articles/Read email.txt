@@ -9,6 +9,9 @@
     |schema=ContactManager/Message
     |?parsedDate   
     |?headers/from
+    |?to
+    |?cc
+    |?bcc
     |?headers/subject
     |?headers/date
     |?fromParsed/address
@@ -32,6 +35,9 @@
       |schema=ContactManager/Message
       |?parsedDate
       |?headers/from
+      |?to
+      |?cc
+      |?bcc
       |?headers/date
       |?headers/subject
       |?fromParsed/address

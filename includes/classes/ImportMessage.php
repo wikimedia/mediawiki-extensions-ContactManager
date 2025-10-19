@@ -597,7 +597,7 @@ conversationHash
 		if ( strtolower( $params['folder']['folder_type'] ) === 'inbox' &&
 			count( array_intersect( $senderAddresses, $this->mailboxData['all_addresses'] ) )
 		) {
-			$categories['message'] = 'Messages in wrong folder';
+			$categories['message'][] = 'Messages in wrong folder';
 		}
 
 		if ( !$this->applyFilters( $obj, $categories, $assignCategories ) ) {

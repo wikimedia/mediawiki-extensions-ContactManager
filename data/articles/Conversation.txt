@@ -47,7 +47,7 @@ __NOTOC__
   {{#visualdataquery: [[conversationHash::{{#urlget:hash}}]]
     |schema=ContactManager/Message
     |?headers/from
-    |?headers/to
+    |?to
     |?headers/subject
     |?parsedDate
     |?regularAttachments
@@ -79,7 +79,7 @@ __NOTOC__
     [[parsedDate::<{{#expr:{{#if: {{#urlget:year}}|{{#urlget:year}}|{{CURRENTYEAR}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|+1|+0}} }}-{{padleft:{{#expr:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}{{#ifeq:{{#if: {{#urlget:month}}|{{#urlget:month}}|{{CURRENTMONTH}} }}|12|-11|+1}} }} |2|0}}-01]]
     |schema=ContactManager/Message
     |?headers/from
-    |?headers/to
+    |?to
     |?headers/subject
     |?parsedDate
     |?regularAttachments
@@ -107,3 +107,4 @@ __NOTOC__
   }}
   }}</big>
 }}
+

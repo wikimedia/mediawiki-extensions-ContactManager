@@ -8,6 +8,15 @@
 |format=pageid
 }}|target=_blank}}
 |-
+! to
+| {{#arraymap:{{{to|}}} | @@ | @ | @ | ,\s  }}
+|-
+! cc
+| {{#arraymap:{{{cc|}}} | @@ | @ | @ | ,\s  }}
+|-
+! bcc
+| {{#arraymap:{{{bcc|}}} | @@ | @ | @ | ,\s  }}
+|-
 ! subject
 | {{{headers/subject|}}}
 |-

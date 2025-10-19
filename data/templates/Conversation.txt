@@ -3,7 +3,7 @@
 
 '''From:''' {{{headers/from|}}}
 
-'''To:''' {{{headers/to|}}}
+'''To:''' {{#arraymap:{{{to|}}} | @@ | @ | @ | ,\s  }}
 
 '''Time:''' {{#timelocal: {{{parsedDate|}}} | HH:mm }}
 
@@ -14,3 +14,4 @@
 <div style="background:#f5f5f5;padding:12px;margin-top:6px">{{#shadowroot: {{#base64encode:{{{visibleText|}}} }}|host}}</div>
 '''{{#querylink:ContactManager:Read_email|email|mailbox={{#urlget:mailbox}}|pageid={{{pageid}}}|target=_blank}}'''
 </div>
+
