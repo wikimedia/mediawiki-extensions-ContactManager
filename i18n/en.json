@@ -44,10 +44,10 @@
 	"contactmanager-sidepanel-organizations": "Organizations",
 	"contactmanager-sidepanel-data-structure": "Data structure",
 
-	"right-contactmanager-can-manage-mailboxes": "contactmanager can manage mailboxes",
-	"action-contactmanager-can-manage-mailboxes": "contactmanager can manage mailboxes",
-	"right-contactmanager-can-browse-tracking": "contactmanager can browse-tracking",
-	"action-contactmanager-can-browse-tracking": "contactmanager can browse-tracking",
+	"right-contactmanager-can-manage-mailboxes": "Manage mailboxes",
+	"action-contactmanager-can-manage-mailboxes": "manage mailboxes",
+	"right-contactmanager-can-browse-tracking": "Use browse-tracking",
+	"action-contactmanager-can-browse-tracking": "use browse-tracking",
 	"group-contactmanager-admin": "ContactManager admin",
 
 	"apihelp-contactmanager-createjob-summary": "apihelp contactmanager createjob summary",
