@@ -349,7 +349,7 @@ class Mailer {
 			'bodyContentOnly' => true,
 		];
 
-		$html = $parserOutput->getText();
+		$html = $parserOutput->getContentHolderText();
 		$html2Text = new \Html2Text\Html2Text( $html );
 		$text = $html2Text->getText();
 

@@ -10,32 +10,27 @@ use Twig\Environment;
 use Twig\Loader\ArrayLoader;
 
 class ContactManagerTwigContentHandler extends \TextContentHandler {
-	/**
-	 * @inheritDoc
-	 */
-	public function __construct( $modelId = CONTENT_MODEL_CONTACTMANAGER_TWIG, $formats = [ 'text/html' ] ) {
-		parent::__construct( $modelId, $formats );
+
+	public function __construct() {
+		parent::__construct( CONTENT_MODEL_CONTACTMANAGER_TWIG, [ CONTENT_FORMAT_HTML ] );
 	}
 
-	/**
-	 * @return string
-	 */
+	/** @inheritDoc */
 	protected function getContentClass() {
 		return ContactManagerTwigContent::class;
 	}
 
-	/**
-	 * @param Content $content
-	 * @param ContentParseParams $cpoParams
-	 * @param ParserOutput &$output The output object to fill (reference).
-	 */
+	/** @inheritDoc */
 	protected function fillParserOutput(
 		Content $content,
 		ContentParseParams $cpoParams,
 		ParserOutput &$output
 	) {
+		if ( !( $content instanceof TextContent ) ) {
+			return;
+		}
+
 		$textModelsToParse = MediaWikiServices::getInstance()->getMainConfig()->get( 'TextModelsToParse' );
-		'@phan-var TextContent $content';
 		if ( in_array( $content->getModel(), $textModelsToParse ) ) {
 			// parse just to get links etc into the database, HTML is replaced below.
 			$output = MediaWikiServices::getInstance()->getParser()
@@ -49,7 +44,8 @@ class ContactManagerTwigContentHandler extends \TextContentHandler {
 				);
 		}
 
-		if ( $cpoParams->getGenerateHtml() ) {
+		// Skip this code path in e.g. CI environments without Twig
+		if ( $cpoParams->getGenerateHtml() && class_exists( Environment::class ) ) {
 			$templateName = 'twigTemplate';
 			$loader = new ArrayLoader( [
 				$templateName => $content->getText(),
@@ -59,13 +55,12 @@ class ContactManagerTwigContentHandler extends \TextContentHandler {
 
 			$substitutions = [];
 			$html = $twig->render( $templateName, $substitutions );
-
 		} else {
 			$html = '';
 		}
 
 		$output->clearWrapperDivClass();
-		$output->setText( $html );
+		$output->setContentHolderText( $html );
 	}
 
 }
