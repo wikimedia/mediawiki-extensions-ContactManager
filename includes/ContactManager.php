@@ -551,15 +551,6 @@ class ContactManager {
 			echo '***attention, use parameter --memory-limit default' . PHP_EOL;
 		}
 
-		// check regexes
-		$isValidRegex = static function ( $pattern ) {
-			set_error_handler( static function () {
-			}, E_WARNING );
-			$isValid = preg_match( $pattern, '' ) !== false;
-			restore_error_handler();
-			return $isValid;
-		};
-
 		$wrapWithDelimiter = static function ( $text ) {
 			$delimiters = [ '/', '#', '~', '%', '`', '@', '!' ];
 
@@ -581,13 +572,13 @@ class ContactManager {
 					}
 					$value = $v['value_text'];
 
-					if ( $isValidRegex( $value ) ) {
+					if ( StringUtils::isValidPCRERegex( $value ) ) {
 						continue;
 					}
 
 					$regex = $wrapWithDelimiter ( $value );
 
-					if ( $isValidRegex( $regex ) ) {
+					if ( StringUtils::isValidPCRERegex( $regex ) ) {
 						$v['value_text'] = $regex;
 						continue;
 					}
