@@ -35,10 +35,6 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use TheIconic\NameParser\Parser as IconicParser;
 
-if ( is_readable( __DIR__ . '/../vendor/autoload.php' ) ) {
-	include_once __DIR__ . '/../vendor/autoload.php';
-}
-
 class ContactManager {
 
 	/** @var LoggerFactory */

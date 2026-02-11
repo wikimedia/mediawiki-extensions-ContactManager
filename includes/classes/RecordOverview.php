@@ -30,10 +30,6 @@ use MediaWiki\Extension\VisualData\Importer as VisualDataImporter;
 // use MWException;
 use RequestContext;
 
-if ( is_readable( __DIR__ . '/../../vendor/autoload.php' ) ) {
-	include_once __DIR__ . '/../../vendor/autoload.php';
-}
-
 class RecordOverview {
 
 	/** @var User */
