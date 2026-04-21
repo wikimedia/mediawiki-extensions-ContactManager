@@ -54,8 +54,7 @@ class BrowseTracking extends \SpecialPage {
 	 * @inheritDoc
 	 */
 	public function __construct() {
-		$listed = true;
-		parent::__construct( 'ContactManagerBrowseTracking', '', $listed );
+		parent::__construct( 'ContactManagerBrowseTracking' );
 	}
 
 	/**

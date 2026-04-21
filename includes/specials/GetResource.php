@@ -28,7 +28,7 @@ use MediaWiki\Extension\ContactManager\Aliases\Title as TitleClass;
 use MediaWiki\Permissions\PermissionManager;
 use MediaWiki\User\UserIdentityLookup;
 
-class GetResource extends \SpecialPage {
+class GetResource extends \UnlistedSpecialPage {
 
 	/** @var PermissionManager */
 	private $permissionManager;
@@ -47,8 +47,7 @@ class GetResource extends \SpecialPage {
 		$this->permissionManager = $permissionManager;
 		$this->userIdentityLookup = $userIdentityLookup;
 
-		$listed = false;
-		parent::__construct( 'ContactManagerGetResource', '', $listed );
+		parent::__construct( 'ContactManagerGetResource' );
 	}
 
 	/**

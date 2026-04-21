@@ -24,7 +24,7 @@
 
 namespace MediaWiki\Extension\ContactManager\Special;
 
-class Tracking extends \SpecialPage {
+class Tracking extends \UnlistedSpecialPage {
 
 	/**
 	 * @see https://www.twilio.com/docs/sendgrid/for-developers/tracking-events/event
@@ -50,8 +50,7 @@ class Tracking extends \SpecialPage {
 	];
 
 	public function __construct() {
-		$listed = false;
-		parent::__construct( 'ContactManagerTracking', '', $listed );
+		parent::__construct( 'ContactManagerTracking' );
 	}
 
 	/**
