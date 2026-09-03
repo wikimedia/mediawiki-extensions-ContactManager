@@ -24,6 +24,8 @@
 namespace MediaWiki\Extension\ContactManager;
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Notification\RecipientSet;
+use MediaWiki\Notification\Types\WikiNotification;
 
 // @see https://www.mediawiki.org/wiki/Extension:Echo/Creating_a_new_notification_type_(1.43)
 class EchoInterface {
@@ -51,13 +53,8 @@ class EchoInterface {
 	 * @param Title|MediaWiki\Title\Title $mailboxTitle
 	 * @param string $mailbox
 	 * @param array $updates
-	 * @return array
 	 */
-	public function sendNotifications( $user, $mailboxTitle, $mailbox, $updates ) {
-		if ( !$this->isLoaded ) {
-			return;
-		}
-
+	public function sendNotifications( $user, $mailboxTitle, $mailbox, $updates ): void {
 		$extra = [
 			'user' => $user,
 			'mailbox' => $mailbox,
@@ -67,29 +64,24 @@ class EchoInterface {
 			'notifyAgent' => true,
 		];
 
-		// @see https://www.mediawiki.org/wiki/Extension:Echo/Creating_a_new_notification_type
-		// $ret = \EchoEvent::create( [
-		// 	'type' => 'contactmanager-get-messages-complete',
-		// 	'title' => $mailboxTitle,
-		// 	'extra' => $extra,
-		// 	'agent' => $user
-		// ] );
-
-		$ret = [];
+		$notificationService = MediaWikiServices::getInstance()->getNotificationService();
 		foreach ( $updates as $name => $count ) {
 			if ( !$count ) {
 				continue;
 			}
 
-			$ret[] = \EchoEvent::create( [
-				'type' => 'contactmanager-get-messages-new-' . $name,
-				'title' => $mailboxTitle,
-				'extra' => [ ...$extra, 'name' => $name, 'count' => $count ],
-				'agent' => $user
-			] );
+			$notificationService->notify(
+				new WikiNotification(
+					'contactmanager-get-messages-new-' . $name,
+					$mailboxTitle,
+					$user,
+					[ ...$extra, 'name' => $name, 'count' => $count ]
+				),
+				// The actual recipients are resolved by Echo via the notification type's
+				// own user-locators config (self::locateUsers()).
+				new RecipientSet( [] )
+			);
 		}
-
-		return $ret;
 	}
 
 	/**
