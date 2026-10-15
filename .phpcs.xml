@@ -4,6 +4,9 @@
 		<exclude name="Generic.Files.LineLength.TooLong" />
 		<exclude name="MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName" />
 		<exclude name="Generic.Files.OneObjectStructurePerFile.MultipleFound" />
+		<exclude name="MediaWiki.Commenting.ClassAnnotations.UnrecognizedAnnotation" />
+		<exclude name="MediaWiki.Commenting.CommentBeforeClass.StrayStyle" />
+		<exclude name="MediaWiki.Commenting.FunctionComment.MissingDocumentationPublic" />
 	</rule>
 	<file>.</file>
 	<arg name="extensions" value="php"/>
